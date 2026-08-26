@@ -2,34 +2,17 @@
 
 const IMAGEKIT_LOGO_WIDTHS = [192, 288, 384, 480];
 const IMAGEKIT_LOGO_QUALITY = 80;
+const MARQUEE_REPEAT_COUNT = 4;
 
 const trustedByLogos = [
-  {
-    name: "RAW",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0026_d14d412bca7ca0242694e995b8884c1eb936c668.png",
-    alt: "RAW",
-    width: 78,
-    height: 21,
-    desktopWidth: 122,
-    mobileWidth: 86,
-  },
   {
     name: "Four Points",
     src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0484_84af68bf00c4be60d84f5ae81513ecd15abaaa08.png",
     alt: "Four Points by Sheraton",
     width: 836,
     height: 156,
-    desktopWidth: 188,
-    mobileWidth: 132,
-  },
-  {
-    name: "Hotel Indigo",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0020_cf92c94ad6147fe46043ac3164e92b5654560958.png",
-    alt: "Hotel Indigo",
-    width: 480,
-    height: 270,
-    desktopWidth: 125,
-    mobileWidth: 88,
+    desktopWidth: 205,
+    mobileWidth: 138,
   },
   {
     name: "Grand Hyatt",
@@ -37,8 +20,8 @@ const trustedByLogos = [
     alt: "Grand Hyatt Jakarta",
     width: 428,
     height: 283,
-    desktopWidth: 92,
-    mobileWidth: 64,
+    desktopWidth: 76,
+    mobileWidth: 50,
   },
   {
     name: "Marriott",
@@ -46,26 +29,8 @@ const trustedByLogos = [
     alt: "Marriott",
     width: 1622,
     height: 1274,
-    desktopWidth: 82,
-    mobileWidth: 58,
-  },
-  {
-    name: "Eastin",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0594_b9b56ddf8d4fc2089b4ded7cf474cbad18306556.png",
-    alt: "Eastin Hotels",
-    width: 480,
-    height: 270,
-    desktopWidth: 125,
-    mobileWidth: 88,
-  },
-  {
-    name: "COCO Development",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0571_afd80b7a4e27dfd483046cddc3ed86c49ef92d81.png",
-    alt: "COCO Development",
-    width: 597,
-    height: 199,
-    desktopWidth: 196,
-    mobileWidth: 138,
+    desktopWidth: 66,
+    mobileWidth: 44,
   },
   {
     name: "The Apurva Kempinski",
@@ -73,19 +38,15 @@ const trustedByLogos = [
     alt: "The Apurva Kempinski",
     width: 543,
     height: 676,
-    desktopWidth: 60,
-    mobileWidth: 44,
-  },
-  {
-    name: "Mövenpick",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0573_b1dc0715f92308df9ccc7ac21c60defb24b02141.png",
-    alt: "Mövenpick Hotels & Resorts",
-    width: 396,
-    height: 128,
-    desktopWidth: 196,
-    mobileWidth: 138,
+    desktopWidth: 46,
+    mobileWidth: 31,
   },
 ];
+
+const repeatedLogos = Array.from(
+  { length: MARQUEE_REPEAT_COUNT },
+  () => trustedByLogos,
+).flat();
 
 function getImageKitUrl(src, width) {
   return `${src}?tr=w-${width},q-${IMAGEKIT_LOGO_QUALITY},f-auto`;
@@ -97,56 +58,68 @@ function getImageKitSrcSet(src) {
   ).join(", ");
 }
 
-function LogoRow({ duplicate = false }) {
+function LogoSegment({ duplicate = false }) {
   return (
-    <ul className="trusted__list" aria-hidden={duplicate ? "true" : undefined}>
-      {trustedByLogos.map(
-        ({
-          name,
-          src,
-          alt,
-          width,
-          height,
-          desktopWidth,
-          mobileWidth,
-        }) => (
-          <li
-            className="trusted__logo"
-            key={`${duplicate ? "duplicate" : "primary"}-${name}`}
+    <div
+      className="flex flex-none items-center gap-[3rem] pr-[3rem] md:gap-[5.5rem] md:pr-[5.5rem]"
+      aria-hidden="true"
+    >
+      {repeatedLogos.map(
+        ({ name, src, width, height, desktopWidth, mobileWidth }, index) => (
+          <div
+            key={`${duplicate ? "duplicate" : "primary"}-${name}-${index}`}
+            className="flex h-[3.6rem] flex-none items-center justify-center md:h-[5.4rem]"
           >
             <img
+              className="block h-auto w-[var(--logo-mobile-width)] max-w-none flex-none object-contain md:w-[var(--logo-desktop-width)]"
               src={getImageKitUrl(src, IMAGEKIT_LOGO_WIDTHS[1])}
               srcSet={getImageKitSrcSet(src)}
               sizes={`(min-width: 48rem) ${desktopWidth}px, ${mobileWidth}px`}
-              alt={duplicate ? "" : alt}
+              alt=""
               width={width}
               height={height}
-              loading="lazy"
+              loading="eager"
               decoding="async"
               draggable="false"
               style={{
-                "--trusted-logo-desktop-width": `${desktopWidth}px`,
-                "--trusted-logo-mobile-width": `${mobileWidth}px`,
+                "--logo-desktop-width": `${desktopWidth}px`,
+                "--logo-mobile-width": `${mobileWidth}px`,
               }}
             />
-          </li>
+          </div>
         ),
       )}
-    </ul>
+    </div>
   );
 }
 
 export default function TrustedBy() {
   return (
-    <section className="trusted" aria-label="Trusted by hospitality partners">
-      <div className="site-container trusted__label">
-        <p className="eyebrow">Trusted by</p>
-      </div>
+    <section
+      className="overflow-hidden bg-[var(--night)] text-white"
+      aria-labelledby="trusted-by-title"
+    >
+      <div className="flex h-[8.75rem] flex-col justify-center md:h-[12.3125rem]">
+        <p
+          id="trusted-by-title"
+          className="m-0 mb-[1.2rem] text-center font-display text-[0.7rem] font-normal leading-none text-white/[0.58] md:mb-[1.5rem] md:text-[0.8rem]"
+        >
+          Trusted by
+        </p>
 
-      <div className="trusted__viewport">
-        <div className="trusted__track">
-          <LogoRow />
-          <LogoRow duplicate />
+        <ul className="sr-only">
+          {trustedByLogos.map(({ name, alt }) => (
+            <li key={name}>{alt}</li>
+          ))}
+        </ul>
+
+        <div className="relative mx-auto w-full max-w-[46rem] px-5 md:max-w-[72rem] md:px-8">
+          <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,black_7%,black_93%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_7%,black_93%,transparent_100%)] motion-reduce:overflow-x-auto motion-reduce:[scrollbar-width:thin]">
+            <div className="flex w-max items-center animate-[trusted-marquee_42s_linear_infinite] will-change-transform motion-reduce:animate-none motion-reduce:will-change-auto">
+              <LogoSegment />
+              <LogoSegment duplicate />
+            </div>
+          </div>
         </div>
       </div>
     </section>

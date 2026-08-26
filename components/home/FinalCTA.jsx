@@ -1,7 +1,9 @@
 const FINAL_CTA_IMAGE_WIDTHS = [640, 960, 1280, 1600, 1920];
 const FINAL_CTA_IMAGE_QUALITY = 80;
+
 const FINAL_CTA_DESKTOP_IMAGE =
   "https://ik.imagekit.io/ikigaiwellness/ikigai/home/b3f34f90ef3e371670eab38bea9970cfb08e2992.jpg";
+
 const FINAL_CTA_MOBILE_IMAGE =
   "https://ik.imagekit.io/ikigaiwellness/ikigai/home/19fe447fdd327441430bc112d99ff4dbadc762aa.jpg";
 
@@ -18,16 +20,23 @@ function getImageKitSrcSet(src) {
 
 export default function FinalCTA() {
   return (
-    <section className="final-cta" aria-labelledby="final-cta-title">
-      <div className="final-cta__media" aria-hidden="true">
-        <picture>
+    <section
+      className="final-cta relative isolate min-h-[22rem] overflow-hidden bg-[var(--placeholder-dark)] text-white md:min-h-[clamp(36rem,40vw,49rem)]"
+      aria-labelledby="final-cta-title"
+    >
+      <div
+        className="final-cta__media absolute inset-0 -z-[3] overflow-hidden bg-[var(--placeholder-dark)]"
+        aria-hidden="true"
+      >
+        <picture className="block h-full w-full">
           <source
             media="(max-width: 47.99rem)"
             srcSet={getImageKitSrcSet(FINAL_CTA_MOBILE_IMAGE)}
             sizes="100vw"
           />
+
           <img
-            className="final-cta__image"
+            className="final-cta__image block h-full w-full object-cover object-center"
             src={getImageKitUrl(
               FINAL_CTA_DESKTOP_IMAGE,
               FINAL_CTA_IMAGE_WIDTHS[1],
@@ -41,10 +50,42 @@ export default function FinalCTA() {
           />
         </picture>
       </div>
-      <div className="site-container final-cta__inner">
-        <h2 id="final-cta-title">Build a Wellness Space You’ll Be Proud to Own</h2>
-        <a className="pill-button pill-button--dark" href="#consultation">
-          Book my free consultation
+
+      <div
+        className="pointer-events-none absolute inset-0 -z-[2]"
+        aria-hidden="true"
+        style={{
+          backgroundImage: `
+            linear-gradient(
+              90deg,
+              rgba(7, 10, 14, 0.48) 0%,
+              rgba(7, 10, 14, 0.34) 34%,
+              rgba(7, 10, 14, 0.15) 64%,
+              rgba(7, 10, 14, 0.08) 100%
+            ),
+            linear-gradient(
+              180deg,
+              rgba(7, 10, 14, 0.08) 0%,
+              rgba(7, 10, 14, 0.08) 50%,
+              rgba(7, 10, 14, 0.34) 100%
+            )
+          `,
+        }}
+      />
+
+      <div className="site-container final-cta__inner mx-auto flex min-h-[inherit] w-full max-w-[105rem] flex-col justify-end gap-[1.5rem] px-[var(--page-gutter)] pt-8 pb-8 md:flex-row md:items-end md:justify-between md:gap-[clamp(3rem,7vw,8rem)] md:pt-[5rem] md:pb-[clamp(7.5rem,8vw,10rem)]">
+        <h2
+          id="final-cta-title"
+          className="m-0 max-w-[12ch] font-display text-[clamp(2.35rem,10vw,3.1rem)] font-[450] leading-[0.98] tracking-[-0.045em] md:max-w-[12.5ch] md:text-[clamp(4rem,5.3vw,6.5rem)]"
+        >
+          Build a Wellness Space You’ll Be Proud to Own
+        </h2>
+
+        <a
+          href="#consultation"
+          className="inline-flex min-h-[3.5rem] w-full shrink-0 items-center justify-center rounded-[0.85rem] border border-black bg-black px-[1.75rem] py-[0.95rem] text-center font-display text-[0.78rem] font-medium leading-none tracking-[0.025em] text-white transition-[background-color,color,border-color] duration-[180ms] hover:border-white hover:bg-white hover:text-black md:min-h-[3.6rem] md:w-auto md:text-[0.82rem]"
+        >
+          BOOK MY FREE CONSULTATION
         </a>
       </div>
     </section>

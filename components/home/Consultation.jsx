@@ -3,24 +3,23 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Check } from "lucide-react";
-import MediaPlaceholder from "@/components/ui/MediaPlaceholder";
 
 const consultationChecklist = [
-  "Your available space and intended usage",
+  "Your available space",
   "Sauna or ice bath options",
+  "Intended usage and capacity",
+  "Estimated budget",
+  "What you're looking to create",
   "Existing vs. custom designs",
-  "Electrical, drainage and installation",
-  "Estimated budget and next steps",
+  "Electrical, drainage, installation",
+  "Recommended next steps",
 ];
 
 const interestOptions = [
   { value: "sauna", label: "Sauna" },
   { value: "ice-bath", label: "Ice Bath" },
   { value: "combined", label: "Sauna + Ice Bath" },
-  {
-    value: "complete-space",
-    label: "Complete Wellness Space",
-  },
+  { value: "complete-space", label: "Complete Wellness Space" },
   { value: "unsure", label: "Not Sure Yet" },
 ];
 
@@ -34,61 +33,102 @@ export default function Consultation() {
 
   return (
     <section
-      className="consultation dark-section"
       id="consultation"
       aria-labelledby="consultation-title"
+      className="consultation bg-[var(--night)] py-[4.75rem] text-white md:py-[clamp(7rem,8vw,9.5rem)]"
     >
-      <div className="site-container consultation__layout">
-        <div className="consultation__content">
-          <p className="eyebrow">Free wellness consultation</p>
-          <h2 id="consultation-title">Planning a Wellness Space? Talk to Our Team</h2>
-          <p className="consultation__intro">
-            You don’t need to know exactly what you need. Tell us about your
-            property and we’ll explain what’s possible.
+      <div className="site-container mx-auto grid w-full max-w-[105rem] gap-y-[0.8rem] px-[var(--page-gutter)] md:grid-cols-[minmax(0,1.08fr)_minmax(32rem,0.92fr)] md:grid-rows-[auto_1fr] md:gap-x-[clamp(4.5rem,7vw,9rem)] md:gap-y-[0.85rem]">
+        <p className="eyebrow m-0 font-display text-[0.66rem] font-semibold leading-[1.2] tracking-[0.18em] text-white/[0.62] uppercase md:col-start-1 md:row-start-1">
+          Free wellness consultation
+        </p>
+
+        <div className="md:col-start-1 md:row-start-2">
+          <h2
+            id="consultation-title"
+            className="m-0 max-w-[15ch] font-display text-[clamp(2rem,8.4vw,2.8rem)] font-[450] leading-[1.02] tracking-[-0.042em] md:text-[clamp(3.4rem,3.8vw,4.25rem)]"
+          >
+            Planning a Wellness Space? Talk to Our Team
+          </h2>
+
+          <p className="mt-[1.25rem] mb-0 max-w-[34rem] text-[0.8rem] leading-[1.65] text-white/[0.68] md:text-[0.9rem] md:leading-[1.6]">
+            You don&apos;t need to know exactly which sauna, ice bath or
+            technical setup you need. Tell us about your property — we&apos;ll
+            explain what&apos;s possible and what to do next.
           </p>
 
-          <MediaPlaceholder
-            className="consultation__media"
-            label="Consultation media pending"
+          <div
+            className="media-placeholder relative mt-[1.75rem] aspect-[12/5] w-full overflow-hidden bg-[#414957] md:mt-[2rem]"
+            aria-hidden="true"
           />
 
-          <ul className="consultation__checklist">
-            {consultationChecklist.map((item) => (
-              <li key={item}>
-                <Check aria-hidden="true" size={14} strokeWidth={1.6} />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
+          <div className="mt-[1.6rem]">
+            <p className="m-0 font-display text-[0.58rem] font-semibold leading-[1.2] tracking-[0.18em] text-white/[0.58] uppercase">
+              During your consultation we&apos;ll discuss
+            </p>
+
+            <ul className="mt-[0.95rem] mb-0 grid gap-x-[2.5rem] gap-y-[0.55rem] p-0 [list-style:none] sm:grid-cols-2">
+              {consultationChecklist.map((item) => (
+                <li
+                  key={item}
+                  className="flex items-start gap-[0.65rem] text-[0.76rem] leading-[1.4] text-white/[0.76]"
+                >
+                  <Check
+                    className="mt-[0.08rem] shrink-0"
+                    aria-hidden="true"
+                    size={14}
+                    strokeWidth={1.7}
+                  />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         <form
-          className="consultation-form"
+          className="mt-[2.5rem] md:col-start-2 md:row-start-2 md:mt-0"
           onSubmit={handleSubmit(handlePendingSubmit)}
           noValidate
         >
-          <h3>Book your free wellness consultation</h3>
+          <h3 className="mt-0 mb-[1.7rem] font-display text-[1.7rem] font-[450] leading-[1.1] tracking-[-0.03em] md:text-[1.85rem]">
+            Book your free wellness consultation
+          </h3>
 
-          <div className="consultation-form__grid">
-            <label>
+          <div className="grid gap-y-[1.5rem] md:grid-cols-2 md:gap-x-[1.35rem] md:gap-y-[1.65rem]">
+            <label className="grid gap-[0.4rem] font-display text-[0.56rem] font-semibold tracking-[0.14em] text-white/[0.56] uppercase">
               <span>Name</span>
-              <input type="text" placeholder="Your name" {...register("name")} />
+              <input
+                className="font-body w-full rounded-none border-0 border-b border-white/[0.2] bg-transparent px-0 py-[0.72rem] text-[0.86rem] font-normal tracking-normal text-white normal-case outline-none transition-colors placeholder:text-white/[0.42] focus:border-white"
+                type="text"
+                placeholder="Your name"
+                {...register("name")}
+              />
             </label>
-            <label>
+
+            <label className="grid gap-[0.4rem] font-display text-[0.56rem] font-semibold tracking-[0.14em] text-white/[0.56] uppercase">
               <span>WhatsApp</span>
-              <input type="tel" placeholder="+62 …" {...register("whatsapp")} />
+              <input
+                className="font-body w-full rounded-none border-0 border-b border-white/[0.2] bg-transparent px-0 py-[0.72rem] text-[0.86rem] font-normal tracking-normal text-white normal-case outline-none transition-colors placeholder:text-white/[0.42] focus:border-white"
+                type="tel"
+                placeholder="+62 …"
+                {...register("whatsapp")}
+              />
             </label>
-            <label>
+
+            <label className="grid gap-[0.4rem] font-display text-[0.56rem] font-semibold tracking-[0.14em] text-white/[0.56] uppercase">
               <span>Property / Project type</span>
               <input
+                className="font-body w-full rounded-none border-0 border-b border-white/[0.2] bg-transparent px-0 py-[0.72rem] text-[0.86rem] font-normal tracking-normal text-white normal-case outline-none transition-colors placeholder:text-white/[0.42] focus:border-white"
                 type="text"
                 placeholder="Villa, hotel, residence …"
                 {...register("propertyType")}
               />
             </label>
-            <label>
+
+            <label className="grid gap-[0.4rem] font-display text-[0.56rem] font-semibold tracking-[0.14em] text-white/[0.56] uppercase">
               <span>Location</span>
               <input
+                className="font-body w-full rounded-none border-0 border-b border-white/[0.2] bg-transparent px-0 py-[0.72rem] text-[0.86rem] font-normal tracking-normal text-white normal-case outline-none transition-colors placeholder:text-white/[0.42] focus:border-white"
                 type="text"
                 placeholder="Canggu, Ubud, Jakarta …"
                 {...register("location")}
@@ -96,40 +136,76 @@ export default function Consultation() {
             </label>
           </div>
 
-          <fieldset className="consultation-form__interests">
-            <legend>What are you interested in?</legend>
-            <div>
+          <fieldset className="mt-[1.8rem] border-0 p-0">
+            <legend className="font-display text-[0.56rem] font-semibold tracking-[0.14em] text-white/[0.56] uppercase">
+              What are you interested in?
+            </legend>
+
+            <div className="mt-[0.85rem] flex flex-wrap gap-2">
               {interestOptions.map((option) => (
-                <label key={option.value}>
+                <label
+                  key={option.value}
+                  className="relative inline-flex font-display font-medium"
+                >
                   <input
+                    className="peer absolute opacity-0"
                     type="radio"
                     value={option.value}
                     {...register("interest")}
                   />
-                  <span>{option.label}</span>
+                  <span className="inline-flex min-h-[2.55rem] items-center justify-center border border-white/[0.16] bg-[var(--paper-strong)] px-[1rem] py-[0.65rem] text-center text-[0.72rem] leading-none text-[var(--ink)] transition-[background-color,color,border-color] peer-checked:border-white peer-checked:bg-white peer-focus-visible:outline-2 peer-focus-visible:outline-offset-3 peer-focus-visible:outline-white">
+                    {option.label}
+                  </span>
                 </label>
               ))}
             </div>
           </fieldset>
 
-          <label className="consultation-form__check consultation-form__pending-field">
-            <input type="checkbox" {...register("termsDraft")} />
-            <span>Terms & Conditions and Privacy Policy consent — final logic pending</span>
-          </label>
-          <label className="consultation-form__check consultation-form__pending-field">
-            <input type="checkbox" {...register("updatesDraft")} />
-            <span>Occasional IKIGAI updates — optional wording pending</span>
-          </label>
+          <div className="mt-[1.15rem] grid gap-[0.65rem]">
+            <label className="flex cursor-pointer items-start gap-[0.55rem] text-[0.67rem] leading-[1.45] text-white/[0.48]">
+              <input
+                className="mt-[0.12rem] h-[0.85rem] w-[0.85rem] shrink-0 appearance-none border border-white/[0.42] bg-transparent checked:bg-white"
+                type="checkbox"
+                {...register("termsDraft")}
+              />
+              <span>
+                I agree to the Terms &amp; Conditions and Privacy Policy
+              </span>
+            </label>
 
-          <button className="consultation-form__submit" type="submit">
+            <label className="flex cursor-pointer items-start gap-[0.55rem] text-[0.67rem] leading-[1.45] text-white/[0.48]">
+              <input
+                className="mt-[0.12rem] h-[0.85rem] w-[0.85rem] shrink-0 appearance-none border border-white/[0.42] bg-transparent checked:bg-white"
+                type="checkbox"
+                {...register("updatesDraft")}
+              />
+              <span>
+                Send me occasional updates from IKIGAI.{" "}
+                <strong className="font-medium text-white/[0.62]">Optional</strong>
+              </span>
+            </label>
+          </div>
+
+          <button
+            className="mt-[1.25rem] min-h-[3.4rem] w-full rounded-[var(--pill)] border border-black bg-black px-[1.5rem] py-[0.9rem] font-display text-[0.82rem] font-medium leading-none tracking-[0.035em] text-white uppercase transition-[background-color,color,border-color] duration-[160ms] hover:border-white hover:bg-transparent"
+            type="submit"
+          >
             Book my free consultation
           </button>
-          <p
-            className="consultation-form__notice consultation-form__pending-field"
-            aria-live="polite"
-          >
-            {notice}
+
+          <p className="mt-[0.85rem] mb-0 text-[0.65rem] leading-[1.5] text-white/[0.5]">
+            No obligation. Tell us about your project and we&apos;ll help you
+            understand your options.
           </p>
+
+          {notice ? (
+            <p
+              className="mt-[0.65rem] mb-0 text-[0.65rem] leading-[1.5] text-white/[0.5]"
+              aria-live="polite"
+            >
+              {notice}
+            </p>
+          ) : null}
         </form>
       </div>
     </section>

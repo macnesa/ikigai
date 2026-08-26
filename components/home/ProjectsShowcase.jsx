@@ -113,24 +113,24 @@ export default function ProjectsShowcase() {
   }, [emblaApi, updateControls]);
 
   return (
-    <section className="projects light-section" id="projects" aria-labelledby="projects-title">
-      <div className="site-container projects__header">
-        <h2 id="projects-title">Wellness Spaces We’ve Built</h2>
-        <p>
+    <section className="projects light-section overflow-hidden bg-[var(--paper-strong)] py-20 text-[var(--ink)] md:py-[clamp(4.75rem,5.5vw,6.75rem)]" id="projects" aria-labelledby="projects-title">
+      <div className="site-container projects__header mx-auto mb-9 grid w-full max-w-[105rem] gap-4 px-[var(--page-gutter)] md:mb-[clamp(2.5rem,3vw,4rem)] md:grid-cols-[minmax(0,1.25fr)_minmax(20rem,0.75fr)] md:items-end md:gap-16">
+        <h2 className="m-0 font-display text-[clamp(2rem,8.4vw,2.8rem)] font-[450] leading-[1.02] tracking-[-0.042em] md:text-[clamp(3.3rem,4.3vw,5.15rem)]" id="projects-title">Wellness Spaces We’ve Built</h2>
+        <p className="m-0 text-[0.78rem] leading-[1.65] text-[var(--ink-soft)] md:max-w-[38rem] md:justify-self-end md:text-[0.84rem]">
           From private villas to commercial wellness facilities: spaces
           designed around their environment and requirements.
         </p>
       </div>
 
       <div className="projects__slider">
-        <div className="projects__viewport" ref={emblaRef}>
-          <div className="projects__track">
+        <div className="projects__viewport cursor-grab overflow-hidden active:cursor-grabbing" ref={emblaRef}>
+          <div className="projects__track flex pl-[var(--page-offset)] [touch-action:pan-y_pinch-zoom]">
             {projects.map((project) => (
-              <div className="projects__slide" key={project.id}>
-                <article className="project-card">
-                  <div className="project-card__media">
+              <div className="projects__slide min-w-0 flex-[0_0_78%] pr-3 md:basis-[clamp(10rem,11.5vw,14.5rem)] md:pr-[clamp(0.55rem,0.7vw,0.85rem)]" key={project.id}>
+                <article className="project-card relative">
+                  <div className="project-card__media aspect-[3/4] overflow-hidden bg-[var(--placeholder-light)] md:aspect-[9/14]">
                     <img
-                      className="project-card__image"
+                      className="project-card__image block h-full w-full object-cover"
                       src={getImageKitUrl(project.src, PROJECT_IMAGE_WIDTHS[1])}
                       srcSet={getImageKitSrcSet(project.src)}
                       sizes="(min-width: 48rem) 12vw, 78vw"
@@ -147,9 +147,9 @@ export default function ProjectsShowcase() {
           </div>
         </div>
 
-        <div className="projects__controls site-container">
+        <div className="projects__controls site-container mx-auto mt-[1.35rem] flex w-full max-w-[105rem] justify-between px-[var(--page-gutter)] md:justify-end md:gap-3">
           <button
-            className="round-control"
+            className="round-control grid aspect-square w-10 place-items-center rounded-full border border-[var(--line)] bg-[var(--paper-strong)] text-[var(--ink)] transition-[opacity,background-color,color] duration-150 enabled:hover:bg-[var(--ink)] enabled:hover:text-white disabled:cursor-not-allowed disabled:opacity-30 md:w-[2.8rem]"
             type="button"
             onClick={() => emblaApi?.scrollPrev()}
             disabled={!canScrollPrev}
@@ -158,7 +158,7 @@ export default function ProjectsShowcase() {
             <ArrowLeft aria-hidden="true" size={18} strokeWidth={1.5} />
           </button>
           <button
-            className="round-control"
+            className="round-control grid aspect-square w-10 place-items-center rounded-full border border-[var(--line)] bg-[var(--paper-strong)] text-[var(--ink)] transition-[opacity,background-color,color] duration-150 enabled:hover:bg-[var(--ink)] enabled:hover:text-white disabled:cursor-not-allowed disabled:opacity-30 md:w-[2.8rem]"
             type="button"
             onClick={() => emblaApi?.scrollNext()}
             disabled={!canScrollNext}
@@ -169,8 +169,8 @@ export default function ProjectsShowcase() {
         </div>
       </div>
 
-      <div className="site-container">
-        <a className="pill-button pill-button--dark projects__cta" href="#consultation">
+      <div className="site-container mx-auto w-full max-w-[105rem] px-[var(--page-gutter)]">
+        <a className="pill-button pill-button--dark projects__cta mx-auto mt-9 flex min-h-[3.15rem] w-fit items-center justify-center rounded-[var(--pill)] border border-transparent bg-[var(--ink)] px-[1.4rem] py-[0.9rem] text-center font-display text-[0.68rem] font-semibold leading-none tracking-[0.07em] text-white uppercase transition-[background-color,color,border-color] duration-[160ms] hover:border-[var(--ink)] hover:bg-transparent hover:text-[var(--ink)]" href="#consultation">
           Book a free consultation
         </a>
       </div>
