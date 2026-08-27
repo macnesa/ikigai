@@ -2,8 +2,9 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
+import { gsap, MOTION_MEDIA, useGSAP } from "./HomeMotion";
 
 const IMAGEKIT_WIDTHS = [640, 960, 1280, 1600];
 const IMAGEKIT_QUALITY = 80;
@@ -224,13 +225,88 @@ function TechnicalDetails() {
 }
 
 export default function SaunaQuality() {
+  const sectionRef = useRef(null);
+
+  useGSAP(
+    () => {
+      const section = sectionRef.current;
+
+      if (!section || navigator.connection?.saveData === true) return;
+
+      const atmosphere = section.querySelector(".sauna__atmosphere");
+      if (!atmosphere) return;
+
+      const mediaQueries = gsap.matchMedia();
+
+      const addAtmosphere = (query, values) => {
+        mediaQueries.add(query, () => {
+          gsap.fromTo(
+            atmosphere,
+            {
+              y: values.fromY,
+              scale: 1,
+              opacity: values.fromOpacity,
+            },
+            {
+              y: values.toY,
+              scale: values.scale,
+              opacity: values.toOpacity,
+              ease: "none",
+              scrollTrigger: {
+                trigger: section,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: values.scrub,
+                invalidateOnRefresh: true,
+              },
+            },
+          );
+        });
+      };
+
+      addAtmosphere(MOTION_MEDIA.desktop, {
+        fromY: -12,
+        toY: 16,
+        scale: 1.025,
+        fromOpacity: 0.34,
+        toOpacity: 0.5,
+        scrub: 1.5,
+      });
+      addAtmosphere(MOTION_MEDIA.tablet, {
+        fromY: -8,
+        toY: 10,
+        scale: 1.018,
+        fromOpacity: 0.3,
+        toOpacity: 0.44,
+        scrub: 1.3,
+      });
+      addAtmosphere(MOTION_MEDIA.mobile, {
+        fromY: -4,
+        toY: 6,
+        scale: 1.012,
+        fromOpacity: 0.28,
+        toOpacity: 0.38,
+        scrub: 1.1,
+      });
+
+      return () => mediaQueries.revert();
+    },
+    { scope: sectionRef },
+  );
+
   return (
     <section
+      ref={sectionRef}
       id="sauna-quality"
       aria-labelledby="sauna-title"
-      className="bg-[var(--night)] py-[4.75rem] text-white md:py-[clamp(4.75rem,5vw,6rem)]"
+      className="relative isolate overflow-hidden bg-[var(--night)] py-[4.75rem] text-white md:py-[clamp(4.75rem,5vw,6rem)]"
     >
-      <div className="mx-auto grid w-full max-w-[105rem] gap-y-6 px-[var(--page-gutter)] md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:grid-rows-[auto_auto_1fr] md:gap-x-[clamp(3rem,5vw,6rem)] md:gap-y-0">
+      <div
+        className="sauna__atmosphere pointer-events-none absolute -inset-[18%] z-0 bg-[radial-gradient(circle_at_26%_44%,rgba(211,128,56,0.22)_0%,rgba(137,76,35,0.1)_38%,transparent_70%)]"
+        aria-hidden="true"
+      />
+
+      <div className="relative z-[1] mx-auto grid w-full max-w-[105rem] gap-y-6 px-[var(--page-gutter)] md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:grid-rows-[auto_auto_1fr] md:gap-x-[clamp(3rem,5vw,6rem)] md:gap-y-0">
         <div className="grid gap-[0.8rem] md:col-start-2 md:row-start-1">
           <p className="m-0 font-display text-[0.66rem] font-semibold leading-[1.2] tracking-[0.18em] uppercase text-white/[0.62] md:text-right">
             Sauna
@@ -238,7 +314,7 @@ export default function SaunaQuality() {
 
           <h2
             id="sauna-title"
-            className="m-0 font-display text-[clamp(2rem,8.4vw,2.8rem)] font-[450] leading-[1.02] tracking-[-0.042em] md:text-[clamp(3.25rem,3.75vw,4.5rem)]"
+            className="m-0 font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em]"
           >
             Beautiful Isn’t Always Built Properly
           </h2>

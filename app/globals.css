@@ -18,6 +18,7 @@
   --pill: 999px;
   --font-display: var(--font-zen-maru);
   --font-body: var(--font-zen-maru);
+  --standard-section-heading-size: clamp(2rem, 8.4vw, 2.8rem);
   --page-offset: max(
     var(--page-gutter),
     calc((100vw - var(--container)) / 2 + var(--page-gutter))
@@ -32,14 +33,10 @@
 
 @utility font-display {
   font-family: var(--font-display), sans-serif;
-  font-optical-sizing: auto;
-  font-variation-settings: "wdth" 100;
 }
 
 @utility font-body {
   font-family: var(--font-body), sans-serif;
-  font-optical-sizing: auto;
-  font-variation-settings: normal;
 }
 
 @layer base {
@@ -74,8 +71,6 @@
 
   button {
     font-family: var(--font-display), sans-serif;
-    font-optical-sizing: auto;
-    font-variation-settings: "wdth" 100;
   }
 
   button,
@@ -102,6 +97,7 @@
   :root {
     --page-gutter: clamp(2rem, 4.2vw, 5rem);
     --header-height: 6rem;
+    --standard-section-heading-size: clamp(3.25rem, 3.75vw, 4.5rem);
   }
 }
 

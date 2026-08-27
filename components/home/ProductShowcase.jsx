@@ -97,6 +97,87 @@ export default function ProductShowcase() {
     };
   }, [emblaApi, updateControls]);
 
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+    const saveData = navigator.connection?.saveData === true;
+    let mediaNodes = [];
+
+    const collectMedia = () => {
+      mediaNodes = emblaApi
+        .slideNodes()
+        .map((slide) => slide.querySelector(".product-card__media-motion"));
+    };
+
+    const resetMedia = () => {
+      mediaNodes.forEach((media) => {
+        if (media) media.style.transform = "";
+      });
+    };
+
+    const updateMedia = () => {
+      if (reduceMotion.matches || saveData) {
+        resetMedia();
+        return;
+      }
+
+      const scrollProgress = emblaApi.scrollProgress();
+      const scrollSnaps = emblaApi.scrollSnapList();
+      const { slideRegistry } = emblaApi.internalEngine();
+
+      mediaNodes.forEach((media) => {
+        if (media) media.style.transform = "translate3d(0, 0, 0) scale(1)";
+      });
+
+      scrollSnaps.forEach((snap, snapIndex) => {
+        const previousGap = Math.abs(snap - scrollSnaps[snapIndex - 1]);
+        const nextGap = Math.abs(scrollSnaps[snapIndex + 1] - snap);
+        const snapDistance = Math.max(
+          0.0001,
+          Number.isFinite(previousGap) ? previousGap : nextGap,
+          Number.isFinite(nextGap) ? nextGap : previousGap,
+        );
+        const difference = snap - scrollProgress;
+        const proximity = 1 - Math.min(Math.abs(difference) / snapDistance, 1);
+        const scale = 1 + proximity * 0.03;
+        const translateX = Math.max(-2, Math.min(2, difference * 8));
+
+        slideRegistry[snapIndex]?.forEach((slideIndex) => {
+          const media = mediaNodes[slideIndex];
+
+          if (media) {
+            media.style.transform = `translate3d(${translateX}px, 0, 0) scale(${scale})`;
+          }
+        });
+      });
+    };
+
+    const handleReInit = () => {
+      collectMedia();
+      updateMedia();
+    };
+
+    collectMedia();
+    const frame = requestAnimationFrame(updateMedia);
+
+    emblaApi.on("scroll", updateMedia);
+    emblaApi.on("select", updateMedia);
+    emblaApi.on("reInit", handleReInit);
+    reduceMotion.addEventListener?.("change", updateMedia);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      emblaApi.off("scroll", updateMedia);
+      emblaApi.off("select", updateMedia);
+      emblaApi.off("reInit", handleReInit);
+      reduceMotion.removeEventListener?.("change", updateMedia);
+      resetMedia();
+    };
+  }, [emblaApi]);
+
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
@@ -114,7 +195,7 @@ export default function ProductShowcase() {
 
           <h2
             id="products-title"
-            className="m-0 max-w-[18ch] font-display text-[clamp(2rem,8.4vw,2.8rem)] font-[450] leading-[1.02] tracking-[-0.042em] md:col-start-1 md:row-start-2 md:text-[clamp(3.2rem,3.8vw,4.5rem)]"
+            className="m-0 max-w-[18ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em] md:col-start-1 md:row-start-2"
           >
             Start With One of Our Designs or Create Your Own
           </h2>
@@ -139,19 +220,21 @@ export default function ProductShowcase() {
                 >
                   <article className="product-card group flex h-full flex-col bg-[var(--paper)]">
                     <div className="product-card__media aspect-[4/3] overflow-hidden bg-[var(--placeholder-light)]">
-                      <img
-                        className="block h-full w-full object-cover transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:group-hover:scale-[1.02]"
-                        src={getImageKitUrl(
-                          product.src,
-                          PRODUCT_IMAGE_WIDTHS[1],
-                        )}
-                        srcSet={getImageKitSrcSet(product.src)}
-                        sizes="(min-width: 48rem) clamp(22rem, 26vw, 31rem), 88vw"
-                        alt={product.title}
-                        loading="lazy"
-                        decoding="async"
-                        style={{ objectPosition: product.objectPosition }}
-                      />
+                      <div className="product-card__media-motion h-full w-full origin-center">
+                        <img
+                          className="block h-full w-full object-cover transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:group-hover:scale-[1.02]"
+                          src={getImageKitUrl(
+                            product.src,
+                            PRODUCT_IMAGE_WIDTHS[1],
+                          )}
+                          srcSet={getImageKitSrcSet(product.src)}
+                          sizes="(min-width: 48rem) clamp(22rem, 26vw, 31rem), 88vw"
+                          alt={product.title}
+                          loading="lazy"
+                          decoding="async"
+                          style={{ objectPosition: product.objectPosition }}
+                        />
+                      </div>
                     </div>
 
                     <div className="product-card__body flex flex-1 flex-col px-4 pt-[1.1rem] pb-[1.35rem] md:px-[1.35rem] md:pt-[1.35rem] md:pb-[1.5rem]">
@@ -175,7 +258,7 @@ export default function ProductShowcase() {
               onClick={scrollPrev}
               disabled={!canScrollPrev}
               aria-label="Previous product"
-              className="products__control pointer-events-auto grid aspect-square w-[2.7rem] place-items-center rounded-full border border-[var(--line)] bg-[var(--paper-strong)] text-[var(--ink)] shadow-[0_4px_18px_rgba(0,0,0,0.06)] transition-[opacity,background-color,color,border-color] duration-150 enabled:hover:border-[var(--ink)] enabled:hover:bg-[var(--ink)] enabled:hover:text-white disabled:cursor-not-allowed disabled:opacity-30 md:w-[3.1rem]"
+              className="products__control pointer-events-auto grid aspect-square w-10 place-items-center rounded-full border border-[var(--line)] bg-[var(--paper-strong)] text-[var(--ink)] shadow-[0_4px_18px_rgba(0,0,0,0.06)] transition-[opacity,background-color,color,border-color] duration-150 enabled:hover:border-[var(--ink)] enabled:hover:bg-[var(--ink)] enabled:hover:text-white disabled:cursor-not-allowed disabled:opacity-30 md:w-[2.8rem]"
             >
               <ArrowLeft aria-hidden="true" size={18} strokeWidth={1.5} />
             </button>
@@ -185,7 +268,7 @@ export default function ProductShowcase() {
               onClick={scrollNext}
               disabled={!canScrollNext}
               aria-label="Next product"
-              className="products__control pointer-events-auto grid aspect-square w-[2.7rem] place-items-center rounded-full border border-[var(--line)] bg-[var(--paper-strong)] text-[var(--ink)] shadow-[0_4px_18px_rgba(0,0,0,0.06)] transition-[opacity,background-color,color,border-color] duration-150 enabled:hover:border-[var(--ink)] enabled:hover:bg-[var(--ink)] enabled:hover:text-white disabled:cursor-not-allowed disabled:opacity-30 md:w-[3.1rem]"
+              className="products__control pointer-events-auto grid aspect-square w-10 place-items-center rounded-full border border-[var(--line)] bg-[var(--paper-strong)] text-[var(--ink)] shadow-[0_4px_18px_rgba(0,0,0,0.06)] transition-[opacity,background-color,color,border-color] duration-150 enabled:hover:border-[var(--ink)] enabled:hover:bg-[var(--ink)] enabled:hover:text-white disabled:cursor-not-allowed disabled:opacity-30 md:w-[2.8rem]"
             >
               <ArrowRight aria-hidden="true" size={18} strokeWidth={1.5} />
             </button>
@@ -199,7 +282,7 @@ export default function ProductShowcase() {
           <div>
             <h3
               id="products-consultation-title"
-              className="m-0 max-w-[19ch] font-display text-[clamp(1.75rem,7vw,2.15rem)] font-[450] leading-[1.05] tracking-[-0.038em] md:text-[clamp(2.3rem,2.65vw,3.1rem)]"
+              className="m-0 max-w-[19ch] font-display text-[clamp(1.75rem,7vw,2.15rem)] font-medium leading-[1.05] tracking-[-0.038em] md:text-[clamp(2.3rem,2.65vw,3.1rem)]"
             >
               Not sure what works best for your space?
             </h3>

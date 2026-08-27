@@ -43,9 +43,9 @@ export default function SiteHeader() {
 
         <a
           href="#consultation"
-          className="hidden min-h-[3rem] items-center justify-center justify-self-end rounded-full bg-black px-[1.35rem] py-[0.85rem] font-display text-[0.78rem] font-medium leading-none tracking-[0.01em] text-white transition-[background-color,color] duration-200 hover:bg-white hover:text-black lg:inline-flex"
+          className="hidden min-h-[3rem] items-center justify-center justify-self-end rounded-full bg-black px-[1.35rem] py-[0.85rem] font-display text-[0.78rem] font-medium leading-none tracking-[0.01em] text-white uppercase transition-[background-color,color] duration-200 hover:bg-white hover:text-black lg:inline-flex"
         >
-          BOOK A FREE CONSULTATION
+          Book a free consultation
         </a>
       </div>
     </header>

@@ -4,7 +4,12 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Check } from "lucide-react";
-import { gsap } from "gsap";
+import {
+  gsap,
+  MOTION_MEDIA,
+  shouldLimitMotion,
+  useGSAP,
+} from "./HomeMotion";
 
 const IMAGEKIT_WIDTHS = [640, 960, 1280, 1600, 1920, 2560];
 const IMAGEKIT_QUALITY = 80;
@@ -32,7 +37,9 @@ function getImageKitUrl(src, width) {
 }
 
 function getHeroSrcSet(src) {
-  return IMAGEKIT_WIDTHS.map((width) => `${getImageKitUrl(src, width)} ${width}w`).join(", ");
+  return IMAGEKIT_WIDTHS.map(
+    (width) => `${getImageKitUrl(src, width)} ${width}w`,
+  ).join(", ");
 }
 
 function getPreloadWidth() {
@@ -41,7 +48,10 @@ function getPreloadWidth() {
     Math.ceil(window.innerWidth * (window.devicePixelRatio || 1)),
   );
 
-  return IMAGEKIT_WIDTHS.find((width) => width >= targetWidth) || IMAGEKIT_WIDTHS.at(-1);
+  return (
+    IMAGEKIT_WIDTHS.find((width) => width >= targetWidth) ||
+    IMAGEKIT_WIDTHS.at(-1)
+  );
 }
 
 export default function Hero() {
@@ -50,7 +60,6 @@ export default function Hero() {
   const lastShownAtRef = useRef(0);
   const wasRotatingRef = useRef(false);
   const fadeFrameRef = useRef(null);
-  const entrancePlayedRef = useRef(false);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [nextReadyIndex, setNextReadyIndex] = useState(null);
@@ -87,13 +96,98 @@ export default function Hero() {
     pageVisible &&
     heroVisible;
 
+  useGSAP(
+    () => {
+      const hero = heroRef.current;
+
+      if (
+        !hero ||
+        !runtimePreferences.ready ||
+        shouldLimitMotion()
+      ) {
+        return;
+      }
+
+      const media = hero.querySelector(".hero__media");
+      const overlay = hero.querySelector(".hero__overlay-primary");
+      const content = hero.querySelector(".hero__inner");
+
+      if (!media || !overlay || !content) return;
+
+      const mediaQueries = gsap.matchMedia();
+
+      const addDepth = (query, values) => {
+        mediaQueries.add(query, () => {
+          const timeline = gsap.timeline({
+            defaults: { ease: "none" },
+            scrollTrigger: {
+              trigger: hero,
+              start: "top top",
+              end: "bottom top",
+              scrub: values.scrub,
+              invalidateOnRefresh: true,
+            },
+          });
+
+          timeline
+            .fromTo(
+              media,
+              { yPercent: values.mediaFrom },
+              { yPercent: values.mediaTo },
+              0,
+            )
+            .fromTo(content, { y: 0 }, { y: values.contentY }, 0)
+            .fromTo(
+              overlay,
+              { opacity: 1 },
+              { opacity: values.overlayOpacity },
+              0,
+            );
+        });
+      };
+
+      addDepth(MOTION_MEDIA.desktop, {
+        mediaFrom: -1.2,
+        mediaTo: 1.8,
+        contentY: -14,
+        overlayOpacity: 0.88,
+        scrub: 1.2,
+      });
+      addDepth(MOTION_MEDIA.tablet, {
+        mediaFrom: -0.8,
+        mediaTo: 1.2,
+        contentY: -9,
+        overlayOpacity: 0.92,
+        scrub: 1.1,
+      });
+      addDepth(MOTION_MEDIA.mobile, {
+        mediaFrom: -0.35,
+        mediaTo: 0.55,
+        contentY: -5,
+        overlayOpacity: 0.95,
+        scrub: 1,
+      });
+
+      return () => mediaQueries.revert();
+    },
+    {
+      scope: heroRef,
+      dependencies: [
+        runtimePreferences.ready,
+        runtimePreferences.reducedMotion,
+        runtimePreferences.saveData,
+      ],
+      revertOnUpdate: true,
+    },
+  );
+
   useLayoutEffect(() => {
     const hero = heroRef.current;
-    if (!hero || entrancePlayedRef.current) return;
+    if (!hero) return;
 
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    entrancePlayedRef.current = true;
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
 
     if (reduceMotion) return;
 
@@ -121,13 +215,47 @@ export default function Hero() {
         gsap.set(mobileTitleLines, { yPercent: 105 });
         gsap.set([intro, proofs, ctaBlock], { opacity: 0, y: 16 });
 
-        const timeline = gsap.timeline({ defaults: { ease: "power3.out" } });
+        const timeline = gsap.timeline({
+          defaults: { ease: "power3.out" },
+        });
 
         timeline
-          .to(mobileTitleLines, { yPercent: 0, duration: 0.66, stagger: 0.1 }, 0.08)
-          .to(intro, { opacity: 1, y: 0, duration: 0.44 }, "-=0.27")
-          .to(proofs, { opacity: 1, y: 0, duration: 0.44 }, "-=0.19")
-          .to(ctaBlock, { opacity: 1, y: 0, duration: 0.44 }, "-=0.19");
+          .to(
+            mobileTitleLines,
+            {
+              yPercent: 0,
+              duration: 0.66,
+              stagger: 0.1,
+            },
+            0.08,
+          )
+          .to(
+            intro,
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.44,
+            },
+            "-=0.27",
+          )
+          .to(
+            proofs,
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.44,
+            },
+            "-=0.19",
+          )
+          .to(
+            ctaBlock,
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.44,
+            },
+            "-=0.19",
+          );
 
         return () => timeline.kill();
       });
@@ -136,13 +264,47 @@ export default function Hero() {
         gsap.set(desktopTitleLines, { yPercent: 105 });
         gsap.set([intro, ctaBlock, proofs], { opacity: 0, y: 18 });
 
-        const timeline = gsap.timeline({ defaults: { ease: "power3.out" } });
+        const timeline = gsap.timeline({
+          defaults: { ease: "power3.out" },
+        });
 
         timeline
-          .to(desktopTitleLines, { yPercent: 0, duration: 0.74, stagger: 0.11 }, 0.08)
-          .to(intro, { opacity: 1, y: 0, duration: 0.5 }, "-=0.3")
-          .to(ctaBlock, { opacity: 1, y: 0, duration: 0.5 }, "-=0.24")
-          .to(proofs, { opacity: 1, y: 0, duration: 0.52 }, "-=0.18");
+          .to(
+            desktopTitleLines,
+            {
+              yPercent: 0,
+              duration: 0.74,
+              stagger: 0.11,
+            },
+            0.08,
+          )
+          .to(
+            intro,
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.5,
+            },
+            "-=0.3",
+          )
+          .to(
+            ctaBlock,
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.5,
+            },
+            "-=0.24",
+          )
+          .to(
+            proofs,
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.52,
+            },
+            "-=0.18",
+          );
 
         return () => timeline.kill();
       });
@@ -197,7 +359,8 @@ export default function Hero() {
 
     document.addEventListener("visibilitychange", updateVisibility);
 
-    return () => document.removeEventListener("visibilitychange", updateVisibility);
+    return () =>
+      document.removeEventListener("visibilitychange", updateVisibility);
   }, [pausePendingTransition]);
 
   useEffect(() => {
@@ -260,7 +423,10 @@ export default function Hero() {
             };
 
             image.onerror = reject;
-            image.src = getImageKitUrl(HERO_IMAGES[candidateIndex], getPreloadWidth());
+            image.src = getImageKitUrl(
+              HERO_IMAGES[candidateIndex],
+              getPreloadWidth(),
+            );
           });
 
           if (!cancelled) {
@@ -368,16 +534,21 @@ export default function Hero() {
       ref={heroRef}
       id="hero"
       aria-labelledby="hero-title"
-      className="hero relative isolate min-h-[39rem] overflow-hidden bg-[var(--placeholder-dark)] text-white md:min-h-[clamp(48rem,56.77vw,68.125rem)]"
+      className="hero relative isolate min-h-[39rem] overflow-hidden bg-[var(--placeholder-dark)] text-white md:min-h-[clamp(48rem,56.77vw,56rem)]"
     >
       <div
         aria-hidden="true"
-        className="hero__media absolute inset-0 -z-[3] overflow-hidden bg-[var(--placeholder-dark)]"
-        style={{ "--hero-crossfade-duration": `${CROSSFADE_DURATION_MS}ms` }}
+        className="hero__media absolute inset-x-0 -inset-y-[3%] -z-[3] overflow-hidden bg-[var(--placeholder-dark)]"
+        style={{
+          "--hero-crossfade-duration": `${CROSSFADE_DURATION_MS}ms`,
+        }}
       >
         <img
           className="hero__image hero__image--current absolute inset-0 h-full w-full object-cover object-center will-change-transform"
-          src={getImageKitUrl(HERO_IMAGES[currentIndex], HERO_FALLBACK_WIDTH)}
+          src={getImageKitUrl(
+            HERO_IMAGES[currentIndex],
+            HERO_FALLBACK_WIDTH,
+          )}
           srcSet={getHeroSrcSet(HERO_IMAGES[currentIndex])}
           sizes="100vw"
           alt=""
@@ -391,7 +562,10 @@ export default function Hero() {
             className={`hero__image hero__image--incoming absolute inset-0 h-full w-full object-cover object-center will-change-[opacity] [transition:opacity_var(--hero-crossfade-duration,900ms)_cubic-bezier(0.22,1,0.36,1)] ${
               isCrossfading ? "is-visible opacity-100" : "opacity-0"
             }`}
-            src={getImageKitUrl(HERO_IMAGES[incomingIndex], HERO_FALLBACK_WIDTH)}
+            src={getImageKitUrl(
+              HERO_IMAGES[incomingIndex],
+              HERO_FALLBACK_WIDTH,
+            )}
             srcSet={getHeroSrcSet(HERO_IMAGES[incomingIndex])}
             sizes="100vw"
             alt=""
@@ -406,7 +580,7 @@ export default function Hero() {
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-[2] bg-[rgba(8,12,18,0.34)] md:bg-[rgba(6,9,14,0.12)]"
+        className="hero__overlay-primary pointer-events-none absolute inset-0 -z-[2] bg-[rgba(8,12,18,0.34)] md:bg-[rgba(6,9,14,0.18)]"
       />
 
       <div
@@ -419,7 +593,7 @@ export default function Hero() {
         className="pointer-events-none absolute inset-0 -z-[2] hidden md:block md:bg-[linear-gradient(180deg,rgba(5,8,12,0.10)_0%,rgba(5,8,12,0)_25%,rgba(5,8,12,0)_64%,rgba(5,8,12,0.30)_100%)]"
       />
 
-      <div className="hero__inner mx-auto flex min-h-[inherit] w-full flex-col px-[var(--page-gutter)] pt-[calc(var(--header-height)+2rem)] pb-6 md:px-[clamp(3rem,5.26vw,6.3125rem)] md:pt-[clamp(14rem,17.97vw,21.5625rem)] md:pb-0">
+      <div className="hero__inner mx-auto flex min-h-[inherit] w-full max-w-[105rem] flex-col px-[var(--page-gutter)] pt-[calc(var(--header-height)+2rem)] pb-6 md:pt-[clamp(14rem,17.97vw,16rem)] md:pb-0">
         <div className="hero__copy order-1 max-w-[33rem] md:w-full md:max-w-[52.9375rem]">
           <h1
             id="hero-title"
@@ -433,7 +607,7 @@ export default function Hero() {
               </span>
 
               <span className="mt-[0.16em] block overflow-hidden">
-                <strong className="hero-title-line--mobile block font-[650]">
+                <strong className="hero-title-line--mobile block font-bold">
                   IKIGAI WELLNESS
                 </strong>
               </span>
@@ -441,22 +615,26 @@ export default function Hero() {
 
             <span className="hidden md:block">
               <span className="block overflow-hidden">
-                <span className="hero-title-line--desktop block">Build Your Dream</span>
+                <span className="hero-title-line--desktop block">
+                  Build Your Dream
+                </span>
               </span>
 
               <span className="block overflow-hidden">
-                <span className="hero-title-line--desktop block">Wellness Setup with</span>
+                <span className="hero-title-line--desktop block">
+                  Wellness Setup with
+                </span>
               </span>
 
               <span className="block overflow-hidden">
-                <strong className="hero-title-line--desktop block font-[650]">
+                <strong className="hero-title-line--desktop block font-bold">
                   IKIGAI WELLNESS
                 </strong>
               </span>
             </span>
           </h1>
 
-          <p className="hero__intro mt-4 mb-0 max-w-[37rem] text-[0.77rem] leading-[1.55] text-white/[0.76] md:mt-[0.8rem] md:max-w-[46.125rem] md:text-[clamp(1rem,1.302vw,1.5625rem)] md:leading-[1.344] md:text-white/[0.82]">
+          <p className="hero__intro mt-4 mb-0 max-w-[37rem] text-[0.77rem] leading-[1.55] text-white/[0.76] md:mt-[0.8rem] md:max-w-[46.125rem] md:text-[clamp(1rem,1.1vw,1.125rem)] md:leading-[1.344] md:text-white/[0.82]">
             Premium saunas, ice baths and complete wellness spaces designed,
             built, installed and maintained by our team across Indonesia.
           </p>
@@ -468,7 +646,7 @@ export default function Hero() {
         >
           {proofItems.map((item) => (
             <li
-              className="flex items-center gap-2 font-display text-[0.67rem] font-medium leading-[1.35] md:gap-[0.625rem] md:text-[clamp(0.9rem,1.042vw,1.25rem)] md:font-bold md:leading-[1.2]"
+              className="flex items-center gap-2 font-display text-[0.67rem] font-medium leading-[1.35] md:gap-[0.625rem] md:text-[clamp(0.9rem,1vw,1rem)] md:font-bold md:leading-[1.2]"
               key={item}
             >
               <Check
@@ -484,7 +662,7 @@ export default function Hero() {
 
         <div className="hero__cta-block order-3 mt-auto md:order-2 md:mt-[1.75rem]">
           <a
-            className="pill-button pill-button--light hero__cta inline-flex min-h-[3.15rem] w-full items-center justify-center rounded-[var(--pill)] border border-transparent bg-[var(--paper-strong)] px-[1.4rem] py-[0.9rem] text-center font-display text-[0.68rem] font-semibold leading-none tracking-[0.07em] text-[var(--ink)] uppercase transition-[background-color,color,border-color] duration-[180ms] ease-out hover:border-white/[0.65] hover:bg-transparent hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white md:min-h-[3.875rem] md:w-auto md:px-[2.35rem] md:py-4 md:text-[clamp(0.9rem,1.198vw,1.4375rem)] md:tracking-[0.014em] md:normal-case"
+            className="pill-button pill-button--light hero__cta inline-flex min-h-[3.15rem] w-full items-center justify-center rounded-[var(--pill)] border border-transparent bg-[var(--paper-strong)] px-[1.4rem] py-[0.9rem] text-center font-display text-[0.68rem] font-semibold leading-none tracking-[0.07em] text-[var(--ink)] uppercase transition-[background-color,color,border-color] duration-[180ms] ease-out hover:border-white/[0.65] hover:bg-transparent hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white md:min-h-[3.875rem] md:w-auto md:px-[2.35rem] md:py-4 md:text-[clamp(0.82rem,0.9vw,0.95rem)] md:tracking-[0.014em]"
             href="#consultation"
           >
             Book a free consultation

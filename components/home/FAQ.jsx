@@ -63,11 +63,11 @@ export default function FAQ() {
       aria-labelledby="faq-title"
       className="faq bg-[var(--paper-strong)] pt-[4.75rem] pb-[5rem] text-[var(--ink)] md:pt-[clamp(7rem,7vw,8rem)] md:pb-[clamp(5.5rem,6vw,7rem)]"
     >
-      <div className="site-container mx-auto grid w-full max-w-[105rem] gap-[2.75rem] px-[var(--page-gutter)] md:grid-cols-[minmax(17rem,0.72fr)_minmax(34rem,1fr)] md:items-start md:gap-[clamp(8rem,11vw,13rem)]">
-        <header className="md:sticky md:top-[8rem]">
+      <div className="site-container mx-auto grid w-full max-w-[105rem] gap-[2.75rem] px-[var(--page-gutter)] lg:grid-cols-[minmax(17rem,0.72fr)_minmax(34rem,1fr)] lg:items-start lg:gap-[clamp(6.5rem,11vw,13rem)]">
+        <header className="lg:sticky lg:top-[8rem]">
           <h2
             id="faq-title"
-            className="m-0 max-w-[7ch] font-display text-[clamp(2.7rem,11vw,3.35rem)] font-[450] leading-[0.98] tracking-[-0.045em] md:max-w-[6ch] md:text-[clamp(3.25rem,3.2vw,4rem)]"
+            className="m-0 max-w-[7ch] font-display text-[clamp(2.7rem,11vw,3.35rem)] font-medium leading-[0.98] tracking-[-0.045em] md:max-w-[6ch] md:text-[clamp(3.25rem,3.2vw,4rem)]"
           >
             IKIGAI FAQs
           </h2>
@@ -104,18 +104,31 @@ export default function FAQ() {
                   </span>
 
                   <span
-                    className={`grid size-[1.65rem] shrink-0 place-items-center rounded-full border transition-[border-color,background-color,color] duration-[160ms] ${
+                    className={`relative grid size-[1.65rem] shrink-0 place-items-center rounded-full border transition-[border-color,background-color,color] duration-[180ms] ${
                       isOpen
                         ? "border-[var(--ink)] bg-[var(--ink)] text-white"
                         : "border-[var(--line)] text-[var(--ink)]"
                     }`}
                     aria-hidden="true"
                   >
-                    {isOpen ? (
-                      <Minus size={13} strokeWidth={1.5} />
-                    ) : (
-                      <Plus size={13} strokeWidth={1.5} />
-                    )}
+                    <Plus
+                      className={`absolute transition-[transform,opacity] duration-[180ms] ease-out ${
+                        isOpen
+                          ? "rotate-90 opacity-0"
+                          : "rotate-0 opacity-100"
+                      }`}
+                      size={13}
+                      strokeWidth={1.5}
+                    />
+                    <Minus
+                      className={`absolute transition-[transform,opacity] duration-[180ms] ease-out ${
+                        isOpen
+                          ? "rotate-0 opacity-100"
+                          : "-rotate-90 opacity-0"
+                      }`}
+                      size={13}
+                      strokeWidth={1.5}
+                    />
                   </span>
                 </button>
 
@@ -130,8 +143,10 @@ export default function FAQ() {
                 >
                   <div className="min-h-0 overflow-hidden">
                     <p
-                      className={`m-0 max-w-[40rem] pr-10 text-[0.8rem] leading-[1.65] text-[var(--ink-soft)] md:text-[0.88rem] md:leading-[1.6] ${
-                        isOpen ? "pt-[0.2rem] pb-[1.65rem]" : ""
+                      className={`m-0 max-w-[40rem] pr-10 text-[0.8rem] leading-[1.65] text-[var(--ink-soft)] transition-transform duration-[220ms] ease-out md:text-[0.88rem] md:leading-[1.6] ${
+                        isOpen
+                          ? "translate-y-0 pt-[0.2rem] pb-[1.65rem]"
+                          : "-translate-y-1"
                       }`}
                     >
                       {item.answer}

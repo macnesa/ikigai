@@ -37,15 +37,15 @@ export default function Consultation() {
       aria-labelledby="consultation-title"
       className="consultation bg-[var(--night)] py-[4.75rem] text-white md:py-[clamp(7rem,8vw,9.5rem)]"
     >
-      <div className="site-container mx-auto grid w-full max-w-[105rem] gap-y-[0.8rem] px-[var(--page-gutter)] md:grid-cols-[minmax(0,1.08fr)_minmax(32rem,0.92fr)] md:grid-rows-[auto_1fr] md:gap-x-[clamp(4.5rem,7vw,9rem)] md:gap-y-[0.85rem]">
-        <p className="eyebrow m-0 font-display text-[0.66rem] font-semibold leading-[1.2] tracking-[0.18em] text-white/[0.62] uppercase md:col-start-1 md:row-start-1">
+      <div className="site-container mx-auto grid w-full max-w-[105rem] gap-y-[0.8rem] px-[var(--page-gutter)] lg:grid-cols-[minmax(0,1.08fr)_minmax(32rem,0.92fr)] lg:grid-rows-[auto_1fr] lg:gap-x-[clamp(4.5rem,7vw,9rem)] lg:gap-y-[0.85rem]">
+        <p className="eyebrow m-0 font-display text-[0.66rem] font-semibold leading-[1.2] tracking-[0.18em] text-white/[0.62] uppercase lg:col-start-1 lg:row-start-1">
           Free wellness consultation
         </p>
 
-        <div className="md:col-start-1 md:row-start-2">
+        <div className="lg:col-start-1 lg:row-start-2">
           <h2
             id="consultation-title"
-            className="m-0 max-w-[15ch] font-display text-[clamp(2rem,8.4vw,2.8rem)] font-[450] leading-[1.02] tracking-[-0.042em] md:text-[clamp(3.4rem,3.8vw,4.25rem)]"
+            className="m-0 max-w-[15ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em]"
           >
             Planning a Wellness Space? Talk to Our Team
           </h2>
@@ -86,11 +86,11 @@ export default function Consultation() {
         </div>
 
         <form
-          className="mt-[2.5rem] md:col-start-2 md:row-start-2 md:mt-0"
+          className="mt-[2.5rem] lg:col-start-2 lg:row-start-2 lg:mt-0"
           onSubmit={handleSubmit(handlePendingSubmit)}
           noValidate
         >
-          <h3 className="mt-0 mb-[1.7rem] font-display text-[1.7rem] font-[450] leading-[1.1] tracking-[-0.03em] md:text-[1.85rem]">
+          <h3 className="mt-0 mb-[1.7rem] font-display text-[1.7rem] font-medium leading-[1.1] tracking-[-0.03em] md:text-[1.85rem]">
             Book your free wellness consultation
           </h3>
 

@@ -112,10 +112,91 @@ export default function ProjectsShowcase() {
     };
   }, [emblaApi, updateControls]);
 
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+    const saveData = navigator.connection?.saveData === true;
+    let mediaNodes = [];
+
+    const collectMedia = () => {
+      mediaNodes = emblaApi
+        .slideNodes()
+        .map((slide) => slide.querySelector(".project-card__image"));
+    };
+
+    const resetMedia = () => {
+      mediaNodes.forEach((media) => {
+        if (media) media.style.transform = "";
+      });
+    };
+
+    const updateMedia = () => {
+      if (reduceMotion.matches || saveData) {
+        resetMedia();
+        return;
+      }
+
+      const scrollProgress = emblaApi.scrollProgress();
+      const scrollSnaps = emblaApi.scrollSnapList();
+      const { slideRegistry } = emblaApi.internalEngine();
+
+      mediaNodes.forEach((media) => {
+        if (media) media.style.transform = "translate3d(0, 0, 0) scale(1)";
+      });
+
+      scrollSnaps.forEach((snap, snapIndex) => {
+        const previousGap = Math.abs(snap - scrollSnaps[snapIndex - 1]);
+        const nextGap = Math.abs(scrollSnaps[snapIndex + 1] - snap);
+        const snapDistance = Math.max(
+          0.0001,
+          Number.isFinite(previousGap) ? previousGap : nextGap,
+          Number.isFinite(nextGap) ? nextGap : previousGap,
+        );
+        const difference = snap - scrollProgress;
+        const proximity = 1 - Math.min(Math.abs(difference) / snapDistance, 1);
+        const scale = 1 + proximity * 0.04;
+        const translateX = Math.max(-3, Math.min(3, difference * 10));
+
+        slideRegistry[snapIndex]?.forEach((slideIndex) => {
+          const media = mediaNodes[slideIndex];
+
+          if (media) {
+            media.style.transform = `translate3d(${translateX}px, 0, 0) scale(${scale})`;
+          }
+        });
+      });
+    };
+
+    const handleReInit = () => {
+      collectMedia();
+      updateMedia();
+    };
+
+    collectMedia();
+    const frame = requestAnimationFrame(updateMedia);
+
+    emblaApi.on("scroll", updateMedia);
+    emblaApi.on("select", updateMedia);
+    emblaApi.on("reInit", handleReInit);
+    reduceMotion.addEventListener?.("change", updateMedia);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      emblaApi.off("scroll", updateMedia);
+      emblaApi.off("select", updateMedia);
+      emblaApi.off("reInit", handleReInit);
+      reduceMotion.removeEventListener?.("change", updateMedia);
+      resetMedia();
+    };
+  }, [emblaApi]);
+
   return (
     <section className="projects light-section overflow-hidden bg-[var(--paper-strong)] py-20 text-[var(--ink)] md:py-[clamp(4.75rem,5.5vw,6.75rem)]" id="projects" aria-labelledby="projects-title">
       <div className="site-container projects__header mx-auto mb-9 grid w-full max-w-[105rem] gap-4 px-[var(--page-gutter)] md:mb-[clamp(2.5rem,3vw,4rem)] md:grid-cols-[minmax(0,1.25fr)_minmax(20rem,0.75fr)] md:items-end md:gap-16">
-        <h2 className="m-0 font-display text-[clamp(2rem,8.4vw,2.8rem)] font-[450] leading-[1.02] tracking-[-0.042em] md:text-[clamp(3.3rem,4.3vw,5.15rem)]" id="projects-title">Wellness Spaces We’ve Built</h2>
+        <h2 className="m-0 font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em]" id="projects-title">Wellness Spaces We’ve Built</h2>
         <p className="m-0 text-[0.78rem] leading-[1.65] text-[var(--ink-soft)] md:max-w-[38rem] md:justify-self-end md:text-[0.84rem]">
           From private villas to commercial wellness facilities: spaces
           designed around their environment and requirements.

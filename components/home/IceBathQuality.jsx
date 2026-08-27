@@ -2,8 +2,9 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Minus, Plus } from "lucide-react";
+import { gsap, MOTION_MEDIA, useGSAP } from "./HomeMotion";
 
 const iceBathDetails = [
   {
@@ -44,7 +45,7 @@ function TechnicalDetails() {
 
   return (
     <>
-      <div className="hidden md:grid md:grid-cols-2 md:gap-x-[clamp(2.75rem,3.5vw,4.5rem)]">
+      <div className="hidden lg:grid lg:grid-cols-2 lg:gap-x-[clamp(2.75rem,3.5vw,4.5rem)]">
         {iceBathDetails.map((item, index) => (
           <article
             key={item.id}
@@ -73,7 +74,7 @@ function TechnicalDetails() {
         ))}
       </div>
 
-      <div className="border-t border-white/[0.16] md:hidden">
+      <div className="border-t border-white/[0.16] lg:hidden">
         {iceBathDetails.map((item, index) => {
           const isOpen = openIndex === index;
           const panelId = `ice-technical-panel-${item.id}`;
@@ -142,27 +143,106 @@ function TechnicalDetails() {
 }
 
 export default function IceBathQuality() {
+  const sectionRef = useRef(null);
+
+  useGSAP(
+    () => {
+      const section = sectionRef.current;
+
+      if (!section || navigator.connection?.saveData === true) return;
+
+      const atmosphere = section.querySelector(".ice-quality__atmosphere");
+      const technicalEnvironment = section.querySelector(
+        ".ice-quality__technical",
+      );
+
+      if (!atmosphere || !technicalEnvironment) return;
+
+      const mediaQueries = gsap.matchMedia();
+
+      const addAtmosphere = (query, values) => {
+        mediaQueries.add(query, () => {
+          gsap.fromTo(
+            atmosphere,
+            {
+              y: values.fromY,
+              scale: 1,
+              opacity: values.fromOpacity,
+            },
+            {
+              y: values.toY,
+              scale: values.scale,
+              opacity: values.toOpacity,
+              ease: "none",
+              scrollTrigger: {
+                trigger: technicalEnvironment,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: values.scrub,
+                invalidateOnRefresh: true,
+              },
+            },
+          );
+        });
+      };
+
+      addAtmosphere(MOTION_MEDIA.desktop, {
+        fromY: 14,
+        toY: -16,
+        scale: 1.018,
+        fromOpacity: 0.22,
+        toOpacity: 0.34,
+        scrub: 1.4,
+      });
+      addAtmosphere(MOTION_MEDIA.tablet, {
+        fromY: 9,
+        toY: -11,
+        scale: 1.012,
+        fromOpacity: 0.24,
+        toOpacity: 0.34,
+        scrub: 1.25,
+      });
+      addAtmosphere(MOTION_MEDIA.mobile, {
+        fromY: 5,
+        toY: -6,
+        scale: 1.008,
+        fromOpacity: 0.25,
+        toOpacity: 0.34,
+        scrub: 1.05,
+      });
+
+      return () => mediaQueries.revert();
+    },
+    { scope: sectionRef },
+  );
+
   return (
     <section
+      ref={sectionRef}
       id="ice-bath-quality"
       aria-labelledby="ice-title"
       className="ice-quality bg-[var(--paper-strong)] text-[var(--ink)]"
     >
-      <div className="bg-[#0b2d44] py-20 text-white md:bg-[var(--paper-strong)] md:pt-[clamp(7rem,8vw,9.5rem)] md:pb-[clamp(3rem,4vw,4.75rem)] md:text-[var(--ink)]">
-        <div className="site-container mx-auto grid w-full max-w-[105rem] gap-y-[0.8rem] px-[var(--page-gutter)] md:grid-cols-[minmax(0,1.05fr)_minmax(32rem,0.95fr)] md:grid-rows-[auto_1fr] md:gap-x-[clamp(3.5rem,6vw,8rem)] md:gap-y-[0.8rem]">
-          <p className="eyebrow m-0 font-display text-[0.66rem] font-semibold leading-[1.2] tracking-[0.18em] uppercase md:col-start-1 md:row-start-1">
+      <div className="ice-quality__technical relative isolate overflow-hidden bg-[#0b2d44] py-20 text-white md:pt-[clamp(7rem,8vw,9.5rem)] md:pb-[clamp(3rem,4vw,4.75rem)] lg:bg-[var(--paper-strong)] lg:text-[var(--ink)]">
+        <div
+          className="ice-quality__atmosphere pointer-events-none absolute -inset-[16%] z-0 bg-[radial-gradient(ellipse_at_72%_38%,rgba(49,126,169,0.26)_0%,rgba(22,72,103,0.11)_42%,transparent_70%)]"
+          aria-hidden="true"
+        />
+
+        <div className="site-container relative z-[1] mx-auto grid w-full max-w-[105rem] gap-y-[0.8rem] px-[var(--page-gutter)] lg:grid-cols-[minmax(0,1.05fr)_minmax(32rem,0.95fr)] lg:grid-rows-[auto_1fr] lg:gap-x-[clamp(3.5rem,6vw,8rem)] lg:gap-y-[0.8rem]">
+          <p className="eyebrow m-0 font-display text-[0.66rem] font-semibold leading-[1.2] tracking-[0.18em] uppercase lg:col-start-1 lg:row-start-1">
             Ice bath
           </p>
 
-          <div className="md:col-start-1 md:row-start-2">
+          <div className="lg:col-start-1 lg:row-start-2">
             <h2
               id="ice-title"
-              className="m-0 max-w-[18ch] font-display text-[clamp(2rem,8.4vw,2.8rem)] font-[450] leading-[1.02] tracking-[-0.042em] md:text-[clamp(3.3rem,4.3vw,5.15rem)]"
+              className="m-0 max-w-[18ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em]"
             >
               What’s Underneath Matters More Than You Think
             </h2>
 
-            <p className="mt-[0.8rem] mb-0 max-w-[38rem] text-[0.78rem] leading-[1.65] text-white/[0.68] md:text-[0.84rem] md:text-[var(--ink-soft)]">
+            <p className="mt-[0.8rem] mb-0 max-w-[38rem] text-[0.78rem] leading-[1.65] text-white/[0.68] md:text-[0.84rem] lg:text-[var(--ink-soft)]">
               Two ice baths can look almost identical from the outside. What
               happens underneath determines how efficiently they cool, how
               clean the water stays, and how easy the system is to maintain.
@@ -189,7 +269,7 @@ export default function IceBathQuality() {
             </div>
           </div>
 
-          <div className="mt-[2rem] md:col-start-2 md:row-start-2 md:mt-0">
+          <div className="mt-[2rem] lg:col-start-2 lg:row-start-2 lg:mt-0">
             <TechnicalDetails />
           </div>
         </div>
@@ -197,13 +277,13 @@ export default function IceBathQuality() {
 
       <div className="bg-[var(--paper-strong)] text-[var(--ink)]">
         <div className="site-container mx-auto grid w-full max-w-[105rem] gap-6 px-[var(--page-gutter)] pt-9 pb-[4.25rem] md:flex md:items-center md:justify-between md:gap-16 md:pt-[2.25rem] md:pb-[clamp(4rem,6vw,7rem)]">
-          <p className="m-0 max-w-[22ch] font-display text-[1.35rem] font-[450] leading-[1.15] tracking-[-0.025em] text-[var(--ink-soft)] md:max-w-none md:text-[1.55rem]">
+          <p className="m-0 max-w-[22ch] font-display text-[1.35rem] font-medium leading-[1.15] tracking-[-0.025em] text-[var(--ink-soft)] md:max-w-none md:text-[1.55rem]">
             The Difference Isn’t Always Visible from the Outside
           </p>
 
           <a
             href="#consultation"
-            className="pill-button pill-button--dark inline-flex min-h-[3.5rem] w-fit items-center justify-center rounded-[var(--pill)] border border-transparent bg-[var(--ink)] px-[1.7rem] py-[0.95rem] font-display text-[0.72rem] font-semibold leading-none tracking-[0.07em] text-white uppercase transition-[background-color,color,border-color] duration-[160ms] hover:border-[var(--ink)] hover:bg-transparent hover:text-[var(--ink)]"
+            className="pill-button pill-button--dark inline-flex min-h-[3.15rem] w-fit items-center justify-center rounded-[var(--pill)] border border-transparent bg-[var(--ink)] px-[1.4rem] py-[0.9rem] font-display text-[0.68rem] font-semibold leading-none tracking-[0.07em] text-white uppercase transition-[background-color,color,border-color] duration-[160ms] hover:border-[var(--ink)] hover:bg-transparent hover:text-[var(--ink)]"
           >
             Book a free consultation
           </a>

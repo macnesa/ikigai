@@ -1,12 +1,5 @@
-import { Bricolage_Grotesque } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
-
-const bricolage = Bricolage_Grotesque({
-  variable: "--font-bricolage",
-  subsets: ["latin"],
-  display: "swap",
-});
 
 const zenMaru = localFont({
   src: [
@@ -38,10 +31,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html
-      lang="en"
-      className={`${bricolage.variable} ${zenMaru.variable} antialiased`}
-    >
+    <html lang="en" className={`${zenMaru.variable} antialiased`}>
       <body>{children}</body>
     </html>
   );

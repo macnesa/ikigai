@@ -46,7 +46,7 @@ export default function SiteFooter() {
   return (
     <footer className="site-footer bg-[var(--night)] text-white">
       <div className="site-container mx-auto w-full max-w-[105rem] px-[var(--page-gutter)] pt-10 pb-10 md:pt-[2.75rem] md:pb-[3.25rem]">
-        <div className="grid gap-11 md:grid-cols-[minmax(15rem,1.35fr)_minmax(9rem,1fr)_minmax(9rem,1fr)_minmax(8rem,0.9fr)] md:gap-x-[clamp(3rem,5vw,6rem)]">
+        <div className="grid gap-11 lg:grid-cols-[minmax(15rem,1.35fr)_minmax(9rem,1fr)_minmax(9rem,1fr)_minmax(8rem,0.9fr)] lg:gap-x-[clamp(3rem,5vw,6rem)]">
           <div className="max-w-[16rem]">
             <p className="m-0 text-[0.78rem] leading-[1.65] text-white/[0.56] md:text-[0.8rem]">
               Saunas, ice baths and complete wellness spaces, installed across
@@ -54,7 +54,7 @@ export default function SiteFooter() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-8 gap-y-10 md:contents">
+          <div className="grid grid-cols-2 gap-x-8 gap-y-10 lg:contents">
             {footerGroups.slice(0, 2).map((group) => (
               <section
                 key={group.title}
@@ -83,7 +83,7 @@ export default function SiteFooter() {
           </div>
 
           <section
-            className="border-t border-white/[0.12] pt-6 md:border-0 md:pt-0"
+            className="border-t border-white/[0.12] pt-6 lg:border-0 lg:pt-0"
             aria-labelledby="footer-contact"
           >
             <h2
@@ -93,7 +93,7 @@ export default function SiteFooter() {
               Contact
             </h2>
 
-            <ul className="m-0 flex flex-wrap gap-x-6 gap-y-[0.82rem] p-0 text-[0.74rem] leading-[1.35] text-white/[0.62] [list-style:none] md:grid md:text-[0.76rem]">
+            <ul className="m-0 flex flex-wrap gap-x-6 gap-y-[0.82rem] p-0 text-[0.74rem] leading-[1.35] text-white/[0.62] [list-style:none] md:text-[0.76rem] lg:grid">
               {footerGroups[2].items.map((item) => (
                 <li key={item.label}>
                   <FooterLink item={item} />
@@ -113,7 +113,7 @@ export default function SiteFooter() {
         </div>
       </div>
 
-      <div className="mobile-booking-bar flex items-center justify-between gap-4 border-t border-[var(--line)] bg-[var(--paper-strong)] px-[var(--page-gutter)] py-[0.85rem] text-[var(--ink)] md:hidden">
+      <div className="mobile-booking-bar flex items-center justify-between gap-4 border-t border-[var(--line)] bg-[var(--paper-strong)] px-[var(--page-gutter)] py-[0.85rem] text-[var(--ink)] lg:hidden">
         <strong className="max-w-[13rem] font-display text-[0.72rem] font-medium leading-[1.25] tracking-[-0.01em]">
           Free wellness consultation
         </strong>

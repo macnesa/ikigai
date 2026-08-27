@@ -1,4 +1,9 @@
+"use client";
+
 /* eslint-disable @next/next/no-img-element */
+
+import { useRef } from "react";
+import { gsap, MOTION_MEDIA, useGSAP } from "./HomeMotion";
 
 const PROCESS_IMAGE_WIDTHS = [480, 640, 960, 1280];
 const PROCESS_IMAGE_QUALITY = 80;
@@ -66,11 +71,81 @@ function getImageKitSrcSet(src) {
 }
 
 export default function Process() {
+  const sectionRef = useRef(null);
+
+  useGSAP(
+    () => {
+      const section = sectionRef.current;
+
+      if (!section || navigator.connection?.saveData === true) return;
+
+      const images = gsap.utils.toArray(
+        section.querySelectorAll(".process-card__image"),
+      );
+      const mediaQueries = gsap.matchMedia();
+
+      const addSettling = (query, values) => {
+        mediaQueries.add(query, () => {
+          images.forEach((image) => {
+            gsap.set(image, {
+              transformOrigin: "50% 50%",
+            });
+
+            gsap.fromTo(
+              image,
+              {
+                scale: values.scale,
+                yPercent: values.yPercent,
+              },
+              {
+                scale: 1,
+                yPercent: 0,
+                ease: "none",
+                scrollTrigger: {
+                  trigger: image,
+                  start: values.start,
+                  end: values.end,
+                  scrub: values.scrub,
+                  invalidateOnRefresh: true,
+                },
+              },
+            );
+          });
+        });
+      };
+
+      addSettling(MOTION_MEDIA.desktop, {
+        scale: 1.035,
+        yPercent: 1.1,
+        start: "top 88%",
+        end: "center 62%",
+        scrub: 1.05,
+      });
+      addSettling(MOTION_MEDIA.tablet, {
+        scale: 1.025,
+        yPercent: 0.8,
+        start: "top 90%",
+        end: "center 66%",
+        scrub: 0.9,
+      });
+      addSettling(MOTION_MEDIA.mobile, {
+        scale: 1.018,
+        yPercent: 0.5,
+        start: "top 92%",
+        end: "center 70%",
+        scrub: 0.75,
+      });
+
+      return () => mediaQueries.revert();
+    },
+    { scope: sectionRef },
+  );
+
   return (
-    <section className="process dark-section bg-[var(--night)] py-[4.25rem] text-white md:py-[clamp(6.5rem,8vw,9.5rem)]" id="process" aria-labelledby="process-title">
+    <section ref={sectionRef} className="process dark-section bg-[var(--night)] py-[4.25rem] text-white md:py-[clamp(6.5rem,8vw,9.5rem)]" id="process" aria-labelledby="process-title">
       <div className="site-container mx-auto w-full max-w-[105rem] px-[var(--page-gutter)]">
         <header className="process__header mb-10 grid gap-4 md:mb-[clamp(3.5rem,5vw,6rem)] md:grid-cols-[minmax(0,1.25fr)_minmax(20rem,0.75fr)] md:items-end md:gap-16">
-          <h2 className="m-0 font-display text-[clamp(2rem,8.4vw,2.8rem)] font-[450] leading-[1.02] tracking-[-0.042em] md:text-[clamp(3.3rem,4.3vw,5.15rem)]" id="process-title">The IKIGAI Process</h2>
+          <h2 className="m-0 font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em]" id="process-title">The IKIGAI Process</h2>
           <p className="m-0 text-[0.78rem] leading-[1.65] text-white/[0.62] md:max-w-[38rem] md:justify-self-end md:text-[0.84rem]">
             You tell us about your property and what you’re trying to create. We
             manage the process from assessment through installation and ongoing
