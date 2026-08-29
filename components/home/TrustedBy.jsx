@@ -2,7 +2,7 @@
 
 const IMAGEKIT_LOGO_WIDTHS = [192, 288, 384, 480];
 const IMAGEKIT_LOGO_QUALITY = 80;
-const MARQUEE_REPEAT_COUNT = 4;
+const MARQUEE_REPEAT_COUNT = 2;
 
 const trustedByLogos = [
   {
@@ -58,37 +58,63 @@ function getImageKitSrcSet(src) {
   ).join(", ");
 }
 
+function LogoItem({
+  name,
+  src,
+  width,
+  height,
+  desktopWidth,
+  mobileWidth,
+  eager = false,
+}) {
+  return (
+    <div className="flex h-[3.25rem] flex-none items-center justify-center md:h-[4.5rem]">
+      <img
+        className="block h-auto w-[var(--logo-mobile-width)] max-w-none flex-none object-contain md:w-[var(--logo-desktop-width)]"
+        src={getImageKitUrl(src, IMAGEKIT_LOGO_WIDTHS[1])}
+        srcSet={getImageKitSrcSet(src)}
+        sizes={`(min-width: 48rem) ${desktopWidth}px, ${mobileWidth}px`}
+        alt=""
+        width={width}
+        height={height}
+        loading={eager ? "eager" : "lazy"}
+        decoding="async"
+        draggable="false"
+        style={{
+          "--logo-desktop-width": `${desktopWidth}px`,
+          "--logo-mobile-width": `${mobileWidth}px`,
+        }}
+        data-logo={name}
+      />
+    </div>
+  );
+}
+
 function LogoSegment({ duplicate = false }) {
   return (
     <div
-      className="flex flex-none items-center gap-[3rem] pr-[3rem] md:gap-[5.5rem] md:pr-[5.5rem]"
+      className="flex flex-none items-center gap-[2.75rem] pr-[2.75rem] md:gap-[5.25rem] md:pr-[5.25rem]"
       aria-hidden="true"
     >
-      {repeatedLogos.map(
-        ({ name, src, width, height, desktopWidth, mobileWidth }, index) => (
-          <div
-            key={`${duplicate ? "duplicate" : "primary"}-${name}-${index}`}
-            className="flex h-[3.6rem] flex-none items-center justify-center md:h-[5.4rem]"
-          >
-            <img
-              className="block h-auto w-[var(--logo-mobile-width)] max-w-none flex-none object-contain md:w-[var(--logo-desktop-width)]"
-              src={getImageKitUrl(src, IMAGEKIT_LOGO_WIDTHS[1])}
-              srcSet={getImageKitSrcSet(src)}
-              sizes={`(min-width: 48rem) ${desktopWidth}px, ${mobileWidth}px`}
-              alt=""
-              width={width}
-              height={height}
-              loading="eager"
-              decoding="async"
-              draggable="false"
-              style={{
-                "--logo-desktop-width": `${desktopWidth}px`,
-                "--logo-mobile-width": `${mobileWidth}px`,
-              }}
-            />
-          </div>
-        ),
-      )}
+      {repeatedLogos.map((logo, index) => (
+        <LogoItem
+          key={`${duplicate ? "duplicate" : "primary"}-${logo.name}-${index}`}
+          {...logo}
+          eager={!duplicate && index < 4}
+        />
+      ))}
+    </div>
+  );
+}
+
+function ReducedMotionLogos() {
+  return (
+    <div className="hidden overflow-x-auto px-5 motion-reduce:block md:px-8 [scrollbar-width:thin]">
+      <div className="mx-auto flex w-max min-w-full items-center justify-start gap-[2.75rem] md:justify-center md:gap-[5.25rem]">
+        {trustedByLogos.map((logo, index) => (
+          <LogoItem key={logo.name} {...logo} eager={index < 4} />
+        ))}
+      </div>
     </div>
   );
 }
@@ -99,10 +125,10 @@ export default function TrustedBy() {
       className="overflow-hidden bg-[var(--night)] text-white"
       aria-labelledby="trusted-by-title"
     >
-      <div className="flex h-[8.75rem] flex-col justify-center md:h-[12.3125rem]">
+      <div className="flex h-[7.5rem] flex-col justify-center md:h-[9.5rem]">
         <p
           id="trusted-by-title"
-          className="m-0 mb-[1.2rem] text-center font-display text-[0.7rem] font-normal leading-none text-white/[0.58] md:mb-[1.5rem] md:text-[0.8rem]"
+          className="m-0 mb-[1rem] text-center font-display text-[0.72rem] font-normal leading-none text-white/[0.68] md:mb-[1.2rem] md:text-[0.8rem]"
         >
           Trusted by
         </p>
@@ -113,9 +139,11 @@ export default function TrustedBy() {
           ))}
         </ul>
 
-        <div className="relative mx-auto w-full max-w-[46rem] px-5 md:max-w-[72rem] md:px-8">
-          <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,black_7%,black_93%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_7%,black_93%,transparent_100%)] motion-reduce:overflow-x-auto motion-reduce:[scrollbar-width:thin]">
-            <div className="flex w-max items-center animate-[trusted-marquee_42s_linear_infinite] will-change-transform motion-reduce:animate-none motion-reduce:will-change-auto">
+        <ReducedMotionLogos />
+
+        <div className="relative mx-auto w-full max-w-[105rem] px-5 motion-reduce:hidden md:px-[var(--page-gutter)]">
+          <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,black_9%,black_91%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_9%,black_91%,transparent_100%)] md:[mask-image:linear-gradient(to_right,transparent_0%,black_5%,black_95%,transparent_100%)] md:[-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_5%,black_95%,transparent_100%)]">
+            <div className="flex w-max items-center animate-[trusted-marquee_34s_linear_infinite] will-change-transform">
               <LogoSegment />
               <LogoSegment duplicate />
             </div>

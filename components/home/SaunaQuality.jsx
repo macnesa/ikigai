@@ -3,8 +3,13 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
-import { gsap, MOTION_MEDIA, useGSAP } from "./HomeMotion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  gsap,
+  MOTION_MEDIA,
+  shouldLimitMotion,
+  useGSAP,
+} from "./HomeMotion";
 
 const IMAGEKIT_WIDTHS = [640, 960, 1280, 1600];
 const IMAGEKIT_QUALITY = 80;
@@ -51,6 +56,7 @@ const saunaDetails = [
 
 function getImageKitUrl(src, width) {
   const separator = src.includes("?") ? "&" : "?";
+
   return `${src}${separator}tr=w-${width},q-${IMAGEKIT_QUALITY},f-auto`;
 }
 
@@ -66,7 +72,7 @@ function ComparisonImage({ src }) {
       className="absolute inset-0 block h-full w-full object-cover object-center"
       src={getImageKitUrl(src, IMAGEKIT_WIDTHS[1])}
       srcSet={getImageKitSrcSet(src)}
-      sizes="(min-width: 48rem) 48vw, calc(100vw - 2.5rem)"
+      sizes="(min-width: 48rem) 48vw, 100vw"
       alt=""
       loading="lazy"
       decoding="async"
@@ -81,7 +87,7 @@ function ComparisonSlider() {
 
   return (
     <div
-      className="relative aspect-[16/10] w-full overflow-hidden bg-[#5f5a52] text-white md:aspect-[4/5]"
+      className="group relative aspect-[4/5] w-full overflow-hidden bg-[#5f5a52] text-white"
       role="group"
       aria-label="Compare the other sauna with the IKIGAI sauna"
       style={{ "--comparison-position": `${position}%` }}
@@ -95,21 +101,22 @@ function ComparisonSlider() {
         <ComparisonImage src={SAUNA_COMPARISON_IMAGES.other} />
       </div>
 
-      <span className="pointer-events-none absolute top-4 left-4 z-[2] font-display text-[0.82rem] font-normal leading-none tracking-[-0.02em] text-white drop-shadow-[0_1px_5px_rgba(0,0,0,0.35)] md:top-7 md:left-6 md:text-[1.35rem]">
-        Other Sauna
-      </span>
-
-      <span className="pointer-events-none absolute top-4 right-4 z-[2] font-display text-[0.82rem] font-normal leading-none tracking-[-0.02em] text-white drop-shadow-[0_1px_5px_rgba(0,0,0,0.35)] md:top-7 md:right-6 md:text-[1.35rem]">
-        Our Sauna
-      </span>
-
       <div
         className="pointer-events-none absolute inset-y-0 left-[var(--comparison-position)] z-[3] w-[2px] -translate-x-1/2 bg-white"
         aria-hidden="true"
       >
-        <span className="absolute top-1/2 left-1/2 flex aspect-square w-[2.75rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-[var(--ink)] shadow-[0_4px_20px_rgba(0,0,0,0.16)] md:w-[3.25rem]">
-          <ChevronLeft className="-mr-[0.22rem]" size={17} strokeWidth={1.7} />
-          <ChevronRight className="-ml-[0.22rem]" size={17} strokeWidth={1.7} />
+        <span className="absolute top-1/2 left-1/2 flex aspect-square w-[2.65rem] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-[var(--ink)] shadow-[0_4px_18px_rgba(0,0,0,0.14)] transition-[box-shadow,transform] duration-[160ms] group-focus-within:shadow-[0_0_0_3px_rgba(255,255,255,0.34),0_4px_18px_rgba(0,0,0,0.17)] md:w-[3rem]">
+          <ChevronLeft
+            className="-mr-[0.22rem]"
+            size={16}
+            strokeWidth={1.7}
+          />
+
+          <ChevronRight
+            className="-ml-[0.22rem]"
+            size={16}
+            strokeWidth={1.7}
+          />
         </span>
       </div>
 
@@ -127,30 +134,28 @@ function ComparisonSlider() {
 }
 
 function TechnicalDetails() {
-  const [openIndex, setOpenIndex] = useState(null);
-
   return (
     <>
-      <div className="hidden md:block">
+      <div className="sauna__technical-focus sauna__technical-desktop hidden md:block">
         {saunaDetails.map((item, index) => (
           <article
             key={item.id}
-            className={`grid grid-cols-[3.4rem_minmax(0,1fr)] gap-4 py-[1.3rem] ${
+            className={`grid grid-cols-[3.4rem_minmax(0,1fr)] gap-4 py-[1.35rem] ${
               index < saunaDetails.length - 1
                 ? "border-b border-white/[0.13]"
                 : ""
             }`}
           >
-            <span className="pt-[0.08rem] font-display text-[1.08rem] font-normal leading-none tracking-[-0.02em] text-white/[0.78]">
+            <span className="pt-[0.08rem] font-display text-[1.08rem] font-normal leading-none tracking-[-0.02em] text-white/[0.72]">
               {String(index + 1).padStart(2, "0")}
             </span>
 
             <div>
-              <h3 className="m-0 font-display text-[1.02rem] font-medium leading-[1.3] tracking-[-0.015em] text-white/[0.92]">
+              <h3 className="m-0 font-display text-[1.04rem] font-medium leading-[1.3] tracking-[-0.015em] text-white/[0.94]">
                 {item.title}
               </h3>
 
-              <p className="mt-[0.55rem] mb-0 max-w-[35rem] text-[0.76rem] leading-[1.58] text-white/[0.54]">
+              <p className="mt-[0.55rem] mb-0 max-w-[35rem] text-[0.86rem] leading-[1.6] text-white/[0.62]">
                 {item.body}
               </p>
             </div>
@@ -158,67 +163,28 @@ function TechnicalDetails() {
         ))}
       </div>
 
-      <div className="border-t border-white/[0.15] md:hidden">
-        {saunaDetails.map((item, index) => {
-          const isOpen = openIndex === index;
-          const panelId = `sauna-technical-panel-${item.id}`;
+      <div className="sauna__technical-focus sauna__technical-mobile md:hidden">
+        <div className="border-t border-white/[0.15]">
+          {saunaDetails.map((item, index) => (
+            <div
+              key={item.id}
+              className="grid min-h-[3.8rem] grid-cols-[2.65rem_minmax(0,1fr)] items-center border-b border-white/[0.15]"
+            >
+              <span className="font-display text-[0.9rem] font-normal leading-none text-white/[0.46]">
+                {String(index + 1).padStart(2, "0")}
+              </span>
 
-          return (
-            <div key={item.id} className="border-b border-white/[0.15]">
-              <button
-                className="grid min-h-[4.25rem] w-full grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-[0.65rem] border-0 bg-transparent p-0 text-left text-white"
-                type="button"
-                onClick={() => setOpenIndex(isOpen ? null : index)}
-                aria-expanded={isOpen}
-                aria-controls={panelId}
-              >
-                <span className="font-display text-[0.74rem] font-normal text-white/[0.52]">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-
-                <span className="font-display text-[0.9rem] font-medium leading-[1.25] tracking-[-0.015em]">
-                  {item.mobileTitle || item.title}
-                </span>
-
-                {isOpen ? (
-                  <Minus
-                    className="shrink-0"
-                    aria-hidden="true"
-                    size={18}
-                    strokeWidth={1.4}
-                  />
-                ) : (
-                  <Plus
-                    className="shrink-0"
-                    aria-hidden="true"
-                    size={18}
-                    strokeWidth={1.4}
-                  />
-                )}
-              </button>
-
-              <div
-                id={panelId}
-                aria-hidden={!isOpen}
-                className={`grid transition-[grid-template-rows,opacity] duration-[180ms] ${
-                  isOpen
-                    ? "grid-rows-[1fr] opacity-100"
-                    : "grid-rows-[0fr] opacity-0"
-                }`}
-              >
-                <div className="min-h-0 overflow-hidden">
-                  <p
-                    className={`m-0 pl-[2.9rem] pr-8 text-[0.78rem] leading-[1.62] text-white/[0.6] ${
-                      isOpen ? "pb-[1.35rem]" : ""
-                    }`}
-                  >
-                    {item.body}
-                  </p>
-                </div>
-              </div>
+              <span className="py-[0.95rem] font-display text-[1rem] font-medium leading-[1.28] tracking-[-0.018em] text-white/[0.94]">
+                {item.mobileTitle || item.title}
+              </span>
             </div>
-          );
-        })}
+          ))}
+        </div>
+
+        <p className="mt-[2.2rem] mb-0 max-w-[21rem] text-[0.82rem] leading-[1.65] text-white/[0.62]">
+          Every IKIGAI sauna is engineered as a complete room — from heater
+          sizing and ventilation to insulation and construction.
+        </p>
       </div>
     </>
   );
@@ -231,15 +197,30 @@ export default function SaunaQuality() {
     () => {
       const section = sectionRef.current;
 
-      if (!section || navigator.connection?.saveData === true) return;
+      if (
+        !section ||
+        shouldLimitMotion() ||
+        navigator.connection?.saveData === true
+      ) {
+        return;
+      }
 
       const atmosphere = section.querySelector(".sauna__atmosphere");
-      if (!atmosphere) return;
+      const eyebrow = section.querySelector(".sauna__eyebrow");
+      const heading = section.querySelector(".sauna__heading");
+      const body = section.querySelector(".sauna__body");
+      const comparison = section.querySelector(".sauna__comparison-frame");
+
+      if (!atmosphere || !eyebrow || !heading || !body || !comparison) {
+        return;
+      }
 
       const mediaQueries = gsap.matchMedia();
 
       const addAtmosphere = (query, values) => {
         mediaQueries.add(query, () => {
+          const technical = section.querySelector(values.technicalSelector);
+
           gsap.fromTo(
             atmosphere,
             {
@@ -261,37 +242,150 @@ export default function SaunaQuality() {
               },
             },
           );
+
+          const entrance = gsap.timeline({
+            defaults: { ease: "power2.out" },
+            scrollTrigger: {
+              trigger: section,
+              start: values.entranceStart,
+              once: true,
+            },
+          });
+
+          entrance
+            .fromTo(
+              eyebrow,
+              {
+                autoAlpha: 0,
+                y: values.eyebrowY,
+              },
+              {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.48,
+              },
+            )
+            .fromTo(
+              heading,
+              {
+                autoAlpha: 0,
+                y: values.headingY,
+                clipPath: "inset(0 0 100% 0)",
+              },
+              {
+                autoAlpha: 1,
+                y: 0,
+                clipPath: "inset(0 0 0% 0)",
+                duration: 0.82,
+                ease: "power3.out",
+              },
+              0.08,
+            )
+            .fromTo(
+              body,
+              {
+                autoAlpha: 0,
+                y: values.bodyY,
+              },
+              {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.58,
+              },
+              0.28,
+            )
+            .fromTo(
+              comparison,
+              {
+                autoAlpha: 0,
+                y: values.frameY,
+                scale: values.frameScale,
+              },
+              {
+                autoAlpha: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.78,
+              },
+              0.16,
+            );
+
+          if (technical) {
+            entrance.fromTo(
+              technical,
+              {
+                autoAlpha: 0,
+                y: values.technicalY,
+              },
+              {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.58,
+              },
+              0.42,
+            );
+          }
+
+          return () => entrance.kill();
         });
       };
 
       addAtmosphere(MOTION_MEDIA.desktop, {
-        fromY: -12,
-        toY: 16,
-        scale: 1.025,
-        fromOpacity: 0.34,
-        toOpacity: 0.5,
-        scrub: 1.5,
-      });
-      addAtmosphere(MOTION_MEDIA.tablet, {
-        fromY: -8,
-        toY: 10,
-        scale: 1.018,
-        fromOpacity: 0.3,
+        fromY: -28,
+        toY: 30,
+        scale: 1.045,
+        fromOpacity: 0.29,
         toOpacity: 0.44,
-        scrub: 1.3,
+        scrub: 1.5,
+        eyebrowY: 6,
+        headingY: 30,
+        bodyY: 16,
+        frameY: 20,
+        frameScale: 0.985,
+        technicalY: 7,
+        technicalSelector: ".sauna__technical-desktop",
+        entranceStart: "top 76%",
       });
+
+      addAtmosphere(MOTION_MEDIA.tablet, {
+        fromY: -21,
+        toY: 24,
+        scale: 1.038,
+        fromOpacity: 0.27,
+        toOpacity: 0.4,
+        scrub: 1.3,
+        eyebrowY: 5,
+        headingY: 25,
+        bodyY: 13,
+        frameY: 16,
+        frameScale: 0.988,
+        technicalY: 6,
+        technicalSelector: ".sauna__technical-desktop",
+        entranceStart: "top 79%",
+      });
+
       addAtmosphere(MOTION_MEDIA.mobile, {
-        fromY: -4,
-        toY: 6,
-        scale: 1.012,
-        fromOpacity: 0.28,
-        toOpacity: 0.38,
+        fromY: -14,
+        toY: 15,
+        scale: 1.026,
+        fromOpacity: 0.25,
+        toOpacity: 0.35,
         scrub: 1.1,
+        eyebrowY: 4,
+        headingY: 21,
+        bodyY: 10,
+        frameY: 10,
+        frameScale: 1,
+        technicalY: 5,
+        technicalSelector: ".sauna__technical-mobile",
+        entranceStart: "top 83%",
       });
 
       return () => mediaQueries.revert();
     },
-    { scope: sectionRef },
+    {
+      scope: sectionRef,
+    },
   );
 
   return (
@@ -299,38 +393,45 @@ export default function SaunaQuality() {
       ref={sectionRef}
       id="sauna-quality"
       aria-labelledby="sauna-title"
-      className="relative isolate overflow-hidden bg-[var(--night)] py-[4.75rem] text-white md:py-[clamp(4.75rem,5vw,6rem)]"
+      className="relative isolate overflow-hidden bg-[var(--night)] pt-16 pb-[4.5rem] text-white md:py-[clamp(5.5rem,6vw,7rem)]"
     >
       <div
         className="sauna__atmosphere pointer-events-none absolute -inset-[18%] z-0 bg-[radial-gradient(circle_at_26%_44%,rgba(211,128,56,0.22)_0%,rgba(137,76,35,0.1)_38%,transparent_70%)]"
         aria-hidden="true"
       />
 
-      <div className="relative z-[1] mx-auto grid w-full max-w-[105rem] gap-y-6 px-[var(--page-gutter)] md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:grid-rows-[auto_auto_1fr] md:gap-x-[clamp(3rem,5vw,6rem)] md:gap-y-0">
+      <div className="relative z-[1] mx-auto grid w-full max-w-[105rem] px-[var(--page-gutter)] md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:grid-rows-[auto_auto_1fr] md:gap-x-[clamp(3rem,5vw,6rem)]">
         <div className="grid gap-[0.8rem] md:col-start-2 md:row-start-1">
-          <p className="m-0 font-display text-[0.66rem] font-semibold leading-[1.2] tracking-[0.18em] uppercase text-white/[0.62] md:text-right">
+          <p className="sauna__eyebrow m-0 font-display text-[0.66rem] font-semibold leading-[1.2] tracking-[0.18em] text-white/[0.62] uppercase">
             Sauna
           </p>
 
           <h2
             id="sauna-title"
-            className="m-0 font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em]"
+            className="sauna__heading m-0 font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em]"
           >
             Beautiful Isn’t Always Built Properly
           </h2>
         </div>
 
-        <div className="md:col-start-1 md:row-start-1 md:row-span-3">
+        <p className="sauna__body order-2 mt-[1rem] mb-0 text-[0.82rem] leading-[1.65] text-white/[0.64] md:order-none md:col-start-2 md:row-start-2 md:mt-[1rem] md:max-w-[39rem] md:text-[1rem] md:leading-[1.58]">
+          <span className="md:hidden">
+            A sauna can look beautiful and still be poorly designed. What
+            matters is how the whole room works together.
+          </span>
+
+          <span className="hidden md:inline">
+            Most problems aren’t obvious when an installation is new. They show
+            up later: poor performance, higher running costs, uncomfortable use,
+            difficult maintenance.
+          </span>
+        </p>
+
+        <div className="sauna__comparison-frame order-3 -mx-[var(--page-gutter)] mt-[2rem] w-[calc(100%+2*var(--page-gutter))] md:order-none md:col-start-1 md:row-start-1 md:row-span-3 md:mx-0 md:mt-0 md:w-auto">
           <ComparisonSlider />
         </div>
 
-        <p className="m-0 text-[0.8rem] leading-[1.62] text-white/[0.62] md:col-start-2 md:row-start-2 md:mt-[1rem] md:max-w-[39rem] md:text-[1rem] md:leading-[1.58]">
-          Most problems aren’t obvious when an installation is new. They show
-          up later: poor performance, higher running costs, uncomfortable use,
-          difficult maintenance.
-        </p>
-
-        <div className="md:col-start-2 md:row-start-3 md:mt-[1.8rem]">
+        <div className="order-4 mt-[2.25rem] md:order-none md:col-start-2 md:row-start-3 md:mt-[1.9rem]">
           <TechnicalDetails />
         </div>
       </div>

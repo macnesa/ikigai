@@ -2,7 +2,13 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { Check } from "lucide-react";
 import {
   gsap,
@@ -15,14 +21,25 @@ const IMAGEKIT_WIDTHS = [640, 960, 1280, 1600, 1920, 2560];
 const IMAGEKIT_QUALITY = 80;
 const HERO_FALLBACK_WIDTH = 1280;
 
-// Provisional until the authored timing is verified.
-const ROTATION_INTERVAL_MS = 5000;
+const ROTATION_INTERVAL_MS = 7000;
 const CROSSFADE_DURATION_MS = 900;
 
 const HERO_IMAGES = [
-  "https://ik.imagekit.io/ikigaiwellness/ikigai/home/0566_ad48168e4a93f9aaf727711ea2ff3d488019b1cc.png",
-  "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-25_17-51-48.png",
-  "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-25_17-52-30.png",
+  {
+    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/0566_ad48168e4a93f9aaf727711ea2ff3d488019b1cc.png",
+    mobilePosition: "52% center",
+    desktopPosition: "50% center",
+  },
+  {
+    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-25_17-51-48.png",
+    mobilePosition: "54% center",
+    desktopPosition: "52% center",
+  },
+  {
+    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-25_17-52-30.png",
+    mobilePosition: "58% center",
+    desktopPosition: "54% center",
+  },
 ];
 
 const proofItems = [
@@ -82,7 +99,9 @@ export default function Hero() {
 
     if (incomingIndex === null) return;
 
-    if (isCrossfading) setCurrentIndex(incomingIndex);
+    if (isCrossfading) {
+      setCurrentIndex(incomingIndex);
+    }
 
     setIncomingIndex(null);
     setIsCrossfading(false);
@@ -100,19 +119,13 @@ export default function Hero() {
     () => {
       const hero = heroRef.current;
 
-      if (
-        !hero ||
-        !runtimePreferences.ready ||
-        shouldLimitMotion()
-      ) {
+      if (!hero || !runtimePreferences.ready || shouldLimitMotion()) {
         return;
       }
 
       const media = hero.querySelector(".hero__media");
-      const overlay = hero.querySelector(".hero__overlay-primary");
-      const content = hero.querySelector(".hero__inner");
 
-      if (!media || !overlay || !content) return;
+      if (!media) return;
 
       const mediaQueries = gsap.matchMedia();
 
@@ -129,42 +142,32 @@ export default function Hero() {
             },
           });
 
-          timeline
-            .fromTo(
-              media,
-              { yPercent: values.mediaFrom },
-              { yPercent: values.mediaTo },
-              0,
-            )
-            .fromTo(content, { y: 0 }, { y: values.contentY }, 0)
-            .fromTo(
-              overlay,
-              { opacity: 1 },
-              { opacity: values.overlayOpacity },
-              0,
-            );
+          timeline.fromTo(
+            media,
+            { yPercent: values.mediaFrom },
+            { yPercent: values.mediaTo },
+            0,
+          );
+
+          return () => timeline.kill();
         });
       };
 
       addDepth(MOTION_MEDIA.desktop, {
-        mediaFrom: -1.2,
-        mediaTo: 1.8,
-        contentY: -14,
-        overlayOpacity: 0.88,
-        scrub: 1.2,
+        mediaFrom: 1.35,
+        mediaTo: -1.35,
+        scrub: 1.25,
       });
+
       addDepth(MOTION_MEDIA.tablet, {
-        mediaFrom: -0.8,
-        mediaTo: 1.2,
-        contentY: -9,
-        overlayOpacity: 0.92,
-        scrub: 1.1,
+        mediaFrom: 1,
+        mediaTo: -1,
+        scrub: 1.15,
       });
+
       addDepth(MOTION_MEDIA.mobile, {
-        mediaFrom: -0.35,
-        mediaTo: 0.55,
-        contentY: -5,
-        overlayOpacity: 0.95,
+        mediaFrom: 0.55,
+        mediaTo: -0.55,
         scrub: 1,
       });
 
@@ -189,7 +192,9 @@ export default function Hero() {
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
-    if (reduceMotion) return;
+    if (reduceMotion || navigator.connection?.saveData === true) {
+      return;
+    }
 
     const ctx = gsap.context(() => {
       const select = gsap.utils.selector(hero);
@@ -199,21 +204,47 @@ export default function Hero() {
       const intro = select(".hero__intro");
       const ctaBlock = select(".hero__cta-block");
       const proofs = select(".hero__proofs");
+      const proofItems = select(".hero__proofs li");
       const currentImage = select(".hero__image--current")[0];
 
       if (currentImage) {
         gsap.fromTo(
           currentImage,
-          { scale: 1.018 },
-          { scale: 1, duration: 1.8, ease: "power2.out" },
+          { scale: 1.035 },
+          {
+            scale: 1,
+            duration: 1.8,
+            ease: "power2.out",
+          },
         );
       }
 
       const mm = gsap.matchMedia();
 
-      mm.add("(max-width: 767px)", () => {
-        gsap.set(mobileTitleLines, { yPercent: 105 });
-        gsap.set([intro, proofs, ctaBlock], { opacity: 0, y: 16 });
+      mm.add("(max-width: 1023px)", () => {
+        gsap.set(mobileTitleLines, {
+          yPercent: 105,
+        });
+
+        gsap.set(intro, {
+          opacity: 0,
+          y: 12,
+        });
+
+        gsap.set(proofs, {
+          opacity: 1,
+          y: 0,
+        });
+
+        gsap.set(proofItems, {
+          opacity: 0,
+          y: 6,
+        });
+
+        gsap.set(ctaBlock, {
+          opacity: 0,
+          y: 12,
+        });
 
         const timeline = gsap.timeline({
           defaults: { ease: "power3.out" },
@@ -224,8 +255,8 @@ export default function Hero() {
             mobileTitleLines,
             {
               yPercent: 0,
-              duration: 0.66,
-              stagger: 0.1,
+              duration: 0.74,
+              stagger: 0.09,
             },
             0.08,
           )
@@ -236,33 +267,55 @@ export default function Hero() {
               y: 0,
               duration: 0.44,
             },
-            "-=0.27",
+            "-=0.24",
           )
           .to(
-            proofs,
+            proofItems,
             {
               opacity: 1,
               y: 0,
-              duration: 0.44,
+              duration: 0.34,
+              stagger: 0.035,
             },
-            "-=0.19",
+            "-=0.16",
           )
           .to(
             ctaBlock,
             {
               opacity: 1,
               y: 0,
-              duration: 0.44,
+              duration: 0.46,
             },
-            "-=0.19",
+            "-=0.1",
           );
 
         return () => timeline.kill();
       });
 
-      mm.add("(min-width: 768px)", () => {
-        gsap.set(desktopTitleLines, { yPercent: 105 });
-        gsap.set([intro, ctaBlock, proofs], { opacity: 0, y: 18 });
+      mm.add("(min-width: 1024px)", () => {
+        gsap.set(desktopTitleLines, {
+          yPercent: 105,
+        });
+
+        gsap.set(intro, {
+          opacity: 0,
+          y: 20,
+        });
+
+        gsap.set(proofs, {
+          opacity: 1,
+          y: 0,
+        });
+
+        gsap.set(proofItems, {
+          opacity: 0,
+          y: 8,
+        });
+
+        gsap.set(ctaBlock, {
+          opacity: 0,
+          y: 16,
+        });
 
         const timeline = gsap.timeline({
           defaults: { ease: "power3.out" },
@@ -273,8 +326,8 @@ export default function Hero() {
             desktopTitleLines,
             {
               yPercent: 0,
-              duration: 0.74,
-              stagger: 0.11,
+              duration: 0.86,
+              stagger: 0.1,
             },
             0.08,
           )
@@ -283,7 +336,7 @@ export default function Hero() {
             {
               opacity: 1,
               y: 0,
-              duration: 0.5,
+              duration: 0.54,
             },
             "-=0.3",
           )
@@ -294,16 +347,17 @@ export default function Hero() {
               y: 0,
               duration: 0.5,
             },
-            "-=0.24",
+            "-=0.26",
           )
           .to(
-            proofs,
+            proofItems,
             {
               opacity: 1,
               y: 0,
-              duration: 0.52,
+              duration: 0.38,
+              stagger: 0.045,
             },
-            "-=0.18",
+            "-=0.24",
           );
 
         return () => timeline.kill();
@@ -316,7 +370,9 @@ export default function Hero() {
   }, []);
 
   useEffect(() => {
-    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const motionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
     const connection = navigator.connection;
 
     const updatePreferences = () => {
@@ -366,7 +422,9 @@ export default function Hero() {
   useEffect(() => {
     const hero = heroRef.current;
 
-    if (!hero || !("IntersectionObserver" in window)) return;
+    if (!hero || !("IntersectionObserver" in window)) {
+      return;
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -410,7 +468,7 @@ export default function Hero() {
             preloader = image;
             image.decoding = "async";
             image.sizes = "100vw";
-            image.srcset = getHeroSrcSet(HERO_IMAGES[candidateIndex]);
+            image.srcset = getHeroSrcSet(HERO_IMAGES[candidateIndex].src);
 
             image.onload = async () => {
               try {
@@ -423,8 +481,9 @@ export default function Hero() {
             };
 
             image.onerror = reject;
+
             image.src = getImageKitUrl(
-              HERO_IMAGES[candidateIndex],
+              HERO_IMAGES[candidateIndex].src,
               getPreloadWidth(),
             );
           });
@@ -437,6 +496,10 @@ export default function Hero() {
         } catch {
           failedImagesRef.current.add(candidateIndex);
         }
+      }
+
+      if (!cancelled) {
+        setNextReadyIndex(null);
       }
     };
 
@@ -487,7 +550,9 @@ export default function Hero() {
   }, [canRotate, currentIndex, incomingIndex, nextReadyIndex]);
 
   useEffect(() => {
-    if (!isCrossfading || incomingIndex === null) return;
+    if (!isCrossfading || incomingIndex === null) {
+      return;
+    }
 
     const timer = window.setTimeout(() => {
       setCurrentIndex(incomingIndex);
@@ -509,7 +574,7 @@ export default function Hero() {
   );
 
   const startCrossfade = () => {
-    if (!canRotate) return;
+    if (!canRotate || incomingIndex === null) return;
 
     fadeFrameRef.current = window.requestAnimationFrame(() => {
       fadeFrameRef.current = null;
@@ -529,49 +594,57 @@ export default function Hero() {
     lastShownAtRef.current = Date.now();
   };
 
+  const currentImage = HERO_IMAGES[currentIndex];
+  const incomingImage =
+    incomingIndex !== null ? HERO_IMAGES[incomingIndex] : null;
+
   return (
     <section
       ref={heroRef}
       id="hero"
       aria-labelledby="hero-title"
-      className="hero relative isolate min-h-[39rem] overflow-hidden bg-[var(--placeholder-dark)] text-white md:min-h-[clamp(48rem,56.77vw,56rem)]"
+      className="hero relative isolate min-h-[clamp(40rem,78svh,44rem)] overflow-hidden bg-[var(--placeholder-dark)] text-white lg:min-h-[clamp(48rem,56.77vw,56rem)]"
     >
       <div
         aria-hidden="true"
-        className="hero__media absolute inset-x-0 -inset-y-[3%] -z-[3] overflow-hidden bg-[var(--placeholder-dark)]"
+        className="hero__media absolute inset-x-0 -inset-y-[7%] -z-[3] overflow-hidden bg-[var(--placeholder-dark)]"
         style={{
           "--hero-crossfade-duration": `${CROSSFADE_DURATION_MS}ms`,
         }}
       >
         <img
-          className="hero__image hero__image--current absolute inset-0 h-full w-full object-cover object-center will-change-transform"
-          src={getImageKitUrl(
-            HERO_IMAGES[currentIndex],
-            HERO_FALLBACK_WIDTH,
-          )}
-          srcSet={getHeroSrcSet(HERO_IMAGES[currentIndex])}
+          className="hero__image hero__image--current absolute inset-0 h-full w-full object-cover [object-position:var(--hero-object-mobile)] will-change-transform lg:[object-position:var(--hero-object-desktop)]"
+          style={{
+            "--hero-object-mobile": currentImage.mobilePosition,
+            "--hero-object-desktop": currentImage.desktopPosition,
+          }}
+          src={getImageKitUrl(currentImage.src, HERO_FALLBACK_WIDTH)}
+          srcSet={getHeroSrcSet(currentImage.src)}
           sizes="100vw"
           alt=""
           loading="eager"
           fetchPriority={currentIndex === 0 ? "high" : "auto"}
           decoding="async"
+          draggable="false"
         />
 
-        {incomingIndex !== null ? (
+        {incomingImage ? (
           <img
-            className={`hero__image hero__image--incoming absolute inset-0 h-full w-full object-cover object-center will-change-[opacity] [transition:opacity_var(--hero-crossfade-duration,900ms)_cubic-bezier(0.22,1,0.36,1)] ${
+            className={`hero__image hero__image--incoming absolute inset-0 h-full w-full object-cover [object-position:var(--hero-object-mobile)] will-change-[opacity] [transition:opacity_var(--hero-crossfade-duration,900ms)_cubic-bezier(0.22,1,0.36,1)] lg:[object-position:var(--hero-object-desktop)] ${
               isCrossfading ? "is-visible opacity-100" : "opacity-0"
             }`}
-            src={getImageKitUrl(
-              HERO_IMAGES[incomingIndex],
-              HERO_FALLBACK_WIDTH,
-            )}
-            srcSet={getHeroSrcSet(HERO_IMAGES[incomingIndex])}
+            style={{
+              "--hero-object-mobile": incomingImage.mobilePosition,
+              "--hero-object-desktop": incomingImage.desktopPosition,
+            }}
+            src={getImageKitUrl(incomingImage.src, HERO_FALLBACK_WIDTH)}
+            srcSet={getHeroSrcSet(incomingImage.src)}
             sizes="100vw"
             alt=""
             loading="eager"
             fetchPriority="auto"
             decoding="async"
+            draggable="false"
             onLoad={startCrossfade}
             onError={handleIncomingError}
           />
@@ -580,29 +653,35 @@ export default function Hero() {
 
       <div
         aria-hidden="true"
-        className="hero__overlay-primary pointer-events-none absolute inset-0 -z-[2] bg-[rgba(8,12,18,0.34)] md:bg-[rgba(6,9,14,0.18)]"
+        className="hero__overlay-primary pointer-events-none absolute inset-0 -z-[2] bg-[linear-gradient(180deg,rgba(5,8,12,0.58)_0%,rgba(5,8,12,0.35)_26%,rgba(5,8,12,0.16)_56%,rgba(5,8,12,0.22)_72%,rgba(5,8,12,0.52)_100%)] lg:bg-[rgba(6,9,14,0.18)]"
       />
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-[2] hidden md:block md:bg-[linear-gradient(90deg,rgba(5,8,12,0.46)_0%,rgba(5,8,12,0.30)_32%,rgba(5,8,12,0.08)_61%,rgba(5,8,12,0)_82%)]"
+        className="pointer-events-none absolute inset-0 -z-[2] hidden lg:block lg:bg-[linear-gradient(90deg,rgba(5,8,12,0.48)_0%,rgba(5,8,12,0.31)_31%,rgba(5,8,12,0.09)_60%,rgba(5,8,12,0)_82%)]"
       />
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-[2] hidden md:block md:bg-[linear-gradient(180deg,rgba(5,8,12,0.10)_0%,rgba(5,8,12,0)_25%,rgba(5,8,12,0)_64%,rgba(5,8,12,0.30)_100%)]"
+        className="pointer-events-none absolute inset-0 -z-[2] hidden lg:block lg:bg-[linear-gradient(180deg,rgba(5,8,12,0.10)_0%,rgba(5,8,12,0)_25%,rgba(5,8,12,0)_62%,rgba(5,8,12,0.34)_100%)]"
       />
 
-      <div className="hero__inner mx-auto flex min-h-[inherit] w-full max-w-[105rem] flex-col px-[var(--page-gutter)] pt-[calc(var(--header-height)+2rem)] pb-6 md:pt-[clamp(14rem,17.97vw,16rem)] md:pb-0">
-        <div className="hero__copy order-1 max-w-[33rem] md:w-full md:max-w-[52.9375rem]">
+      <div className="hero__inner mx-auto flex min-h-[inherit] w-full max-w-[105rem] flex-col px-[var(--page-gutter)] pt-[calc(var(--header-height)+2rem)] pb-8 md:pt-[calc(var(--header-height)+3rem)] lg:pt-[clamp(12rem,15.5vw,14.5rem)] lg:pb-0">
+        <div className="hero__copy order-1 max-w-[33rem] md:max-w-[38rem] lg:w-full lg:max-w-[52.9375rem]">
           <h1
             id="hero-title"
-            className="m-0 font-display text-[clamp(2rem,9vw,2.55rem)] font-normal leading-[0.99] tracking-[-0.045em] md:text-[clamp(4rem,4.75vw,5.75rem)] md:leading-[1.2] md:tracking-[-0.0192em]"
+            className="m-0 font-display text-[clamp(2.15rem,9vw,2.75rem)] font-normal leading-[0.98] tracking-[-0.038em] md:text-[clamp(2.8rem,6vw,3.8rem)] lg:text-[clamp(4rem,4.75vw,5.75rem)] lg:leading-[0.99] lg:tracking-[-0.025em]"
           >
-            <span className="md:hidden">
+            <span className="lg:hidden">
               <span className="block overflow-hidden">
                 <span className="hero-title-line--mobile block">
-                  Build Your Dream Wellness Setup with
+                  Build Your Dream
+                </span>
+              </span>
+
+              <span className="block overflow-hidden">
+                <span className="hero-title-line--mobile block">
+                  Wellness Setup with
                 </span>
               </span>
 
@@ -613,7 +692,7 @@ export default function Hero() {
               </span>
             </span>
 
-            <span className="hidden md:block">
+            <span className="hidden lg:block">
               <span className="block overflow-hidden">
                 <span className="hero-title-line--desktop block">
                   Build Your Dream
@@ -626,7 +705,7 @@ export default function Hero() {
                 </span>
               </span>
 
-              <span className="block overflow-hidden">
+              <span className="mt-[0.1em] block overflow-hidden">
                 <strong className="hero-title-line--desktop block font-bold">
                   IKIGAI WELLNESS
                 </strong>
@@ -634,25 +713,25 @@ export default function Hero() {
             </span>
           </h1>
 
-          <p className="hero__intro mt-4 mb-0 max-w-[37rem] text-[0.77rem] leading-[1.55] text-white/[0.76] md:mt-[0.8rem] md:max-w-[46.125rem] md:text-[clamp(1rem,1.1vw,1.125rem)] md:leading-[1.344] md:text-white/[0.82]">
+          <p className="hero__intro mt-[1.15rem] mb-0 max-w-[29rem] text-[0.82rem] leading-[1.55] text-white/[0.78] md:max-w-[32rem] md:text-[0.9rem] lg:mt-[1.25rem] lg:max-w-[38rem] lg:text-[clamp(1rem,1.1vw,1.125rem)] lg:leading-[1.42] lg:text-white/[0.82]">
             Premium saunas, ice baths and complete wellness spaces designed,
             built, installed and maintained by our team across Indonesia.
           </p>
         </div>
 
         <ul
-          className="hero__proofs order-2 mt-[1.35rem] grid list-none gap-[0.55rem] p-0 md:order-3 md:mx-auto md:mt-auto md:mb-[2.375rem] md:flex md:flex-wrap md:items-center md:justify-center md:gap-x-[0.9375rem] md:gap-y-[0.8rem]"
+          className="hero__proofs order-2 mt-[1.85rem] grid max-w-[18rem] list-none grid-cols-1 gap-y-[0.8rem] p-0 md:max-w-[35rem] md:grid-cols-2 md:gap-x-8 md:gap-y-4 lg:order-3 lg:mt-auto lg:mb-[2.25rem] lg:w-full lg:max-w-none lg:grid-cols-4 lg:gap-x-[2rem] lg:border-t lg:border-white/[0.22] lg:pt-[1.3rem]"
           aria-label="IKIGAI service commitments"
         >
           {proofItems.map((item) => (
             <li
-              className="flex items-center gap-2 font-display text-[0.67rem] font-medium leading-[1.35] md:gap-[0.625rem] md:text-[clamp(0.9rem,1vw,1rem)] md:font-bold md:leading-[1.2]"
+              className="flex items-start gap-[0.6rem] font-display text-[0.75rem] font-medium leading-[1.38] text-white/[0.94] md:text-[0.82rem] lg:items-center lg:gap-[0.625rem] lg:text-[clamp(0.86rem,0.9vw,0.95rem)] lg:font-semibold lg:leading-[1.25]"
               key={item}
             >
               <Check
-                className="h-[13px] w-[13px] shrink-0 md:h-[1.15rem] md:w-[1.15rem]"
+                className="mt-[0.05rem] h-[14px] w-[14px] shrink-0 opacity-90 lg:mt-0 lg:h-[1.05rem] lg:w-[1.05rem]"
                 aria-hidden="true"
-                strokeWidth={1.8}
+                strokeWidth={1.7}
               />
 
               <span>{item}</span>
@@ -660,18 +739,20 @@ export default function Hero() {
           ))}
         </ul>
 
-        <div className="hero__cta-block order-3 mt-auto md:order-2 md:mt-[1.75rem]">
-          <a
-            className="pill-button pill-button--light hero__cta inline-flex min-h-[3.15rem] w-full items-center justify-center rounded-[var(--pill)] border border-transparent bg-[var(--paper-strong)] px-[1.4rem] py-[0.9rem] text-center font-display text-[0.68rem] font-semibold leading-none tracking-[0.07em] text-[var(--ink)] uppercase transition-[background-color,color,border-color] duration-[180ms] ease-out hover:border-white/[0.65] hover:bg-transparent hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white md:min-h-[3.875rem] md:w-auto md:px-[2.35rem] md:py-4 md:text-[clamp(0.82rem,0.9vw,0.95rem)] md:tracking-[0.014em]"
-            href="#consultation"
-          >
-            Book a free consultation
-          </a>
+        <div className="hero__cta-block order-3 mt-[2rem] w-full lg:order-2 lg:mt-[1.8rem]">
+          <div className="hero__cta-depth w-auto lg:max-w-none">
+            <a
+              className="pill-button pill-button--light hero__cta inline-flex min-h-[3.5rem] w-auto items-center justify-center rounded-[var(--pill)] border border-transparent bg-[var(--paper-strong)] px-[1.55rem] py-[0.9rem] text-center font-display text-[0.76rem] font-semibold leading-none tracking-[0.035em] text-[var(--ink)] uppercase transition-[background-color,border-color,transform] duration-[180ms] ease-out hover:border-white/[0.18] hover:bg-white/[0.9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white lg:min-h-[3.875rem] lg:px-[2.35rem] lg:py-4 lg:text-[clamp(0.82rem,0.9vw,0.95rem)] lg:tracking-[0.014em]"
+              href="#consultation"
+            >
+              Book a free consultation
+            </a>
 
-          <p className="mt-[1.1rem] hidden max-w-[20.375rem] text-[0.75rem] leading-[1.873] text-white/[0.72] md:block">
-            Tell us about your property and what you&apos;re looking to create.
-            Our team will recommend the right setup and next steps.
-          </p>
+            <p className="mt-[1rem] hidden max-w-[20.375rem] text-[0.75rem] leading-[1.72] text-white/[0.72] lg:block">
+              Tell us about your property and what you&apos;re looking to create.
+              Our team will recommend the right setup and next steps.
+            </p>
+          </div>
         </div>
       </div>
     </section>
