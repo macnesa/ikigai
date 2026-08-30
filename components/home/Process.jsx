@@ -123,12 +123,10 @@ export default function Process() {
             .sort(
               (a, b) =>
                 Math.abs(
-                  a.boundingClientRect.top -
-                    window.innerHeight * 0.46,
+                  a.boundingClientRect.top - window.innerHeight * 0.46,
                 ) -
                 Math.abs(
-                  b.boundingClientRect.top -
-                    window.innerHeight * 0.46,
+                  b.boundingClientRect.top - window.innerHeight * 0.46,
                 ),
             );
 
@@ -303,7 +301,7 @@ export default function Process() {
       className="process dark-section bg-[var(--night)] py-[4.25rem] text-white md:py-[clamp(6.5rem,8vw,9.5rem)]"
     >
       <div className="site-container mx-auto w-full max-w-[105rem] px-[var(--page-gutter)]">
-        <header className="process__header mb-12 grid gap-4 md:mb-[clamp(4rem,5vw,5.75rem)] md:grid-cols-[minmax(0,1.25fr)_minmax(20rem,0.75fr)] md:items-end md:gap-16">
+        <header className="process__header mb-[3.25rem] grid gap-4 md:mb-[clamp(4rem,5vw,5.75rem)] md:grid-cols-[minmax(0,1.25fr)_minmax(20rem,0.75fr)] md:items-end md:gap-16">
           <h2
             id="process-title"
             className="process__heading m-0 max-w-[15ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em]"
@@ -319,33 +317,33 @@ export default function Process() {
         </header>
 
         {/* MOBILE */}
-        <div className="grid gap-y-[3.25rem] md:hidden">
+        <div className="grid gap-y-[3.75rem] md:hidden">
           {processSteps.map((step, index) => (
             <article
               key={step.title}
-              className="process-step grid min-w-0 content-start"
+              className="process-step min-w-0"
             >
-              <div className="process-step__copy mb-[1.25rem] grid grid-cols-[2.7rem_minmax(0,1fr)] gap-[0.75rem]">
-                <span className="pt-[0.15rem] font-display text-[0.78rem] font-normal leading-none tracking-[-0.01em] text-white/[0.46]">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
+              <div className="process-step__copy">
+                <div className="flex items-baseline gap-[0.8rem]">
+                  <span className="shrink-0 font-display text-[0.78rem] font-normal leading-none tracking-[-0.01em] text-white/[0.46]">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
 
-                <div className="min-w-0">
                   <p className="m-0 font-display text-[0.62rem] font-semibold leading-[1.2] tracking-[0.15em] text-white/[0.5] uppercase">
                     {step.label}
                   </p>
-
-                  <h3 className="mt-[0.48rem] mb-0 max-w-[20rem] font-display text-[1.18rem] font-medium leading-[1.22] tracking-[-0.025em] text-white">
-                    {step.title}
-                  </h3>
-
-                  <p className="mt-[0.62rem] mb-0 max-w-[28rem] text-[0.8rem] leading-[1.62] text-white/[0.6]">
-                    {step.body}
-                  </p>
                 </div>
+
+                <h3 className="mt-[0.9rem] mb-0 max-w-[22rem] font-display text-[1.18rem] font-medium leading-[1.22] tracking-[-0.025em] text-white">
+                  {step.title}
+                </h3>
+
+                <p className="mt-[0.62rem] mb-0 max-w-[28rem] text-[0.8rem] leading-[1.62] text-white/[0.6]">
+                  {step.body}
+                </p>
               </div>
 
-              <div className="aspect-[12/5] overflow-hidden bg-[#414957]">
+              <div className="mt-[1.4rem] aspect-[5/3] overflow-hidden bg-[#414957]">
                 <img
                   className="process-step__mobile-image block h-full w-full object-cover will-change-transform"
                   src={getImageKitUrl(
@@ -353,7 +351,7 @@ export default function Process() {
                     PROCESS_IMAGE_WIDTHS[1],
                   )}
                   srcSet={getImageKitSrcSet(step.image)}
-                  sizes="calc(100vw - 2.5rem)"
+                  sizes="calc(100vw - 2 * var(--page-gutter))"
                   alt=""
                   loading="lazy"
                   decoding="async"

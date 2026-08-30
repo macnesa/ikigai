@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
+
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Check } from "lucide-react";
@@ -209,10 +211,15 @@ export default function Consultation() {
             explain what&apos;s possible and what to do next.
           </p>
 
-          <div
-            className="media-placeholder relative mt-[1.75rem] aspect-[12/5] w-full overflow-hidden bg-[#414957] md:mt-[2rem]"
-            aria-hidden="true"
-          />
+          <div className="relative mt-[1.75rem] aspect-[12/5] w-full overflow-hidden bg-[#414957] md:mt-[2rem]">
+            <img
+              src="https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-30_17-21-40.png"
+              alt=""
+              className="h-full w-full object-cover"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
 
           <div className="consultation__checklist mt-[1.6rem]">
             <p className="m-0 font-display text-[0.62rem] font-semibold leading-[1.2] tracking-[0.18em] text-white/[0.6] uppercase">

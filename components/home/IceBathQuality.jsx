@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   gsap,
   MOTION_MEDIA,
@@ -14,6 +14,9 @@ const IMAGEKIT_QUALITY = 80;
 
 const MOBILE_ICE_BATH_VISUAL =
   "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-29_17-35-43.png";
+
+const DESKTOP_ICE_BATH_VIDEO =
+  "https://ik.imagekit.io/ikigaiwellness/ikigai/home/assamble%20chiller.mp4?updatedAt=1788083800216";
 
 const iceBathDetails = [
   {
@@ -60,23 +63,76 @@ function getImageKitUrl(src, width) {
 }
 
 function MobileTechnicalDetails() {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const selectPrinciple = (index) => {
+    if (activeIndex === index) {
+      return;
+    }
+
+    setActiveIndex(index);
+  };
+
   return (
     <div className="ice-quality__mobile-technical">
       <div className="border-t border-white/[0.15]">
-        {iceBathDetails.map((item, index) => (
-          <div
-            key={item.id}
-            className="grid min-h-[3.8rem] grid-cols-[2.65rem_minmax(0,1fr)] items-center border-b border-white/[0.15]"
-          >
-            <span className="font-display text-[0.9rem] font-normal leading-none text-white/[0.46]">
-              {String(index + 1).padStart(2, "0")}
-            </span>
+        {iceBathDetails.map((item, index) => {
+          const isActive = activeIndex === index;
+          const triggerId = `${item.id}-mobile-trigger`;
+          const panelId = `${item.id}-mobile-detail`;
 
-            <span className="py-[0.95rem] font-display text-[1rem] font-medium leading-[1.28] tracking-[-0.018em] text-white/[0.94]">
-              {item.mobileTitle}
-            </span>
-          </div>
-        ))}
+          return (
+            <div key={item.id} className="border-b border-white/[0.15]">
+              <button
+                id={triggerId}
+                type="button"
+                onClick={() => selectPrinciple(index)}
+                aria-expanded={isActive}
+                aria-controls={panelId}
+                className="grid min-h-[3.8rem] w-full grid-cols-[2.65rem_minmax(0,1fr)] items-center bg-transparent p-0 text-left outline-none [tap-highlight-color:transparent] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[-1px] focus-visible:outline-white/[0.7]"
+              >
+                <span
+                  className={`font-display text-[0.9rem] font-normal leading-none transition-colors duration-300 ${
+                    isActive
+                      ? "text-white/[0.72]"
+                      : "text-white/[0.42]"
+                  }`}
+                >
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+
+                <span
+                  className={`py-[0.95rem] pr-[0.2rem] font-display text-[1rem] font-medium leading-[1.28] tracking-[-0.018em] transition-colors duration-300 ${
+                    isActive ? "text-white" : "text-white/[0.86]"
+                  }`}
+                >
+                  {item.mobileTitle}
+                </span>
+              </button>
+
+              <div
+                id={panelId}
+                role="region"
+                aria-labelledby={triggerId}
+                className={`grid transition-[grid-template-rows,opacity] duration-[360ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                  isActive
+                    ? "grid-rows-[1fr] opacity-100"
+                    : "grid-rows-[0fr] opacity-0"
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <div className="grid grid-cols-[2.65rem_minmax(0,1fr)]">
+                    <div aria-hidden="true" />
+
+                    <p className="mt-0 mb-0 max-w-[22rem] pb-[1.5rem] pr-[0.2rem] text-[0.8rem] leading-[1.65] text-white/[0.62]">
+                      {item.body}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <p className="mt-[2.2rem] mb-0 max-w-[21rem] text-[0.8rem] leading-[1.65] text-white/[0.6]">
@@ -122,6 +178,13 @@ function DesktopTechnicalDetails() {
 
 export default function IceBathQuality() {
   const sectionRef = useRef(null);
+  const [canPlayVideo, setCanPlayVideo] = useState(false);
+
+  useEffect(() => {
+    const saveData = navigator.connection?.saveData === true;
+
+    setCanPlayVideo(!saveData && !shouldLimitMotion());
+  }, []);
 
   useGSAP(
     () => {
@@ -491,41 +554,51 @@ export default function IceBathQuality() {
       id="ice-bath-quality"
       className="ice-quality bg-[var(--paper-strong)] text-[var(--ink)]"
     >
-      <div
-        className="ice-quality__mobile-stage bg-[#001a36] pb-12 text-white md:hidden"
-        style={{
-          backgroundImage: `url("${mobileBackgroundUrl}")`,
-          backgroundSize: "100% auto",
-          backgroundPosition: "top center",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
-        <div className="min-h-[137vw] px-[var(--page-gutter)] pt-12">
-          <p className="ice-quality__mobile-eyebrow m-0 font-display text-[0.66rem] font-semibold leading-[1.2] tracking-[0.18em] text-white/[0.62] uppercase">
-            Ice Bath
-          </p>
+      {/* MOBILE */}
+      <div className="ice-quality__mobile-stage relative overflow-hidden bg-[#001a36] pb-12 text-white md:hidden">
+  <div
+    className="absolute inset-x-0 top-0 h-[137vw] bg-[#001a36]"
+    style={{
+      backgroundImage: `url("${mobileBackgroundUrl}")`,
+      backgroundSize: "100% auto",
+      backgroundPosition: "top center",
+      backgroundRepeat: "no-repeat",
+    }}
+    aria-hidden="true"
+  />
 
-          <h2
-            id="ice-bath-title-mobile"
-            className="ice-quality__mobile-heading mt-[0.8rem] mb-0 max-w-[18ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em]"
-          >
-            What’s Underneath Matters More Than You Think
-          </h2>
-        </div>
+  <div
+    className="pointer-events-none absolute inset-x-0 bottom-0 h-[30vw] bg-[linear-gradient(to_bottom,rgba(0,26,54,0)_0%,rgba(0,26,54,0.16)_28%,rgba(0,26,54,0.42)_56%,rgba(0,26,54,0.78)_82%,#001a36_100%)]"
+    aria-hidden="true"
+  />
 
-        <div className="px-[var(--page-gutter)]">
-          <p className="ice-quality__mobile-body m-0 text-[0.82rem] leading-[1.65] text-white/[0.62]">
-            Two ice baths can look almost identical from the outside. What
-            happens underneath determines how efficiently they cool, how clean
-            the water stays, and how easy the system is to maintain.
-          </p>
+  <div className="relative z-[1] min-h-[137vw] px-[var(--page-gutter)] pt-12">
+    <p className="ice-quality__mobile-eyebrow m-0 font-display text-[0.66rem] font-semibold leading-[1.2] tracking-[0.18em] text-white/[0.62] uppercase">
+      Ice Bath
+    </p>
 
-          <div className="mt-[1.8rem]">
-            <MobileTechnicalDetails />
-          </div>
-        </div>
-      </div>
+    <h2
+      id="ice-bath-title-mobile"
+      className="ice-quality__mobile-heading mt-[0.8rem] mb-0 max-w-[18ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em]"
+    >
+      What’s Underneath Matters More Than You Think
+    </h2>
 
+    <p className="ice-quality__mobile-body mt-[1rem] mb-0 max-w-[23rem] text-[0.82rem] leading-[1.65] text-white/[0.62]">
+      Two ice baths can look almost identical from the outside. What
+      happens underneath determines how efficiently they cool, how clean
+      the water stays, and how easy the system is to maintain.
+    </p>
+  </div>
+
+  <div className="relative z-[1] px-[var(--page-gutter)]">
+    <div>
+      <MobileTechnicalDetails />
+    </div>
+  </div>
+</div>
+
+      {/* TABLET / DESKTOP */}
       <div
         className="ice-quality__desktop relative isolate hidden overflow-hidden bg-[var(--paper-strong)] text-[var(--ink)] md:block md:pt-[clamp(7rem,8vw,9.5rem)] md:pb-[clamp(3rem,4vw,4.75rem)]"
         aria-labelledby="ice-bath-title-desktop"
@@ -554,24 +627,30 @@ export default function IceBathQuality() {
               clean the water stays, and how easy the system is to maintain.
             </p>
 
-            <div
-              className="ice-quality__desktop-media relative mt-[1.25rem] aspect-[16/11] overflow-hidden bg-[#174159]"
-              data-video-status="pending"
-            >
-              <video
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="none"
-                className="absolute inset-0 h-full w-full object-cover"
+            <div className="ice-quality__desktop-media relative mt-[1.25rem] aspect-[16/11] overflow-hidden bg-[#174159]">
+              <img
+                className="absolute inset-0 block h-full w-full object-cover object-center"
+                src={getImageKitUrl(MOBILE_ICE_BATH_VISUAL, 1280)}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                draggable="false"
                 aria-hidden="true"
               />
 
-              <div
-                className="absolute inset-0 h-full w-full bg-[#174159]"
-                aria-hidden="true"
-              />
+              {canPlayVideo ? (
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  className="absolute inset-0 hidden h-full w-full object-cover lg:block"
+                  aria-hidden="true"
+                >
+                  <source src={DESKTOP_ICE_BATH_VIDEO} type="video/mp4" />
+                </video>
+              ) : null}
             </div>
           </div>
 
@@ -581,6 +660,7 @@ export default function IceBathQuality() {
         </div>
       </div>
 
+      {/* BRIDGE */}
       <div className="ice-quality__bridge bg-[var(--paper-strong)] text-[var(--ink)]">
         <div className="site-container mx-auto grid w-full max-w-[105rem] gap-[2.35rem] px-[var(--page-gutter)] pt-[3.8rem] pb-[4rem] md:flex md:items-center md:justify-between md:gap-16 md:pt-[2.25rem] md:pb-[clamp(4rem,6vw,7rem)]">
           <p className="ice-quality__bridge-statement mx-auto my-0 w-full max-w-[20rem] text-center font-display text-[clamp(1.72rem,7.2vw,2rem)] font-medium leading-[1.1] tracking-[-0.035em] text-[var(--ink-soft)] md:mx-0 md:max-w-none md:text-left md:text-[1.55rem] md:leading-[1.15] md:tracking-[-0.025em]">

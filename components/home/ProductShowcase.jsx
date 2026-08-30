@@ -5,6 +5,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import ImageLightbox, {
+  useImageLightbox,
+} from "../ui/ImageLightbox";
 import { gsap, MOTION_MEDIA, useGSAP } from "./HomeMotion";
 
 const PRODUCT_IMAGE_WIDTHS = [640, 960, 1280, 1600];
@@ -67,8 +70,17 @@ function getImageKitSrcSet(src) {
   ).join(", ");
 }
 
+const productLightboxImages = products.map((product) => ({
+  src: getImageKitUrl(
+    product.src,
+    PRODUCT_IMAGE_WIDTHS[PRODUCT_IMAGE_WIDTHS.length - 1],
+  ),
+  alt: product.title,
+}));
+
 export default function ProductShowcase() {
   const sectionRef = useRef(null);
+  const imageLightbox = useImageLightbox();
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
@@ -397,7 +409,18 @@ export default function ProductShowcase() {
                   aria-label={`${index + 1} of ${products.length}`}
                 >
                   <article className="product-card group flex h-full flex-col bg-[var(--paper)]">
-                    <div className="product-card__media aspect-[6/5] overflow-hidden bg-[var(--placeholder-light)]">
+                    <button
+                      type="button"
+                      aria-label={`View ${product.title} image`}
+                      onPointerDown={imageLightbox.handlePointerDown}
+                      onPointerMove={imageLightbox.handlePointerMove}
+                      onPointerUp={imageLightbox.handlePointerEnd}
+                      onPointerCancel={imageLightbox.handlePointerCancel}
+                      onClick={(event) =>
+                        imageLightbox.openImage(index, event)
+                      }
+                      className="product-card__media block aspect-[6/5] w-full cursor-zoom-in overflow-hidden border-0 bg-[var(--placeholder-light)] p-0 text-left focus-visible:-outline-offset-2 focus-visible:outline-white"
+                    >
                       <div className="product-card__media-motion h-full w-full origin-center will-change-transform">
                         <img
                           className="block h-full w-full object-cover"
@@ -416,7 +439,7 @@ export default function ProductShowcase() {
                           }}
                         />
                       </div>
-                    </div>
+                    </button>
 
                     <div className="product-card__body flex flex-1 flex-col px-4 pt-[1.15rem] pb-[1.4rem] md:px-[1.35rem] md:pt-[1.4rem] md:pb-[1.55rem]">
                       <h3 className="m-0 font-display text-[1.25rem] font-medium leading-[1.13] tracking-[-0.028em] md:text-[1.5rem] xl:text-[1.6rem]">
@@ -498,6 +521,17 @@ export default function ProductShowcase() {
           </a>
         </aside>
       </div>
+
+      {imageLightbox.activeIndex !== null && (
+        <ImageLightbox
+          activeIndex={imageLightbox.activeIndex}
+          images={productLightboxImages}
+          label="Product image viewer"
+          onClose={imageLightbox.closeImage}
+          onIndexChange={imageLightbox.setActiveIndex}
+          returnFocusRef={imageLightbox.openerRef}
+        />
+      )}
     </section>
   );
 }

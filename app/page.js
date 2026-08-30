@@ -8,6 +8,7 @@ import Process from "@/components/home/Process";
 import ProductShowcase from "@/components/home/ProductShowcase";
 import ProjectsShowcase from "@/components/home/ProjectsShowcase";
 import SaunaQuality from "@/components/home/SaunaQuality";
+import SmoothScroll from "@/components/home/SmoothScroll";
 import TrustedBy from "@/components/home/TrustedBy";
 import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
@@ -16,6 +17,7 @@ export default function Home() {
   return (
     <main id="main-content">
       <HomeMotion />
+      <SmoothScroll />
       <SiteHeader />
       <Hero />
       <TrustedBy />

@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import ImageLightbox, {
+  useImageLightbox,
+} from "../ui/ImageLightbox";
 import {
   gsap,
   MOTION_MEDIA,
@@ -14,6 +17,7 @@ import {
 
 const PROJECT_IMAGE_WIDTHS = [480, 640, 960, 1280];
 const PROJECT_IMAGE_QUALITY = 80;
+const PROJECT_LIGHTBOX_IMAGE_WIDTH = 1600;
 
 const projects = [
   {
@@ -90,8 +94,14 @@ function getImageKitSrcSet(src) {
   ).join(", ");
 }
 
+const projectLightboxImages = projects.map((project) => ({
+  src: getImageKitUrl(project.src, PROJECT_LIGHTBOX_IMAGE_WIDTH),
+  alt: project.alt,
+}));
+
 export default function ProjectsShowcase() {
   const sectionRef = useRef(null);
+  const imageLightbox = useImageLightbox();
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
@@ -240,13 +250,24 @@ export default function ProjectsShowcase() {
           className="projects__viewport cursor-grab overflow-hidden active:cursor-grabbing"
         >
           <div className="projects__track flex pl-[var(--page-offset)] pr-[var(--page-gutter)] [touch-action:pan-y_pinch-zoom]">
-            {projects.map((project) => (
+            {projects.map((project, index) => (
               <div
                 key={project.id}
                 className="projects__slide min-w-0 flex-[0_0_78%] pr-3 md:basis-[clamp(12rem,13.75vw,17rem)] md:pr-[clamp(0.55rem,0.7vw,0.85rem)]"
               >
                 <div className="project-card relative">
-                  <div className="project-card__media aspect-[9/16] overflow-hidden bg-[var(--placeholder-light)]">
+                  <button
+                    type="button"
+                    aria-label={`View project ${index + 1} image`}
+                    onPointerDown={imageLightbox.handlePointerDown}
+                    onPointerMove={imageLightbox.handlePointerMove}
+                    onPointerUp={imageLightbox.handlePointerEnd}
+                    onPointerCancel={imageLightbox.handlePointerCancel}
+                    onClick={(event) =>
+                      imageLightbox.openImage(index, event)
+                    }
+                    className="project-card__media block aspect-[9/16] w-full cursor-zoom-in overflow-hidden border-0 bg-[var(--placeholder-light)] p-0 text-left focus-visible:-outline-offset-2 focus-visible:outline-white"
+                  >
                     <img
                       className="project-card__image block h-full w-full object-cover"
                       src={getImageKitUrl(
@@ -263,7 +284,7 @@ export default function ProjectsShowcase() {
                         objectPosition: project.objectPosition,
                       }}
                     />
-                  </div>
+                  </button>
                 </div>
               </div>
             ))}
@@ -292,6 +313,17 @@ export default function ProjectsShowcase() {
           </button>
         </div>
       </div>
+
+      {imageLightbox.activeIndex !== null && (
+        <ImageLightbox
+          activeIndex={imageLightbox.activeIndex}
+          images={projectLightboxImages}
+          label="Project image viewer"
+          onClose={imageLightbox.closeImage}
+          onIndexChange={imageLightbox.setActiveIndex}
+          returnFocusRef={imageLightbox.openerRef}
+        />
+      )}
     </section>
   );
 }

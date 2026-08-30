@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   gsap,
@@ -90,7 +90,9 @@ function ComparisonSlider() {
       className="group relative aspect-[4/5] w-full overflow-hidden bg-[#5f5a52] text-white"
       role="group"
       aria-label="Compare the other sauna with the IKIGAI sauna"
-      style={{ "--comparison-position": `${position}%` }}
+      style={{
+        "--comparison-position": `${position}%`,
+      }}
     >
       <ComparisonImage src={SAUNA_COMPARISON_IMAGES.ours} />
 
@@ -133,59 +135,182 @@ function ComparisonSlider() {
   );
 }
 
+function MobileTechnicalDetails() {
+  const containerRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(null);
+  const hasIntroducedRef = useRef(false);
+
+  useEffect(() => {
+    const container = containerRef.current;
+
+    if (!container) return;
+
+    if (shouldLimitMotion()) {
+      hasIntroducedRef.current = true;
+      setActiveIndex(0);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+
+        if (!entry?.isIntersecting || hasIntroducedRef.current) {
+          return;
+        }
+
+        hasIntroducedRef.current = true;
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            setActiveIndex(0);
+          });
+        });
+
+        observer.disconnect();
+      },
+      {
+        root: null,
+        threshold: 0.16,
+        rootMargin: "0px 0px -12% 0px",
+      },
+    );
+
+    observer.observe(container);
+
+    return () => observer.disconnect();
+  }, []);
+
+  const selectPrinciple = (index) => {
+    hasIntroducedRef.current = true;
+
+    if (activeIndex === index) {
+      return;
+    }
+
+    setActiveIndex(index);
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      className="sauna__technical-focus sauna__technical-mobile md:hidden"
+    >
+      <div className="border-t border-white/[0.15]">
+        {saunaDetails.map((item, index) => {
+          const isActive = activeIndex === index;
+          const panelId = `${item.id}-mobile-detail`;
+          const triggerId = `${item.id}-mobile-trigger`;
+
+          return (
+            <div
+              key={item.id}
+              className="border-b border-white/[0.15]"
+            >
+              <button
+                id={triggerId}
+                type="button"
+                className="grid min-h-[3.8rem] w-full grid-cols-[2.65rem_minmax(0,1fr)] items-center bg-transparent p-0 text-left outline-none [tap-highlight-color:transparent] focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[-1px] focus-visible:outline-white/[0.7]"
+                aria-expanded={isActive}
+                aria-controls={panelId}
+                onClick={() => selectPrinciple(index)}
+              >
+                <span
+                  className={`font-display text-[0.9rem] font-normal leading-none transition-colors duration-300 ${
+                    isActive
+                      ? "text-white/[0.72]"
+                      : "text-white/[0.42]"
+                  }`}
+                >
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+
+                <span
+                  className={`py-[0.95rem] pr-[0.2rem] font-display text-[1rem] font-medium leading-[1.28] tracking-[-0.018em] transition-colors duration-300 ${
+                    isActive
+                      ? "text-white"
+                      : "text-white/[0.86]"
+                  }`}
+                >
+                  {item.mobileTitle || item.title}
+                </span>
+              </button>
+
+              <div
+                id={panelId}
+                role="region"
+                aria-labelledby={triggerId}
+                className={`grid transition-[grid-template-rows,opacity] duration-[360ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                  isActive
+                    ? "grid-rows-[1fr] opacity-100"
+                    : "grid-rows-[0fr] opacity-0"
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <div className="grid grid-cols-[2.65rem_minmax(0,1fr)]">
+                    <div aria-hidden="true" />
+
+                    <div className="pb-[1.5rem] pr-[0.2rem]">
+                      <h3 className="m-0 max-w-[20rem] font-display text-[0.98rem] font-medium leading-[1.35] tracking-[-0.018em] text-white/[0.94]">
+                        {item.title}
+                      </h3>
+
+                      <p className="mt-[0.65rem] mb-0 max-w-[22rem] text-[0.8rem] leading-[1.65] text-white/[0.62]">
+                        {item.body}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <p className="mt-[2.2rem] mb-0 max-w-[21rem] text-[0.82rem] leading-[1.65] text-white/[0.62]">
+        Every IKIGAI sauna is engineered as a complete room — from heater
+        sizing and ventilation to insulation and construction.
+      </p>
+    </div>
+  );
+}
+
+function DesktopTechnicalDetails() {
+  return (
+    <div className="sauna__technical-focus sauna__technical-desktop hidden md:block">
+      {saunaDetails.map((item, index) => (
+        <article
+          key={item.id}
+          className={`grid grid-cols-[3.4rem_minmax(0,1fr)] gap-4 py-[1.35rem] ${
+            index < saunaDetails.length - 1
+              ? "border-b border-white/[0.13]"
+              : ""
+          }`}
+        >
+          <span className="pt-[0.08rem] font-display text-[1.08rem] font-normal leading-none tracking-[-0.02em] text-white/[0.72]">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+
+          <div>
+            <h3 className="m-0 font-display text-[1.04rem] font-medium leading-[1.3] tracking-[-0.015em] text-white/[0.94]">
+              {item.title}
+            </h3>
+
+            <p className="mt-[0.55rem] mb-0 max-w-[35rem] text-[0.86rem] leading-[1.6] text-white/[0.62]">
+              {item.body}
+            </p>
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+}
+
 function TechnicalDetails() {
   return (
     <>
-      <div className="sauna__technical-focus sauna__technical-desktop hidden md:block">
-        {saunaDetails.map((item, index) => (
-          <article
-            key={item.id}
-            className={`grid grid-cols-[3.4rem_minmax(0,1fr)] gap-4 py-[1.35rem] ${
-              index < saunaDetails.length - 1
-                ? "border-b border-white/[0.13]"
-                : ""
-            }`}
-          >
-            <span className="pt-[0.08rem] font-display text-[1.08rem] font-normal leading-none tracking-[-0.02em] text-white/[0.72]">
-              {String(index + 1).padStart(2, "0")}
-            </span>
-
-            <div>
-              <h3 className="m-0 font-display text-[1.04rem] font-medium leading-[1.3] tracking-[-0.015em] text-white/[0.94]">
-                {item.title}
-              </h3>
-
-              <p className="mt-[0.55rem] mb-0 max-w-[35rem] text-[0.86rem] leading-[1.6] text-white/[0.62]">
-                {item.body}
-              </p>
-            </div>
-          </article>
-        ))}
-      </div>
-
-      <div className="sauna__technical-focus sauna__technical-mobile md:hidden">
-        <div className="border-t border-white/[0.15]">
-          {saunaDetails.map((item, index) => (
-            <div
-              key={item.id}
-              className="grid min-h-[3.8rem] grid-cols-[2.65rem_minmax(0,1fr)] items-center border-b border-white/[0.15]"
-            >
-              <span className="font-display text-[0.9rem] font-normal leading-none text-white/[0.46]">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-
-              <span className="py-[0.95rem] font-display text-[1rem] font-medium leading-[1.28] tracking-[-0.018em] text-white/[0.94]">
-                {item.mobileTitle || item.title}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        <p className="mt-[2.2rem] mb-0 max-w-[21rem] text-[0.82rem] leading-[1.65] text-white/[0.62]">
-          Every IKIGAI sauna is engineered as a complete room — from heater
-          sizing and ventilation to insulation and construction.
-        </p>
-      </div>
+      <DesktopTechnicalDetails />
+      <MobileTechnicalDetails />
     </>
   );
 }
@@ -209,7 +334,9 @@ export default function SaunaQuality() {
       const eyebrow = section.querySelector(".sauna__eyebrow");
       const heading = section.querySelector(".sauna__heading");
       const body = section.querySelector(".sauna__body");
-      const comparison = section.querySelector(".sauna__comparison-frame");
+      const comparison = section.querySelector(
+        ".sauna__comparison-frame",
+      );
 
       if (!atmosphere || !eyebrow || !heading || !body || !comparison) {
         return;
@@ -219,9 +346,11 @@ export default function SaunaQuality() {
 
       const addAtmosphere = (query, values) => {
         mediaQueries.add(query, () => {
-          const technical = section.querySelector(values.technicalSelector);
+          const technical = section.querySelector(
+            values.technicalSelector,
+          );
 
-          gsap.fromTo(
+          const atmosphereTween = gsap.fromTo(
             atmosphere,
             {
               y: values.fromY,
@@ -244,7 +373,9 @@ export default function SaunaQuality() {
           );
 
           const entrance = gsap.timeline({
-            defaults: { ease: "power2.out" },
+            defaults: {
+              ease: "power2.out",
+            },
             scrollTrigger: {
               trigger: section,
               start: values.entranceStart,
@@ -326,7 +457,10 @@ export default function SaunaQuality() {
             );
           }
 
-          return () => entrance.kill();
+          return () => {
+            atmosphereTween.kill();
+            entrance.kill();
+          };
         });
       };
 

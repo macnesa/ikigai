@@ -45,18 +45,23 @@ export default function FinalCTA() {
       }
 
       const media = section.querySelector(".final-cta__media");
-      const overlay = section.querySelector(".final-cta__overlay");
       const heading = section.querySelector(".final-cta__heading");
       const cta = section.querySelector(".final-cta__cta");
 
-      if (!media || !overlay || !heading || !cta) return;
+      if (!media || !heading || !cta) return;
 
       const mediaQueries = gsap.matchMedia();
 
       const addMotion = (query, values) => {
         mediaQueries.add(query, () => {
+          const activeOverlay = section.querySelector(
+            values.overlaySelector,
+          );
+
           const depthTimeline = gsap.timeline({
-            defaults: { ease: "none" },
+            defaults: {
+              ease: "none",
+            },
             scrollTrigger: {
               trigger: section,
               start: "top bottom",
@@ -66,32 +71,36 @@ export default function FinalCTA() {
             },
           });
 
-          depthTimeline
-            .fromTo(
-              media,
+          depthTimeline.fromTo(
+            media,
+            {
+              yPercent: values.mediaFrom,
+            },
+            {
+              yPercent: values.mediaTo,
+              duration: 1,
+            },
+            0,
+          );
+
+          if (activeOverlay) {
+            depthTimeline.fromTo(
+              activeOverlay,
               {
-                yPercent: values.mediaFrom,
+                opacity: values.overlayFrom,
               },
               {
-                yPercent: values.mediaTo,
-                duration: 1,
-              },
-              0,
-            )
-            .fromTo(
-              overlay,
-              {
-                opacity: 0.58,
-              },
-              {
-                opacity: 0.48,
-                duration: 0.34,
+                opacity: values.overlayTo,
+                duration: 0.45,
               },
               0,
             );
+          }
 
           const entranceTimeline = gsap.timeline({
-            defaults: { ease: "power2.out" },
+            defaults: {
+              ease: "power3.out",
+            },
             scrollTrigger: {
               trigger: section,
               start: values.entranceStart,
@@ -105,12 +114,15 @@ export default function FinalCTA() {
               {
                 autoAlpha: 0,
                 y: values.headingY,
+                clipPath: "inset(0 0 100% 0)",
               },
               {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.92,
+                clipPath: "inset(0 0 0% 0)",
+                duration: values.headingDuration,
               },
+              0,
             )
             .fromTo(
               cta,
@@ -121,9 +133,10 @@ export default function FinalCTA() {
               {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.64,
+                duration: values.ctaDuration,
+                ease: "power2.out",
               },
-              0.4,
+              values.ctaDelay,
             );
 
           return () => {
@@ -137,42 +150,63 @@ export default function FinalCTA() {
         mediaFrom: 3,
         mediaTo: -3,
         scrub: 1.65,
-        headingY: 24,
-        ctaY: 10,
+        headingY: 30,
+        headingDuration: 0.9,
+        ctaY: 12,
+        ctaDuration: 0.58,
+        ctaDelay: 0.34,
         entranceStart: "top 76%",
+        overlaySelector: ".final-cta__overlay-desktop",
+        overlayFrom: 1,
+        overlayTo: 0.92,
       });
 
       addMotion(MOTION_MEDIA.tablet, {
         mediaFrom: 2.35,
         mediaTo: -2.35,
         scrub: 1.45,
-        headingY: 20,
-        ctaY: 9,
+        headingY: 24,
+        headingDuration: 0.82,
+        ctaY: 10,
+        ctaDuration: 0.54,
+        ctaDelay: 0.32,
         entranceStart: "top 79%",
+        overlaySelector: ".final-cta__overlay-desktop",
+        overlayFrom: 1,
+        overlayTo: 0.93,
       });
 
       addMotion(MOTION_MEDIA.mobile, {
         mediaFrom: 1.5,
         mediaTo: -1.5,
-        scrub: 1.25,
-        headingY: 15,
-        ctaY: 8,
+        scrub: 1.2,
+        headingY: 20,
+        headingDuration: 0.76,
+        ctaY: 9,
+        ctaDuration: 0.5,
+        ctaDelay: 0.3,
         entranceStart: "top 83%",
+        overlaySelector: ".final-cta__overlay-mobile",
+        overlayFrom: 1,
+        overlayTo: 0.94,
       });
 
       return () => mediaQueries.revert();
     },
-    { scope: sectionRef },
+    {
+      scope: sectionRef,
+    },
   );
 
   return (
     <section
       ref={sectionRef}
-      className="final-cta relative isolate min-h-[22rem] overflow-hidden bg-[var(--placeholder-dark)] text-white md:min-h-[clamp(36rem,40vw,49rem)]"
+      className="final-cta relative isolate min-h-[clamp(34rem,78svh,43rem)] overflow-hidden bg-[var(--placeholder-dark)] text-white md:min-h-[clamp(38rem,48vw,54rem)]"
       aria-labelledby="final-cta-title"
     >
+      {/* IMAGE */}
       <div
-        className="final-cta__media absolute inset-x-0 -inset-y-[9%] -z-[3] overflow-hidden bg-[var(--placeholder-dark)]"
+        className="final-cta__media absolute inset-x-0 -inset-y-[8%] -z-[3] overflow-hidden bg-[var(--placeholder-dark)] will-change-transform"
         aria-hidden="true"
       >
         <picture className="block h-full w-full">
@@ -186,7 +220,7 @@ export default function FinalCTA() {
             className="final-cta__image block h-full w-full object-cover object-center"
             src={getImageKitUrl(
               FINAL_CTA_DESKTOP_IMAGE,
-              FINAL_CTA_IMAGE_WIDTHS[1],
+              FINAL_CTA_IMAGE_WIDTHS[2],
             )}
             srcSet={getImageKitSrcSet(FINAL_CTA_DESKTOP_IMAGE)}
             sizes="100vw"
@@ -198,42 +232,66 @@ export default function FinalCTA() {
         </picture>
       </div>
 
+      {/* MOBILE READABILITY */}
       <div
-        className="final-cta__overlay pointer-events-none absolute inset-0 -z-[2] opacity-[0.48]"
+        className="final-cta__overlay-mobile pointer-events-none absolute inset-0 -z-[2] md:hidden"
         aria-hidden="true"
         style={{
           backgroundImage: `
             linear-gradient(
-              90deg,
-              rgba(7, 10, 14, 0.48) 0%,
-              rgba(7, 10, 14, 0.34) 34%,
-              rgba(7, 10, 14, 0.15) 64%,
-              rgba(7, 10, 14, 0.08) 100%
-            ),
-            linear-gradient(
               180deg,
-              rgba(7, 10, 14, 0.08) 0%,
-              rgba(7, 10, 14, 0.08) 50%,
-              rgba(7, 10, 14, 0.34) 100%
+              rgba(7, 10, 14, 0.06) 0%,
+              rgba(7, 10, 14, 0.05) 25%,
+              rgba(7, 10, 14, 0.12) 46%,
+              rgba(7, 10, 14, 0.34) 66%,
+              rgba(7, 10, 14, 0.68) 86%,
+              rgba(7, 10, 14, 0.82) 100%
             )
           `,
         }}
       />
 
-      <div className="site-container final-cta__inner mx-auto flex min-h-[inherit] w-full max-w-[105rem] flex-col justify-end gap-[1.5rem] px-[var(--page-gutter)] pt-8 pb-8 md:flex-row md:items-end md:justify-between md:gap-[clamp(3rem,7vw,8rem)] md:pt-[5rem] md:pb-[clamp(7.5rem,8vw,10rem)]">
-        <h2
-          id="final-cta-title"
-          className="final-cta__heading m-0 max-w-[12ch] font-display text-[clamp(2.35rem,10vw,3.1rem)] font-medium leading-[0.98] tracking-[-0.045em] md:max-w-[12.5ch] md:text-[clamp(4rem,5.3vw,6.5rem)]"
-        >
-          Build a Wellness Space You’ll Be Proud to Own
-        </h2>
+      {/* DESKTOP READABILITY */}
+      <div
+        className="final-cta__overlay-desktop pointer-events-none absolute inset-0 -z-[2] hidden md:block"
+        aria-hidden="true"
+        style={{
+          backgroundImage: `
+            linear-gradient(
+              90deg,
+              rgba(7, 10, 14, 0.46) 0%,
+              rgba(7, 10, 14, 0.28) 30%,
+              rgba(7, 10, 14, 0.10) 59%,
+              rgba(7, 10, 14, 0.03) 100%
+            ),
+            linear-gradient(
+              180deg,
+              rgba(7, 10, 14, 0.03) 0%,
+              rgba(7, 10, 14, 0.03) 45%,
+              rgba(7, 10, 14, 0.18) 67%,
+              rgba(7, 10, 14, 0.6) 100%
+            )
+          `,
+        }}
+      />
 
-        <a
-          href="#consultation"
-          className="final-cta__cta inline-flex min-h-[3.5rem] w-auto self-start shrink-0 items-center justify-center rounded-[0.85rem] border border-black bg-black px-[1.75rem] py-[0.95rem] text-center font-display text-[0.78rem] font-medium leading-none tracking-[0.025em] text-white transition-[background-color,color,border-color] duration-[180ms] hover:border-white hover:bg-white hover:text-black md:min-h-[3.6rem] md:self-auto md:text-[0.82rem]"
-        >
-          Book my free consultation
-        </a>
+      {/* CONTENT */}
+      <div className="site-container final-cta__inner mx-auto flex min-h-[inherit] w-full max-w-[105rem] items-end px-[var(--page-gutter)] pt-[5rem] pb-[clamp(3.75rem,9vw,5.25rem)] md:pb-[clamp(5.75rem,7vw,8rem)]">
+        <div className="flex w-full max-w-[42rem] flex-col items-start">
+          <h2
+            id="final-cta-title"
+            className="final-cta__heading m-0 max-w-[10.5ch] font-display text-[clamp(2.65rem,11.5vw,3.55rem)] font-medium leading-[0.96] tracking-[-0.047em] md:max-w-[10.5ch] md:text-[clamp(3.9rem,5vw,6.2rem)] md:leading-[0.94] md:tracking-[-0.05em]"
+          >
+            Build a Wellness Space You’ll Be Proud to Own
+          </h2>
+
+          <a
+            href="#consultation"
+            className="final-cta__cta mt-[1.75rem] inline-flex min-h-[3.35rem] w-auto items-center justify-center rounded-[var(--pill)] border border-white bg-white px-[1.55rem] py-[0.9rem] text-center font-display text-[0.74rem] font-medium leading-none tracking-[0.035em] text-[var(--ink)] transition-[background-color,color,border-color] duration-[180ms] hover:border-black hover:bg-black hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white md:mt-[2rem] md:min-h-[3.5rem] md:px-[1.75rem] md:text-[0.78rem]"
+          >
+            Book my free consultation
+          </a>
+        </div>
       </div>
     </section>
   );
