@@ -238,7 +238,7 @@ export default function ProjectsShowcase() {
           Wellness Spaces We’ve Built
         </h2>
 
-        <p className="projects__intro m-0 max-w-[34rem] text-[0.82rem] leading-[1.65] text-[var(--ink-soft)] md:max-w-[38rem] md:justify-self-end md:text-[0.9rem]">
+        <p className="projects__intro m-0 max-w-[34rem] text-[length:var(--type-section-intro-standard)] leading-[1.65] text-[var(--ink-soft)] md:max-w-[38rem] md:justify-self-end">
           From private villas to commercial wellness facilities: spaces
           designed around their environment and requirements.
         </p>

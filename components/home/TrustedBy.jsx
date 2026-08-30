@@ -122,7 +122,7 @@ function ReducedMotionLogos() {
 export default function TrustedBy() {
   return (
     <section
-      className="overflow-hidden bg-[var(--night)] text-white"
+      className="dark-surface dark-surface--trust overflow-hidden bg-[var(--night)] text-white"
       aria-labelledby="trusted-by-title"
     >
       <div className="flex h-[7.5rem] flex-col justify-center md:h-[9.5rem]">

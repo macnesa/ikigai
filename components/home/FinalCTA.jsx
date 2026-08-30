@@ -280,7 +280,7 @@ export default function FinalCTA() {
         <div className="flex w-full max-w-[42rem] flex-col items-start">
           <h2
             id="final-cta-title"
-            className="final-cta__heading m-0 max-w-[10.5ch] font-display text-[clamp(2.65rem,11.5vw,3.55rem)] font-medium leading-[0.96] tracking-[-0.047em] md:max-w-[10.5ch] md:text-[clamp(3.9rem,5vw,6.2rem)] md:leading-[0.94] md:tracking-[-0.05em]"
+            className="final-cta__heading gsap-text-clip max-w-[10.5ch] font-display text-[clamp(2.65rem,11.5vw,3.55rem)] font-medium leading-[0.96] tracking-[-0.047em] md:max-w-[10.5ch] md:text-[clamp(3.9rem,5vw,6.2rem)] md:leading-[0.94] md:tracking-[-0.05em]"
           >
             Build a Wellness Space You’ll Be Proud to Own
           </h2>

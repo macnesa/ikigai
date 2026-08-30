@@ -188,12 +188,12 @@ export default function FAQ() {
         <header className="faq__header lg:sticky lg:top-[8rem]">
           <h2
             id="faq-title"
-            className="faq__heading m-0 max-w-[7ch] font-display text-[clamp(2.7rem,11vw,3.35rem)] font-medium leading-[0.98] tracking-[-0.045em] md:max-w-[6ch] md:text-[clamp(3.25rem,3.2vw,4rem)]"
+            className="faq__heading m-0 max-w-[7ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[0.98] tracking-[-0.045em] md:max-w-[6ch]"
           >
-            IKIGAI FAQs
+            Ikigai FAQs
           </h2>
 
-          <p className="faq__intro mt-[1.25rem] mb-0 max-w-[20rem] text-[0.82rem] leading-[1.6] text-[var(--ink-soft)] md:mt-[1.45rem] md:max-w-[18rem] md:text-[0.9rem] md:leading-[1.55]">
+          <p className="faq__intro mt-[1.25rem] mb-0 max-w-[20rem] text-[length:var(--type-section-intro-standard)] leading-[1.6] text-[var(--ink-soft)] md:mt-[1.45rem] md:max-w-[18rem] md:leading-[1.55]">
             Common questions about our sauna and ice bath systems, and how they
             fit into your space.
           </p>
@@ -268,7 +268,7 @@ export default function FAQ() {
                 >
                   <div className="min-h-0 overflow-hidden">
                     <p
-                      className={`m-0 max-w-[40rem] pr-10 text-[0.8rem] leading-[1.65] text-[var(--ink-soft)] transition-transform duration-[220ms] ease-out md:text-[0.88rem] md:leading-[1.6] ${
+                      className={`m-0 max-w-[40rem] pr-10 text-[length:var(--type-reading-body)] leading-[1.65] text-[var(--ink-soft)] transition-transform duration-[220ms] ease-out md:leading-[1.6] ${
                         isOpen
                           ? "translate-y-0 pt-[0.2rem] pb-[1.65rem]"
                           : "-translate-y-2"

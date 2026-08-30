@@ -379,12 +379,12 @@ export default function ProductShowcase() {
 
           <h2
             id="products-title"
-            className="products__heading m-0 max-w-[18ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em] md:col-start-1 md:row-start-2"
+            className="products__heading gsap-text-clip max-w-[18ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em] md:col-start-1 md:row-start-2"
           >
             Start With One of Our Designs or Create Your Own
           </h2>
 
-          <p className="products__intro m-0 mt-[0.4rem] max-w-[31rem] text-[0.82rem] leading-[1.65] text-[var(--ink-soft)] md:col-start-2 md:row-start-2 md:mt-0 md:self-end md:justify-self-end md:text-[1rem] md:leading-[1.6]">
+          <p className="products__intro m-0 mt-[0.4rem] max-w-[31rem] text-[length:var(--type-section-intro-prominent)] leading-[1.65] text-[var(--ink-soft)] md:col-start-2 md:row-start-2 md:mt-0 md:self-end md:justify-self-end md:leading-[1.6]">
             Whether one of our existing sauna and ice bath designs fits your
             space or your project needs something custom, our team will help
             you create the right setup.
@@ -446,7 +446,7 @@ export default function ProductShowcase() {
                         {product.title}
                       </h3>
 
-                      <p className="mt-[0.7rem] mb-0 text-[0.82rem] leading-[1.58] text-[var(--ink-soft)] md:text-[0.9rem] md:leading-[1.6]">
+                      <p className="mt-[0.7rem] mb-0 text-[length:var(--type-reading-body)] leading-[1.58] text-[var(--ink-soft)] md:leading-[1.6]">
                         {product.description}
                       </p>
                     </div>
@@ -497,7 +497,7 @@ export default function ProductShowcase() {
 
         <aside
           aria-labelledby="products-consultation-title"
-          className="products__consultation mt-[3.25rem] grid gap-[1.4rem] bg-[var(--night)] px-[1.3rem] py-[1.5rem] text-white md:mt-[clamp(3.75rem,4.5vw,5rem)] md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-[clamp(3rem,7vw,8rem)] md:px-[clamp(2.25rem,3vw,3.25rem)] md:py-[clamp(1.9rem,2.3vw,2.5rem)]"
+          className="products__consultation dark-surface dark-surface--inset mt-[3.25rem] grid gap-[1.4rem] bg-[var(--night)] px-[1.3rem] py-[1.5rem] text-white md:mt-[clamp(3.75rem,4.5vw,5rem)] md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-[clamp(3rem,7vw,8rem)] md:px-[clamp(2.25rem,3vw,3.25rem)] md:py-[clamp(1.9rem,2.3vw,2.5rem)]"
         >
           <div>
             <h3

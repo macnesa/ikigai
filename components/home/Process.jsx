@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import {
   gsap,
   MOTION_MEDIA,
@@ -12,6 +12,15 @@ import {
 
 const PROCESS_IMAGE_WIDTHS = [480, 640, 960, 1280, 1600];
 const PROCESS_IMAGE_QUALITY = 80;
+
+/*
+ * The supplied process photography is naturally very wide.
+ * Reference asset: 1600 × 846 ≈ 1.891:1.
+ *
+ * Desktop deliberately preserves that composition instead of
+ * forcing the photographs into 5:4 / 4:3 crops.
+ */
+const PROCESS_DESKTOP_ASPECT = "1600 / 846";
 
 const processSteps = [
   {
@@ -64,6 +73,12 @@ const processSteps = [
   },
 ];
 
+const processPairs = [
+  [processSteps[0], processSteps[1]],
+  [processSteps[2], processSteps[3]],
+  [processSteps[4], processSteps[5]],
+];
+
 function getImageKitUrl(src, width) {
   const separator = src.includes("?") ? "&" : "?";
 
@@ -76,89 +91,72 @@ function getImageKitSrcSet(src) {
   ).join(", ");
 }
 
+function DesktopProcessCopy({ step, index, side }) {
+  return (
+    <article
+      className={[
+        "process-chapter__copy min-w-0",
+        side === "left"
+          ? "process-chapter__copy--left"
+          : "process-chapter__copy--right",
+      ].join(" ")}
+    >
+      {/* NUMBER + LABEL */}
+      <div className="flex items-baseline gap-[0.72rem]">
+        <span className="shrink-0 font-display text-[0.9rem] font-medium leading-none tracking-[-0.025em] text-white/[0.62]">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+
+        <p className="m-0 font-display text-[length:var(--type-small-label)] font-semibold leading-[1.2] tracking-[0.15em] text-white/[0.52] uppercase">
+          {step.label}
+        </p>
+      </div>
+
+      {/* TITLE */}
+      <h3 className="mt-[0.78rem] mb-0 max-w-[18rem] font-display text-[length:var(--type-process-title)] font-medium leading-[1.2] tracking-[-0.028em] text-white">
+        {step.title}
+      </h3>
+
+      {/* BODY */}
+      <p className="mt-[0.62rem] mb-0 max-w-[18.75rem] text-[length:var(--type-reading-technical)] leading-[1.62] text-white/[0.6]">
+        {step.body}
+      </p>
+    </article>
+  );
+}
+
+function DesktopProcessImage({ step, side }) {
+  return (
+    <div
+      className={[
+        "process-chapter__media min-w-0 overflow-hidden bg-[#414957]",
+        side === "left"
+          ? "process-chapter__media--left"
+          : "process-chapter__media--right",
+      ].join(" ")}
+      style={{
+        aspectRatio: PROCESS_DESKTOP_ASPECT,
+      }}
+    >
+      <img
+        className="process-chapter__image block h-full w-full object-cover will-change-transform"
+        src={getImageKitUrl(step.image, PROCESS_IMAGE_WIDTHS[2])}
+        srcSet={getImageKitSrcSet(step.image)}
+        sizes="(min-width: 105rem) 28rem, (min-width: 80rem) 28vw, 100vw"
+        alt=""
+        loading="lazy"
+        decoding="async"
+        draggable="false"
+        style={{
+          objectPosition: step.objectPosition,
+        }}
+      />
+    </div>
+  );
+}
+
 export default function Process() {
   const sectionRef = useRef(null);
-  const [activeStep, setActiveStep] = useState(0);
-
-  /*
-   * Desktop/tablet active process tracking.
-   *
-   * The text remains fully scrollable and readable.
-   * Crossing the central reading zone changes only the supporting image
-   * and subtle emphasis of the active step.
-   */
-  useEffect(() => {
-    const section = sectionRef.current;
-
-    if (!section || typeof window === "undefined") return;
-
-    const mediaQuery = window.matchMedia("(min-width: 768px)");
-    let observer = null;
-
-    const destroyObserver = () => {
-      if (observer) {
-        observer.disconnect();
-        observer = null;
-      }
-    };
-
-    const setupObserver = () => {
-      destroyObserver();
-
-      if (!mediaQuery.matches) {
-        setActiveStep(0);
-        return;
-      }
-
-      const steps = Array.from(
-        section.querySelectorAll(".process-step--desktop"),
-      );
-
-      if (!steps.length) return;
-
-      observer = new IntersectionObserver(
-        (entries) => {
-          const intersecting = entries
-            .filter((entry) => entry.isIntersecting)
-            .sort(
-              (a, b) =>
-                Math.abs(
-                  a.boundingClientRect.top - window.innerHeight * 0.46,
-                ) -
-                Math.abs(
-                  b.boundingClientRect.top - window.innerHeight * 0.46,
-                ),
-            );
-
-          if (!intersecting.length) return;
-
-          const index = Number(
-            intersecting[0].target.dataset.processIndex,
-          );
-
-          if (!Number.isNaN(index)) {
-            setActiveStep(index);
-          }
-        },
-        {
-          root: null,
-          rootMargin: "-38% 0px -42% 0px",
-          threshold: 0.01,
-        },
-      );
-
-      steps.forEach((step) => observer.observe(step));
-    };
-
-    setupObserver();
-
-    mediaQuery.addEventListener("change", setupObserver);
-
-    return () => {
-      destroyObserver();
-      mediaQuery.removeEventListener("change", setupObserver);
-    };
-  }, []);
 
   useGSAP(
     () => {
@@ -180,7 +178,10 @@ export default function Process() {
 
       const mediaQueries = gsap.matchMedia();
 
-      const addHeaderEntrance = (query, values) => {
+      /*
+       * Header motion.
+       */
+      const addHeaderMotion = (query, values) => {
         mediaQueries.add(query, () => {
           const timeline = gsap.timeline({
             defaults: {
@@ -218,43 +219,167 @@ export default function Process() {
                 y: 0,
                 duration: values.introDuration,
               },
-              0.18,
+              0.16,
             );
 
           return () => timeline.kill();
         });
       };
 
-      addHeaderEntrance(MOTION_MEDIA.desktop, {
-        headingY: 24,
-        introY: 10,
-        headingDuration: 0.72,
+      addHeaderMotion(MOTION_MEDIA.desktop, {
+        headingY: 22,
+        introY: 9,
+        headingDuration: 0.7,
         introDuration: 0.5,
-        start: "top 78%",
-      });
-
-      addHeaderEntrance(MOTION_MEDIA.tablet, {
-        headingY: 19,
-        introY: 8,
-        headingDuration: 0.66,
-        introDuration: 0.46,
         start: "top 80%",
       });
 
-      addHeaderEntrance(MOTION_MEDIA.mobile, {
-        headingY: 15,
-        introY: 7,
-        headingDuration: 0.6,
+      addHeaderMotion(MOTION_MEDIA.tablet, {
+        headingY: 18,
+        introY: 8,
+        headingDuration: 0.64,
+        introDuration: 0.46,
+        start: "top 82%",
+      });
+
+      addHeaderMotion(MOTION_MEDIA.mobile, {
+        headingY: 14,
+        introY: 6,
+        headingDuration: 0.58,
         introDuration: 0.42,
         start: "top 84%",
       });
 
       /*
-       * Mobile keeps the original subtle photographic movement.
-       * Desktop no longer moves every image independently because the
-       * sticky active-image transition becomes the primary interaction.
+       * LARGE DESKTOP
+       * >= 1280px
+       *
+       * The architecture stays:
+       *
+       * LEFT STEP + IMAGE
+       * then
+       * IMAGE + RIGHT STEP
+       *
+       * Motion quietly reinforces the reading order:
+       * 01 → 02
+       * 03 → 04
+       * 05 → 06
+       *
+       * No slide-in.
+       * No scrub.
+       * No active state.
+       * No sticky.
        */
-      mediaQueries.add(MOTION_MEDIA.mobile, () => {
+      mediaQueries.add("(min-width: 1280px)", () => {
+        const chapters = gsap.utils.toArray(
+          section.querySelectorAll(".process-chapter"),
+        );
+
+        const timelines = chapters.map((chapter) => {
+          const leftCopy = chapter.querySelector(
+            ".process-chapter__copy--left",
+          );
+
+          const leftMedia = chapter.querySelector(
+            ".process-chapter__media--left",
+          );
+
+          const rightMedia = chapter.querySelector(
+            ".process-chapter__media--right",
+          );
+
+          const rightCopy = chapter.querySelector(
+            ".process-chapter__copy--right",
+          );
+
+          const timeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: chapter,
+              start: "top 80%",
+              once: true,
+            },
+            defaults: {
+              ease: "power3.out",
+            },
+          });
+
+          /*
+           * First stage in the pair.
+           */
+          timeline
+            .fromTo(
+              leftCopy,
+              {
+                autoAlpha: 0,
+                y: 8,
+              },
+              {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.48,
+              },
+              0,
+            )
+            .fromTo(
+              leftMedia,
+              {
+                autoAlpha: 0,
+                scale: 1.012,
+              },
+              {
+                autoAlpha: 1,
+                scale: 1,
+                duration: 0.58,
+              },
+              0.04,
+            );
+
+          /*
+           * Second stage follows only slightly later.
+           * Enough to reinforce chronology without feeling choreographed.
+           */
+          timeline
+            .fromTo(
+              rightMedia,
+              {
+                autoAlpha: 0,
+                scale: 1.012,
+              },
+              {
+                autoAlpha: 1,
+                scale: 1,
+                duration: 0.58,
+              },
+              0.12,
+            )
+            .fromTo(
+              rightCopy,
+              {
+                autoAlpha: 0,
+                y: 8,
+              },
+              {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.48,
+              },
+              0.17,
+            );
+
+          return timeline;
+        });
+
+        return () => {
+          timelines.forEach((timeline) => timeline.kill());
+        };
+      });
+
+      /*
+       * < 1280px
+       *
+       * Sequential editorial chapters.
+       */
+      mediaQueries.add("(max-width: 1279px)", () => {
         const images = gsap.utils.toArray(
           section.querySelectorAll(".process-step__mobile-image"),
         );
@@ -298,26 +423,35 @@ export default function Process() {
       ref={sectionRef}
       id="process"
       aria-labelledby="process-title"
-      className="process dark-section bg-[var(--night)] py-[4.25rem] text-white md:py-[clamp(6.5rem,8vw,9.5rem)]"
+      className="process dark-section dark-surface dark-surface--cool bg-[var(--night)] py-[4.25rem] text-white md:py-[5.5rem] xl:py-[clamp(6rem,6.5vw,7.5rem)]"
     >
       <div className="site-container mx-auto w-full max-w-[105rem] px-[var(--page-gutter)]">
-        <header className="process__header mb-[3.25rem] grid gap-4 md:mb-[clamp(4rem,5vw,5.75rem)] md:grid-cols-[minmax(0,1.25fr)_minmax(20rem,0.75fr)] md:items-end md:gap-16">
+        {/* =====================================================
+            HEADER
+        ====================================================== */}
+        <header className="process__header mb-[3.25rem] md:mb-[3.75rem] xl:mx-auto xl:mb-[clamp(4.25rem,4.75vw,5.25rem)] xl:flex xl:max-w-[53rem] xl:flex-col xl:items-center xl:text-center">
           <h2
             id="process-title"
-            className="process__heading m-0 max-w-[15ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em]"
+            className="process__heading m-0 max-w-[15ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em] xl:mx-auto"
           >
-            The IKIGAI Process
+            The Ikigai Process
           </h2>
 
-          <p className="process__intro m-0 max-w-[35rem] text-[0.82rem] leading-[1.65] text-white/[0.64] md:justify-self-end md:text-[0.9rem] md:leading-[1.6]">
+          <p className="process__intro mt-4 mb-0 max-w-[35rem] text-[length:var(--type-section-intro-standard)] leading-[1.65] text-white/[0.64] md:mt-5 md:leading-[1.62] xl:mt-[1.4rem] xl:max-w-[41rem] xl:leading-[1.65]">
             You tell us about your property and what you’re trying to create. We
             manage the process from assessment through installation and ongoing
             support.
           </p>
         </header>
 
-        {/* MOBILE */}
-        <div className="grid gap-y-[3.75rem] md:hidden">
+        {/* =====================================================
+            MOBILE + TABLET + SMALL DESKTOP
+            < 1280px
+
+            Chronological:
+            step → copy → image
+        ====================================================== */}
+        <div className="grid gap-y-[3.75rem] md:gap-y-[4.25rem] xl:hidden">
           {processSteps.map((step, index) => (
             <article
               key={step.title}
@@ -329,21 +463,21 @@ export default function Process() {
                     {String(index + 1).padStart(2, "0")}
                   </span>
 
-                  <p className="m-0 font-display text-[0.62rem] font-semibold leading-[1.2] tracking-[0.15em] text-white/[0.5] uppercase">
+                  <p className="m-0 font-display text-[length:var(--type-small-label)] font-semibold leading-[1.2] tracking-[0.15em] text-white/[0.5] uppercase">
                     {step.label}
                   </p>
                 </div>
 
-                <h3 className="mt-[0.9rem] mb-0 max-w-[22rem] font-display text-[1.18rem] font-medium leading-[1.22] tracking-[-0.025em] text-white">
+                <h3 className="mt-[0.9rem] mb-0 max-w-[22rem] font-display text-[length:var(--type-process-title)] font-medium leading-[1.22] tracking-[-0.025em] text-white md:max-w-[28rem]">
                   {step.title}
                 </h3>
 
-                <p className="mt-[0.62rem] mb-0 max-w-[28rem] text-[0.8rem] leading-[1.62] text-white/[0.6]">
+                <p className="mt-[0.62rem] mb-0 max-w-[28rem] text-[length:var(--type-reading-technical)] leading-[1.62] text-white/[0.6] md:max-w-[34rem]">
                   {step.body}
                 </p>
               </div>
 
-              <div className="mt-[1.4rem] aspect-[5/3] overflow-hidden bg-[#414957]">
+              <div className="mt-[1.4rem] aspect-[5/3] overflow-hidden bg-[#414957] md:mt-[1.55rem]">
                 <img
                   className="process-step__mobile-image block h-full w-full object-cover will-change-transform"
                   src={getImageKitUrl(
@@ -365,86 +499,96 @@ export default function Process() {
           ))}
         </div>
 
-        {/* TABLET / DESKTOP */}
-        <div className="hidden md:grid md:grid-cols-[minmax(0,1.03fr)_minmax(24rem,0.97fr)] md:items-start md:gap-x-[clamp(3rem,6vw,8rem)]">
-          <div className="sticky top-[clamp(5.5rem,8vw,8rem)] self-start">
-            <div className="relative aspect-[5/4] overflow-hidden bg-[#414957]">
-              {processSteps.map((step, index) => {
-                const isActive = activeStep === index;
+        {/* =====================================================
+            LARGE DESKTOP
+            >= 1280px
 
-                return (
-                  <img
-                    key={step.image}
-                    className={`absolute inset-0 block h-full w-full object-cover transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none ${
-                      isActive
-                        ? "scale-100 opacity-100"
-                        : "pointer-events-none scale-[1.012] opacity-0"
-                    }`}
-                    src={getImageKitUrl(
-                      step.image,
-                      PROCESS_IMAGE_WIDTHS[2],
-                    )}
-                    srcSet={getImageKitSrcSet(step.image)}
-                    sizes="(min-width: 48rem) 48vw, 100vw"
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                    draggable="false"
-                    aria-hidden={!isActive}
-                    style={{
-                      objectPosition: step.objectPosition,
-                    }}
+            REFINED MIRRORED PROCESS CHAPTERS
+
+            Physical reading model:
+
+            01 COPY ↔ IMAGE 01    IMAGE 02 ↔ 02 COPY
+
+            03 COPY ↔ IMAGE 03    IMAGE 04 ↔ 04 COPY
+
+            05 COPY ↔ IMAGE 05    IMAGE 06 ↔ 06 COPY
+
+            The two halves are mirrored.
+            Each step remains physically attached to its own evidence.
+
+            No cards.
+            No lines.
+            No arrows.
+            No timeline.
+            No sticky.
+            No active state.
+            No hover state.
+            No CTA.
+        ====================================================== */}
+        <div className="hidden xl:block">
+          {processPairs.map((pair, pairIndex) => {
+            const leftIndex = pairIndex * 2;
+            const rightIndex = leftIndex + 1;
+
+            return (
+              <div
+                key={`${pair[0].title}-${pair[1].title}`}
+                className={[
+                  "process-chapter",
+                  "grid grid-cols-2 items-center",
+                  /*
+                   * Center separation is deliberately a little larger
+                   * than the internal copy↔image gap.
+                   *
+                   * This creates two readable pairs:
+                   * [01 + image01] [image02 + 02]
+                   */
+                  "gap-x-[clamp(1.75rem,2.25vw,2.75rem)]",
+                  pairIndex > 0
+                    ? "mt-[clamp(3.75rem,4.25vw,4.5rem)]"
+                    : "",
+                ].join(" ")}
+              >
+                {/* =============================================
+                    LEFT PAIR
+
+                    COPY → IMAGE
+                ============================================== */}
+                <div className="grid min-w-0 grid-cols-[minmax(0,0.68fr)_minmax(0,1.12fr)] items-center gap-x-[clamp(1rem,1.35vw,1.65rem)]">
+                  <DesktopProcessCopy
+                    step={pair[0]}
+                    index={leftIndex}
+                    side="left"
                   />
-                );
-              })}
-            </div>
-          </div>
 
-          <div className="border-t border-white/[0.14]">
-            {processSteps.map((step, index) => {
-              const isActive = activeStep === index;
+                  <DesktopProcessImage
+                    step={pair[0]}
+                    side="left"
+                  />
+                </div>
 
-              return (
-                <article
-                  key={step.title}
-                  data-process-index={index}
-                  className={`process-step--desktop grid min-h-[clamp(12.5rem,15vw,15.5rem)] grid-cols-[3.5rem_minmax(0,1fr)] gap-[1rem] border-b border-white/[0.14] py-[clamp(1.65rem,2vw,2.2rem)] transition-opacity duration-300 motion-reduce:transition-none ${
-                    isActive ? "opacity-100" : "opacity-[0.52]"
-                  }`}
-                >
-                  <span
-                    className={`pt-[0.16rem] font-display text-[1rem] font-normal leading-none tracking-[-0.02em] transition-colors duration-300 motion-reduce:transition-none ${
-                      isActive
-                        ? "text-white/[0.64]"
-                        : "text-white/[0.46]"
-                    }`}
-                  >
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
+                {/* =============================================
+                    RIGHT PAIR
 
-                  <div className="min-w-0">
-                    <p
-                      className={`m-0 font-display text-[0.62rem] font-semibold leading-[1.2] tracking-[0.16em] uppercase transition-colors duration-300 motion-reduce:transition-none ${
-                        isActive
-                          ? "text-white/[0.62]"
-                          : "text-white/[0.5]"
-                      }`}
-                    >
-                      {step.label}
-                    </p>
+                    IMAGE → COPY
 
-                    <h3 className="mt-[0.55rem] mb-0 max-w-[24rem] font-display text-[clamp(1.22rem,1.45vw,1.4rem)] font-medium leading-[1.2] tracking-[-0.028em] text-white">
-                      {step.title}
-                    </h3>
+                    Mirror of left pair.
+                ============================================== */}
+                <div className="grid min-w-0 grid-cols-[minmax(0,1.12fr)_minmax(0,0.68fr)] items-center gap-x-[clamp(1rem,1.35vw,1.65rem)]">
+                  <DesktopProcessImage
+                    step={pair[1]}
+                    side="right"
+                  />
 
-                    <p className="mt-[0.72rem] mb-0 max-w-[31rem] text-[0.84rem] leading-[1.62] text-white/[0.64]">
-                      {step.body}
-                    </p>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+                  <DesktopProcessCopy
+                    step={pair[1]}
+                    index={rightIndex}
+                    side="right"
+                  />
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

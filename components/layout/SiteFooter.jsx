@@ -44,7 +44,7 @@ function FooterLink({ item }) {
 
 export default function SiteFooter() {
   return (
-    <footer className="site-footer bg-[var(--night)] text-white">
+    <footer className="site-footer dark-surface dark-surface--footer bg-[var(--night)] text-white">
       <div className="site-container mx-auto w-full max-w-[105rem] px-[var(--page-gutter)] pt-10 pb-10 md:pt-[2.75rem] md:pb-[3.25rem]">
         <div className="grid gap-11 lg:grid-cols-[minmax(15rem,1.35fr)_minmax(9rem,1fr)_minmax(9rem,1fr)_minmax(8rem,0.9fr)] lg:gap-x-[clamp(3rem,5vw,6rem)]">
           <div className="max-w-[16rem]">
@@ -66,7 +66,7 @@ export default function SiteFooter() {
                   id={`footer-${group.title
                     .toLowerCase()
                     .replace(/\s+/g, "-")}`}
-                  className="m-0 mb-[1.05rem] font-display text-[0.58rem] font-semibold leading-none tracking-[0.16em] text-white/[0.4] uppercase"
+                  className="m-0 mb-[1.05rem] font-display text-[length:var(--type-small-label)] font-semibold leading-none tracking-[0.16em] text-white/[0.4] uppercase"
                 >
                   {group.title}
                 </h2>
@@ -88,7 +88,7 @@ export default function SiteFooter() {
           >
             <h2
               id="footer-contact"
-              className="m-0 mb-[1.05rem] font-display text-[0.58rem] font-semibold leading-none tracking-[0.16em] text-white/[0.4] uppercase"
+              className="m-0 mb-[1.05rem] font-display text-[length:var(--type-small-label)] font-semibold leading-none tracking-[0.16em] text-white/[0.4] uppercase"
             >
               Contact
             </h2>

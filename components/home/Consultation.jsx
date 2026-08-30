@@ -190,7 +190,7 @@ export default function Consultation() {
       ref={sectionRef}
       id="consultation"
       aria-labelledby="consultation-title"
-      className="consultation bg-[var(--night)] py-[4.75rem] text-white md:py-[clamp(7rem,8vw,9.5rem)]"
+      className="consultation dark-surface dark-surface--conversion bg-[var(--night)] py-[4.75rem] text-white md:py-[clamp(7rem,8vw,9.5rem)]"
     >
       <div className="site-container mx-auto grid w-full max-w-[105rem] gap-y-[0.8rem] px-[var(--page-gutter)] lg:grid-cols-[minmax(0,1.08fr)_minmax(32rem,0.92fr)] lg:grid-rows-[auto_1fr] lg:gap-x-[clamp(4.5rem,7vw,9rem)] lg:gap-y-[0.85rem]">
         <p className="eyebrow consultation__eyebrow m-0 font-display text-[0.66rem] font-semibold leading-[1.2] tracking-[0.18em] text-white/[0.62] uppercase lg:col-start-1 lg:row-start-1">
@@ -205,7 +205,7 @@ export default function Consultation() {
             Planning a Wellness Space? Talk to Our Team
           </h2>
 
-          <p className="consultation__body mt-[1.25rem] mb-0 max-w-[35rem] text-[0.82rem] leading-[1.65] text-white/[0.68] md:text-[0.96rem] md:leading-[1.6]">
+          <p className="consultation__body mt-[1.25rem] mb-0 max-w-[35rem] text-[length:var(--type-section-intro-prominent)] leading-[1.65] text-white/[0.68] md:leading-[1.6]">
             You don&apos;t need to know exactly which sauna, ice bath or
             technical setup you need. Tell us about your property — we&apos;ll
             explain what&apos;s possible and what to do next.
@@ -222,7 +222,7 @@ export default function Consultation() {
           </div>
 
           <div className="consultation__checklist mt-[1.6rem]">
-            <p className="m-0 font-display text-[0.62rem] font-semibold leading-[1.2] tracking-[0.18em] text-white/[0.6] uppercase">
+            <p className="m-0 font-display text-[length:var(--type-small-label)] font-semibold leading-[1.2] tracking-[0.18em] text-white/[0.6] uppercase">
               During your consultation we&apos;ll discuss
             </p>
 
@@ -230,7 +230,7 @@ export default function Consultation() {
               {consultationChecklist.map((item) => (
                 <li
                   key={item}
-                  className="flex items-start gap-[0.65rem] text-[0.8rem] leading-[1.42] text-white/[0.76]"
+                  className="flex items-start gap-[0.65rem] text-[length:var(--type-consultation-checklist)] leading-[1.42] text-white/[0.76]"
                 >
                   <Check
                     className="mt-[0.08rem] shrink-0"
@@ -256,7 +256,7 @@ export default function Consultation() {
           </h3>
 
           <div className="grid gap-y-[1.55rem] md:grid-cols-2 md:gap-x-[1.35rem] md:gap-y-[1.7rem]">
-            <label className="grid gap-[0.4rem] font-display text-[0.62rem] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
+            <label className="grid gap-[0.4rem] font-display text-[length:var(--type-small-label)] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
               <span>Name</span>
 
               <input
@@ -267,7 +267,7 @@ export default function Consultation() {
               />
             </label>
 
-            <label className="grid gap-[0.4rem] font-display text-[0.62rem] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
+            <label className="grid gap-[0.4rem] font-display text-[length:var(--type-small-label)] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
               <span>WhatsApp</span>
 
               <input
@@ -278,7 +278,7 @@ export default function Consultation() {
               />
             </label>
 
-            <label className="grid gap-[0.4rem] font-display text-[0.62rem] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
+            <label className="grid gap-[0.4rem] font-display text-[length:var(--type-small-label)] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
               <span>Property / Project type</span>
 
               <input
@@ -289,7 +289,7 @@ export default function Consultation() {
               />
             </label>
 
-            <label className="grid gap-[0.4rem] font-display text-[0.62rem] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
+            <label className="grid gap-[0.4rem] font-display text-[length:var(--type-small-label)] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
               <span>Location</span>
 
               <input
@@ -302,7 +302,7 @@ export default function Consultation() {
           </div>
 
           <fieldset className="mt-[1.9rem] border-0 p-0">
-            <legend className="font-display text-[0.62rem] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
+            <legend className="font-display text-[length:var(--type-small-label)] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
               What are you interested in?
             </legend>
 

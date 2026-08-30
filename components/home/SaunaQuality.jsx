@@ -255,7 +255,7 @@ function MobileTechnicalDetails() {
                         {item.title}
                       </h3>
 
-                      <p className="mt-[0.65rem] mb-0 max-w-[22rem] text-[0.8rem] leading-[1.65] text-white/[0.62]">
+                      <p className="mt-[0.65rem] mb-0 max-w-[22rem] text-[length:var(--type-reading-technical)] leading-[1.65] text-white/[0.62]">
                         {item.body}
                       </p>
                     </div>
@@ -296,7 +296,7 @@ function DesktopTechnicalDetails() {
               {item.title}
             </h3>
 
-            <p className="mt-[0.55rem] mb-0 max-w-[35rem] text-[0.86rem] leading-[1.6] text-white/[0.62]">
+            <p className="mt-[0.55rem] mb-0 max-w-[35rem] text-[length:var(--type-reading-technical)] leading-[1.6] text-white/[0.62]">
               {item.body}
             </p>
           </div>
@@ -527,7 +527,7 @@ export default function SaunaQuality() {
       ref={sectionRef}
       id="sauna-quality"
       aria-labelledby="sauna-title"
-      className="relative isolate overflow-hidden bg-[var(--night)] pt-16 pb-[4.5rem] text-white md:py-[clamp(5.5rem,6vw,7rem)]"
+      className="dark-surface dark-surface--warm relative isolate overflow-hidden bg-[var(--night)] pt-16 pb-[4.5rem] text-white md:py-[clamp(5.5rem,6vw,7rem)]"
     >
       <div
         className="sauna__atmosphere pointer-events-none absolute -inset-[18%] z-0 bg-[radial-gradient(circle_at_26%_44%,rgba(211,128,56,0.22)_0%,rgba(137,76,35,0.1)_38%,transparent_70%)]"
@@ -542,13 +542,13 @@ export default function SaunaQuality() {
 
           <h2
             id="sauna-title"
-            className="sauna__heading m-0 font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em]"
+            className="sauna__heading gsap-text-clip font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em]"
           >
             Beautiful Isn’t Always Built Properly
           </h2>
         </div>
 
-        <p className="sauna__body order-2 mt-[1rem] mb-0 text-[0.82rem] leading-[1.65] text-white/[0.64] md:order-none md:col-start-2 md:row-start-2 md:mt-[1rem] md:max-w-[39rem] md:text-[1rem] md:leading-[1.58]">
+        <p className="sauna__body order-2 mt-[1rem] mb-0 text-[length:var(--type-section-intro-standard)] leading-[1.65] text-white/[0.64] md:order-none md:col-start-2 md:row-start-2 md:mt-[1rem] md:max-w-[39rem] md:leading-[1.58]">
           <span className="md:hidden">
             A sauna can look beautiful and still be poorly designed. What
             matters is how the whole room works together.

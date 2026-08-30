@@ -124,7 +124,7 @@ function MobileTechnicalDetails() {
                   <div className="grid grid-cols-[2.65rem_minmax(0,1fr)]">
                     <div aria-hidden="true" />
 
-                    <p className="mt-0 mb-0 max-w-[22rem] pb-[1.5rem] pr-[0.2rem] text-[0.8rem] leading-[1.65] text-white/[0.62]">
+                    <p className="mt-0 mb-0 max-w-[22rem] pb-[1.5rem] pr-[0.2rem] text-[length:var(--type-reading-technical)] leading-[1.65] text-white/[0.62]">
                       {item.body}
                     </p>
                   </div>
@@ -161,11 +161,11 @@ function DesktopTechnicalDetails() {
                 {item.title}
               </h3>
 
-              <p className="mt-[0.48rem] mb-0 font-display text-[0.6rem] leading-[1.2] tracking-[0.16em] text-[var(--ink-soft)] uppercase">
+              <p className="mt-[0.48rem] mb-0 font-display text-[length:var(--type-small-label)] leading-[1.2] tracking-[0.16em] text-[var(--ink-soft)] uppercase">
                 {item.label}
               </p>
 
-              <p className="mt-[0.65rem] mb-0 max-w-[26rem] text-[0.78rem] leading-[1.65] text-[var(--ink-soft)]">
+              <p className="mt-[0.65rem] mb-0 max-w-[26rem] text-[length:var(--type-reading-technical)] leading-[1.65] text-[var(--ink-soft)]">
                 {item.body}
               </p>
             </div>
@@ -555,7 +555,7 @@ export default function IceBathQuality() {
       className="ice-quality bg-[var(--paper-strong)] text-[var(--ink)]"
     >
       {/* MOBILE */}
-      <div className="ice-quality__mobile-stage relative overflow-hidden bg-[#001a36] pb-12 text-white md:hidden">
+      <div className="ice-quality__mobile-stage dark-surface dark-surface--ice relative overflow-hidden bg-[#001a36] pb-12 text-white md:hidden">
   <div
     className="absolute inset-x-0 top-0 h-[137vw] bg-[#001a36]"
     style={{
@@ -584,7 +584,7 @@ export default function IceBathQuality() {
       What’s Underneath Matters More Than You Think
     </h2>
 
-    <p className="ice-quality__mobile-body mt-[1rem] mb-0 max-w-[23rem] text-[0.82rem] leading-[1.65] text-white/[0.62]">
+    <p className="ice-quality__mobile-body mt-[1rem] mb-0 max-w-[23rem] text-[length:var(--type-section-intro-standard)] leading-[1.65] text-white/[0.62]">
       Two ice baths can look almost identical from the outside. What
       happens underneath determines how efficiently they cool, how clean
       the water stays, and how easy the system is to maintain.
@@ -621,7 +621,7 @@ export default function IceBathQuality() {
               What’s Underneath Matters More Than You Think
             </h2>
 
-            <p className="ice-quality__desktop-body mt-[0.8rem] mb-0 max-w-[38rem] text-[0.84rem] leading-[1.65] text-[var(--ink-soft)]">
+            <p className="ice-quality__desktop-body mt-[0.8rem] mb-0 max-w-[38rem] text-[length:var(--type-section-intro-standard)] leading-[1.65] text-[var(--ink-soft)]">
               Two ice baths can look almost identical from the outside. What
               happens underneath determines how efficiently they cool, how
               clean the water stays, and how easy the system is to maintain.
