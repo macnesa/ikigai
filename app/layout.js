@@ -1,4 +1,12 @@
 import localFont from "next/font/local";
+import {
+  getIndexingMetadata,
+  getSiteUrl,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_TITLE,
+  SOCIAL_IMAGE,
+} from "./seo-config";
 import "./globals.css";
 
 const zenMaru = localFont({
@@ -23,10 +31,34 @@ const zenMaru = localFont({
   display: "swap",
 });
 
+const siteUrl = getSiteUrl();
+
 export const metadata = {
-  title: "IKIGAI Wellness",
-  description:
-    "Premium saunas, ice baths, and complete wellness spaces across Indonesia.",
+  ...(siteUrl
+    ? {
+        metadataBase: new URL(siteUrl),
+        alternates: {
+          canonical: siteUrl,
+        },
+      }
+    : {}),
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  robots: getIndexingMetadata(siteUrl),
+  openGraph: {
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    ...(siteUrl ? { url: siteUrl } : {}),
+    siteName: SITE_NAME,
+    type: "website",
+    images: [SOCIAL_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: [SOCIAL_IMAGE.url],
+  },
 };
 
 export default function RootLayout({ children }) {

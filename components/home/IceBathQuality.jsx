@@ -181,9 +181,35 @@ export default function IceBathQuality() {
   const [canPlayVideo, setCanPlayVideo] = useState(false);
 
   useEffect(() => {
-    const saveData = navigator.connection?.saveData === true;
+    const desktopVideo = window.matchMedia(MOTION_MEDIA.desktop);
+    const connection = navigator.connection;
+    let frame = null;
 
-    setCanPlayVideo(!saveData && !shouldLimitMotion());
+    const updateVideoPlayback = () => {
+      if (frame !== null) {
+        cancelAnimationFrame(frame);
+      }
+
+      frame = requestAnimationFrame(() => {
+        frame = null;
+        setCanPlayVideo(
+          desktopVideo.matches && connection?.saveData !== true,
+        );
+      });
+    };
+
+    desktopVideo.addEventListener("change", updateVideoPlayback);
+    connection?.addEventListener?.("change", updateVideoPlayback);
+    updateVideoPlayback();
+
+    return () => {
+      desktopVideo.removeEventListener("change", updateVideoPlayback);
+      connection?.removeEventListener?.("change", updateVideoPlayback);
+
+      if (frame !== null) {
+        cancelAnimationFrame(frame);
+      }
+    };
   }, []);
 
   useGSAP(

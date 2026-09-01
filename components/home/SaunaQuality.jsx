@@ -147,8 +147,9 @@ function MobileTechnicalDetails() {
 
     if (shouldLimitMotion()) {
       hasIntroducedRef.current = true;
-      setActiveIndex(0);
-      return;
+      const frame = requestAnimationFrame(() => setActiveIndex(0));
+
+      return () => cancelAnimationFrame(frame);
     }
 
     const observer = new IntersectionObserver(

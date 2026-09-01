@@ -41,6 +41,60 @@ const trustedByLogos = [
     desktopWidth: 46,
     mobileWidth: 31,
   },
+  {
+    name: "Mandapa",
+    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/image_2026-08-27_03-51-40.png?updatedAt=1787778004117",
+    alt: "Mandapa",
+    width: 4725,
+    height: 4725,
+    desktopWidth: 96,
+    mobileWidth: 64,
+  },
+  {
+    name: "The Westin",
+    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0549_a6ac5d0ff6f66e10522aabee813b95602c8d140b%20(1).png?updatedAt=1788170623020",
+    alt: "The Westin",
+    width: 4725,
+    height: 4725,
+    desktopWidth: 66,
+    mobileWidth: 44,
+  },
+  {
+    name: "JSI Resort",
+    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0549_a6ac5d0ff6f66e10522aabee813b95602c8d140b%20(5).png?updatedAt=1788170623158=",
+    alt: "JSI Resort",
+    width: 4725,
+    height: 4725,
+    desktopWidth: 66,
+    mobileWidth: 44,
+  },
+  {
+    name: "RAW",
+    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0549_a6ac5d0ff6f66e10522aabee813b95602c8d140b%20(4).png?updatedAt=1788170623149",
+    alt: "RAW",
+    width: 4725,
+    height: 4725,
+    desktopWidth: 66,
+    mobileWidth: 44,
+  },
+  {
+    name: "Hotel Indigo",
+    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0549_a6ac5d0ff6f66e10522aabee813b95602c8d140b%20(6).png?updatedAt=1788170623201",
+    alt: "Hotel Indigo",
+    width: 4725,
+    height: 4725,
+    desktopWidth: 80,
+    mobileWidth: 54,
+  },
+  {
+    name: "InterContinental Hotels & Resorts",
+    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0549_a6ac5d0ff6f66e10522aabee813b95602c8d140b%20(2).png?updatedAt=1788170623305",
+    alt: "InterContinental Hotels & Resorts",
+    width: 4725,
+    height: 4725,
+    desktopWidth: 110,
+    mobileWidth: 72,
+  },
 ];
 
 const repeatedLogos = Array.from(
@@ -49,7 +103,9 @@ const repeatedLogos = Array.from(
 ).flat();
 
 function getImageKitUrl(src, width) {
-  return `${src}?tr=w-${width},q-${IMAGEKIT_LOGO_QUALITY},f-auto`;
+  const separator = src.includes("?") ? "&" : "?";
+
+  return `${src}${separator}tr=w-${width},q-${IMAGEKIT_LOGO_QUALITY},f-auto`;
 }
 
 function getImageKitSrcSet(src) {

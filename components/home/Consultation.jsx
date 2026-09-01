@@ -33,8 +33,25 @@ const interestOptions = [
 
 export default function Consultation() {
   const sectionRef = useRef(null);
-  const { register, handleSubmit } = useForm();
-  const [notice, setNotice] = useState("");
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: {
+      name: "",
+      whatsapp: "",
+      propertyType: "",
+      location: "",
+      interest: "",
+      termsDraft: false,
+      updatesDraft: false,
+      website: "",
+    },
+  });
+  const [notice, setNotice] = useState({ type: "", message: "" });
 
   useGSAP(
     () => {
@@ -181,8 +198,85 @@ export default function Consultation() {
     },
   );
 
-  const handlePendingSubmit = () => {
-    setNotice("Form submission is pending final client integration.");
+  const onSubmit = async (data) => {
+    setNotice({
+      type: "status",
+      message: "Sending your consultation request...",
+    });
+
+    const payload = {
+      name: data.name.trim(),
+      whatsapp: data.whatsapp.trim(),
+      propertyType: data.propertyType.trim(),
+      location: data.location.trim(),
+      interest: data.interest,
+      termsAccepted: data.termsDraft === true,
+      marketingConsent: data.updatesDraft === true,
+      website: data.website.trim(),
+    };
+
+    try {
+      const response = await fetch("/api/consultation", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      let responseBody = null;
+
+      try {
+        responseBody = await response.json();
+      } catch {
+        responseBody = null;
+      }
+
+      if (!response.ok || responseBody?.ok !== true) {
+        const serverFieldMap = {
+          name: "name",
+          whatsapp: "whatsapp",
+          propertyType: "propertyType",
+          location: "location",
+          interest: "interest",
+          termsAccepted: "termsDraft",
+          marketingConsent: "updatesDraft",
+        };
+
+        if (responseBody?.errors && typeof responseBody.errors === "object") {
+          for (const [field, message] of Object.entries(responseBody.errors)) {
+            const formField = serverFieldMap[field];
+
+            if (formField && typeof message === "string") {
+              setError(formField, {
+                type: "server",
+                message,
+              });
+            }
+          }
+        }
+
+        setNotice({
+          type: "error",
+          message:
+            typeof responseBody?.message === "string"
+              ? responseBody.message
+              : "We couldn't send your request right now. Please try again.",
+        });
+        return;
+      }
+
+      reset();
+      setNotice({
+        type: "success",
+        message: "Thank you. Your consultation request has been sent.",
+      });
+    } catch {
+      setNotice({
+        type: "error",
+        message: "We couldn't send your request right now. Please try again.",
+      });
+    }
   };
 
   return (
@@ -248,12 +342,26 @@ export default function Consultation() {
 
         <form
           className="consultation__form mt-[2.75rem] lg:col-start-2 lg:row-start-2 lg:mt-0"
-          onSubmit={handleSubmit(handlePendingSubmit)}
+          onSubmit={handleSubmit(onSubmit)}
           noValidate
         >
           <h3 className="mt-0 mb-[1.8rem] max-w-[22rem] font-display text-[1.5rem] font-medium leading-[1.1] tracking-[-0.03em] md:text-[1.6rem]">
             Book your free wellness consultation
           </h3>
+
+          <div
+            className="absolute left-[-9999px] h-px w-px overflow-hidden"
+            aria-hidden="true"
+          >
+            <label htmlFor="consultation-website">Website</label>
+            <input
+              id="consultation-website"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              {...register("website")}
+            />
+          </div>
 
           <div className="grid gap-y-[1.55rem] md:grid-cols-2 md:gap-x-[1.35rem] md:gap-y-[1.7rem]">
             <label className="grid gap-[0.4rem] font-display text-[length:var(--type-small-label)] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
@@ -263,8 +371,28 @@ export default function Consultation() {
                 className="font-body w-full rounded-none border-0 border-b border-white/[0.2] bg-transparent px-0 py-[0.72rem] text-[0.88rem] font-normal tracking-normal text-white normal-case outline-none transition-colors duration-[160ms] placeholder:text-white/[0.42] focus:border-white/[0.78]"
                 type="text"
                 placeholder="Your name"
-                {...register("name")}
+                autoComplete="name"
+                aria-invalid={Boolean(errors.name)}
+                aria-describedby={errors.name ? "consultation-name-error" : undefined}
+                {...register("name", {
+                  required: "Name is required.",
+                  maxLength: {
+                    value: 100,
+                    message: "Name must be 100 characters or fewer.",
+                  },
+                  validate: (value) =>
+                    value.trim().length > 0 || "Name is required.",
+                })}
               />
+
+              {errors.name ? (
+                <span
+                  id="consultation-name-error"
+                  className="font-body text-[0.68rem] font-normal tracking-normal text-[#f4c7c3] normal-case"
+                >
+                  {errors.name.message}
+                </span>
+              ) : null}
             </label>
 
             <label className="grid gap-[0.4rem] font-display text-[length:var(--type-small-label)] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
@@ -274,8 +402,44 @@ export default function Consultation() {
                 className="font-body w-full rounded-none border-0 border-b border-white/[0.2] bg-transparent px-0 py-[0.72rem] text-[0.88rem] font-normal tracking-normal text-white normal-case outline-none transition-colors duration-[160ms] placeholder:text-white/[0.42] focus:border-white/[0.78]"
                 type="tel"
                 placeholder="+62 …"
-                {...register("whatsapp")}
+                autoComplete="tel"
+                aria-invalid={Boolean(errors.whatsapp)}
+                aria-describedby={
+                  errors.whatsapp ? "consultation-whatsapp-error" : undefined
+                }
+                {...register("whatsapp", {
+                  required: "WhatsApp number is required.",
+                  maxLength: {
+                    value: 40,
+                    message: "WhatsApp number must be 40 characters or fewer.",
+                  },
+                  validate: {
+                    requiredTrimmed: (value) =>
+                      value.trim().length > 0 ||
+                      "WhatsApp number is required.",
+                    format: (value) => {
+                      const normalizedValue = value.trim();
+                      const digitCount = (normalizedValue.match(/\d/g) || [])
+                        .length;
+
+                      return (
+                        (/^[+\d().\-\s]+$/.test(normalizedValue) &&
+                          digitCount >= 6) ||
+                        "Enter a valid WhatsApp number."
+                      );
+                    },
+                  },
+                })}
               />
+
+              {errors.whatsapp ? (
+                <span
+                  id="consultation-whatsapp-error"
+                  className="font-body text-[0.68rem] font-normal tracking-normal text-[#f4c7c3] normal-case"
+                >
+                  {errors.whatsapp.message}
+                </span>
+              ) : null}
             </label>
 
             <label className="grid gap-[0.4rem] font-display text-[length:var(--type-small-label)] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
@@ -285,8 +449,33 @@ export default function Consultation() {
                 className="font-body w-full rounded-none border-0 border-b border-white/[0.2] bg-transparent px-0 py-[0.72rem] text-[0.88rem] font-normal tracking-normal text-white normal-case outline-none transition-colors duration-[160ms] placeholder:text-white/[0.42] focus:border-white/[0.78]"
                 type="text"
                 placeholder="Villa, hotel, residence …"
-                {...register("propertyType")}
+                aria-invalid={Boolean(errors.propertyType)}
+                aria-describedby={
+                  errors.propertyType
+                    ? "consultation-property-type-error"
+                    : undefined
+                }
+                {...register("propertyType", {
+                  required: "Property or project type is required.",
+                  maxLength: {
+                    value: 120,
+                    message:
+                      "Property or project type must be 120 characters or fewer.",
+                  },
+                  validate: (value) =>
+                    value.trim().length > 0 ||
+                    "Property or project type is required.",
+                })}
               />
+
+              {errors.propertyType ? (
+                <span
+                  id="consultation-property-type-error"
+                  className="font-body text-[0.68rem] font-normal tracking-normal text-[#f4c7c3] normal-case"
+                >
+                  {errors.propertyType.message}
+                </span>
+              ) : null}
             </label>
 
             <label className="grid gap-[0.4rem] font-display text-[length:var(--type-small-label)] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
@@ -296,12 +485,40 @@ export default function Consultation() {
                 className="font-body w-full rounded-none border-0 border-b border-white/[0.2] bg-transparent px-0 py-[0.72rem] text-[0.88rem] font-normal tracking-normal text-white normal-case outline-none transition-colors duration-[160ms] placeholder:text-white/[0.42] focus:border-white/[0.78]"
                 type="text"
                 placeholder="Canggu, Ubud, Jakarta …"
-                {...register("location")}
+                autoComplete="address-level2"
+                aria-invalid={Boolean(errors.location)}
+                aria-describedby={
+                  errors.location ? "consultation-location-error" : undefined
+                }
+                {...register("location", {
+                  required: "Location is required.",
+                  maxLength: {
+                    value: 120,
+                    message: "Location must be 120 characters or fewer.",
+                  },
+                  validate: (value) =>
+                    value.trim().length > 0 || "Location is required.",
+                })}
               />
+
+              {errors.location ? (
+                <span
+                  id="consultation-location-error"
+                  className="font-body text-[0.68rem] font-normal tracking-normal text-[#f4c7c3] normal-case"
+                >
+                  {errors.location.message}
+                </span>
+              ) : null}
             </label>
           </div>
 
-          <fieldset className="mt-[1.9rem] border-0 p-0">
+          <fieldset
+            className="mt-[1.9rem] border-0 p-0"
+            aria-invalid={Boolean(errors.interest)}
+            aria-describedby={
+              errors.interest ? "consultation-interest-error" : undefined
+            }
+          >
             <legend className="font-display text-[length:var(--type-small-label)] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
               What are you interested in?
             </legend>
@@ -316,7 +533,9 @@ export default function Consultation() {
                     className="peer absolute opacity-0"
                     type="radio"
                     value={option.value}
-                    {...register("interest")}
+                    {...register("interest", {
+                      required: "Please select an interest.",
+                    })}
                   />
 
                   <span className="inline-flex min-h-[3rem] w-full items-center justify-center border border-white/[0.2] bg-transparent px-[0.85rem] py-[0.7rem] text-center text-[0.72rem] leading-[1.18] text-white/[0.8] transition-[background-color,color,border-color] duration-[160ms] hover:border-white/[0.44] hover:text-white peer-checked:border-white peer-checked:bg-white peer-checked:text-[var(--ink)] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-3 peer-focus-visible:outline-white md:min-h-[2.65rem] md:w-auto md:px-[1rem] md:text-[0.72rem] md:leading-none">
@@ -325,6 +544,15 @@ export default function Consultation() {
                 </label>
               ))}
             </div>
+
+            {errors.interest ? (
+              <p
+                id="consultation-interest-error"
+                className="font-body mt-[0.55rem] mb-0 text-[0.68rem] font-normal tracking-normal text-[#f4c7c3] normal-case"
+              >
+                {errors.interest.message}
+              </p>
+            ) : null}
           </fieldset>
 
           <div className="mt-[1.3rem] grid gap-[0.8rem]">
@@ -333,7 +561,14 @@ export default function Consultation() {
                 <input
                   className="peer absolute inset-0 h-full w-full appearance-none border border-white/[0.42] bg-transparent outline-none transition-[background-color,border-color] checked:border-white checked:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-white"
                   type="checkbox"
-                  {...register("termsDraft")}
+                  aria-invalid={Boolean(errors.termsDraft)}
+                  aria-describedby={
+                    errors.termsDraft ? "consultation-terms-error" : undefined
+                  }
+                  {...register("termsDraft", {
+                    required:
+                      "You must accept the terms and privacy policy.",
+                  })}
                 />
 
                 <Check
@@ -347,6 +582,15 @@ export default function Consultation() {
                 I agree to the Terms &amp; Conditions and Privacy Policy
               </span>
             </label>
+
+            {errors.termsDraft ? (
+              <p
+                id="consultation-terms-error"
+                className="mt-[-0.35rem] mb-0 pl-[1.6rem] text-[0.68rem] leading-[1.45] text-[#f4c7c3]"
+              >
+                {errors.termsDraft.message}
+              </p>
+            ) : null}
 
             <label className="group flex cursor-pointer items-start gap-[0.65rem] text-[0.71rem] leading-[1.48] text-white/[0.52]">
               <span className="relative mt-[0.08rem] flex h-[0.95rem] w-[0.95rem] shrink-0 items-center justify-center">
@@ -373,10 +617,11 @@ export default function Consultation() {
           </div>
 
           <button
-            className="pill-button pill-button--standard pill-button--light mt-[1.45rem] inline-flex min-h-[3.5rem] w-full items-center justify-center text-center font-display text-[0.82rem] font-semibold leading-none tracking-[0.025em] uppercase focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+            className="pill-button pill-button--standard pill-button--light mt-[1.45rem] inline-flex min-h-[3.5rem] w-full items-center justify-center text-center font-display text-[0.82rem] font-semibold leading-none tracking-[0.025em] uppercase focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white disabled:cursor-not-allowed disabled:opacity-60"
             type="submit"
+            disabled={isSubmitting}
           >
-            Book my free consultation
+            {isSubmitting ? "Sending..." : "Book my free consultation"}
           </button>
 
           <p className="mt-[0.9rem] mb-0 max-w-[31rem] text-[0.68rem] leading-[1.55] text-white/[0.52]">
@@ -384,12 +629,13 @@ export default function Consultation() {
             understand your options.
           </p>
 
-          {notice ? (
+          {notice.message ? (
             <p
               className="mt-[0.7rem] mb-0 text-[0.68rem] leading-[1.55] text-white/[0.52]"
               aria-live="polite"
+              role="status"
             >
-              {notice}
+              {notice.message}
             </p>
           ) : null}
         </form>
