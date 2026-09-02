@@ -384,29 +384,38 @@ export default function Process() {
           section.querySelectorAll(".process-step__mobile-image"),
         );
 
-        const tweens = images.map((image) =>
-          gsap.fromTo(
-            image,
-            {
-              scale: 1.025,
-              y: 9,
-            },
-            {
-              scale: 1,
-              y: 0,
-              ease: "none",
-              scrollTrigger: {
-                trigger: image,
-                start: "top 92%",
-                end: "center 70%",
-                scrub: 0.75,
-                invalidateOnRefresh: true,
+        gsap.set(images, {
+          scale: 1.025,
+          y: 9,
+        });
+
+        let tweens = [];
+        const frame = requestAnimationFrame(() => {
+          tweens = images.map((image) =>
+            gsap.fromTo(
+              image,
+              {
+                scale: 1.025,
+                y: 9,
               },
-            },
-          ),
-        );
+              {
+                scale: 1,
+                y: 0,
+                ease: "none",
+                scrollTrigger: {
+                  trigger: image,
+                  start: "top 92%",
+                  end: "center 70%",
+                  scrub: 0.75,
+                  invalidateOnRefresh: true,
+                },
+              },
+            ),
+          );
+        });
 
         return () => {
+          cancelAnimationFrame(frame);
           tweens.forEach((tween) => tween.kill());
         };
       });
