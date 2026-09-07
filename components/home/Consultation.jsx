@@ -6,6 +6,10 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Check } from "lucide-react";
 import {
+  createTrackingEventId,
+  pushDataLayer,
+} from "@/lib/tracking";
+import {
   gsap,
   MOTION_MEDIA,
   shouldLimitMotion,
@@ -199,6 +203,8 @@ export default function Consultation() {
   );
 
   const onSubmit = async (data) => {
+    const eventId = createTrackingEventId();
+
     setNotice({
       type: "status",
       message: "Sending your consultation request...",
@@ -213,6 +219,7 @@ export default function Consultation() {
       termsAccepted: data.termsDraft === true,
       marketingConsent: data.updatesDraft === true,
       website: data.website.trim(),
+      eventId,
     };
 
     try {
@@ -264,6 +271,16 @@ export default function Consultation() {
               : "We couldn't send your request right now. Please try again.",
         });
         return;
+      }
+
+      if (responseBody.accepted === true) {
+        pushDataLayer({
+          event: "generate_lead",
+          event_id: eventId,
+          form_name: "invest_in_it_enquiry",
+          page_path: window.location.pathname,
+          lead_type: "b2b_hospitality",
+        });
       }
 
       reset();

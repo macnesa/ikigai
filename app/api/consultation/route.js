@@ -1,4 +1,9 @@
 import { Resend } from "resend";
+import { after } from "next/server";
+import {
+  isValidMetaEventId,
+  sendMetaLeadEvent,
+} from "@/lib/meta-capi";
 
 const MAX_REQUEST_BYTES = 10_000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
@@ -22,6 +27,7 @@ const EXPECTED_FIELDS = new Set([
   "termsAccepted",
   "marketingConsent",
   "website",
+  "eventId",
 ]);
 
 const rateLimitEntries = new Map();
@@ -162,6 +168,13 @@ function validatePayload(payload) {
     errors.form = "Request contains an invalid field type.";
   }
 
+  const eventId =
+    typeof payload.eventId === "string" ? payload.eventId.trim() : "";
+
+  if (!isValidMetaEventId(eventId)) {
+    errors.eventId = "Request contains an invalid event identifier.";
+  }
+
   return {
     errors,
     values: {
@@ -172,6 +185,7 @@ function validatePayload(payload) {
       interest,
       termsAccepted: payload.termsAccepted,
       marketingConsent: payload.marketingConsent,
+      eventId,
     },
   };
 }
@@ -374,8 +388,23 @@ export async function POST(request) {
     );
   }
 
+  const eventSourceUrl =
+    request.headers.get("referer") || new URL("/", request.url).href;
+  const metaLeadEvent = {
+    eventId: values.eventId,
+    phone: values.whatsapp,
+    sourceUrl: eventSourceUrl,
+    clientIpAddress: getClientIp(request),
+    clientUserAgent: request.headers.get("user-agent") || "",
+    fbp: request.cookies.get("_fbp")?.value || "",
+    fbc: request.cookies.get("_fbc")?.value || "",
+  };
+
+  after(() => sendMetaLeadEvent(metaLeadEvent));
+
   return jsonResponse({
     ok: true,
+    accepted: true,
     message: "Your consultation request has been sent.",
   });
 }
