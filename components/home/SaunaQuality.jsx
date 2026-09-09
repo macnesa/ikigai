@@ -375,7 +375,7 @@ export default function SaunaQuality() {
 
           const entrance = gsap.timeline({
             defaults: {
-              ease: "power2.out",
+              ease: "sine.out",
             },
             scrollTrigger: {
               trigger: section,
@@ -394,7 +394,7 @@ export default function SaunaQuality() {
               {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.48,
+                duration: values.eyebrowDuration,
               },
             )
             .fromTo(
@@ -402,14 +402,11 @@ export default function SaunaQuality() {
               {
                 autoAlpha: 0,
                 y: values.headingY,
-                clipPath: "inset(0 0 100% 0)",
               },
               {
                 autoAlpha: 1,
                 y: 0,
-                clipPath: "inset(0 0 0% 0)",
-                duration: 0.82,
-                ease: "power3.out",
+                duration: values.headingDuration,
               },
               0.08,
             )
@@ -422,7 +419,7 @@ export default function SaunaQuality() {
               {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.58,
+                duration: values.bodyDuration,
               },
               0.28,
             )
@@ -472,9 +469,12 @@ export default function SaunaQuality() {
         fromOpacity: 0.29,
         toOpacity: 0.44,
         scrub: 1.5,
-        eyebrowY: 6,
-        headingY: 30,
-        bodyY: 16,
+        eyebrowY: 3,
+        eyebrowDuration: 0.4,
+        headingY: 4,
+        headingDuration: 0.84,
+        bodyY: 3,
+        bodyDuration: 0.5,
         frameY: 20,
         frameScale: 0.985,
         technicalY: 7,
@@ -489,9 +489,12 @@ export default function SaunaQuality() {
         fromOpacity: 0.27,
         toOpacity: 0.4,
         scrub: 1.3,
-        eyebrowY: 5,
-        headingY: 25,
-        bodyY: 13,
+        eyebrowY: 2,
+        eyebrowDuration: 0.38,
+        headingY: 4,
+        headingDuration: 0.8,
+        bodyY: 3,
+        bodyDuration: 0.48,
         frameY: 16,
         frameScale: 0.988,
         technicalY: 6,
@@ -506,9 +509,12 @@ export default function SaunaQuality() {
         fromOpacity: 0.25,
         toOpacity: 0.35,
         scrub: 1.1,
-        eyebrowY: 4,
-        headingY: 21,
-        bodyY: 10,
+        eyebrowY: 2,
+        eyebrowDuration: 0.36,
+        headingY: 3,
+        headingDuration: 0.76,
+        bodyY: 2,
+        bodyDuration: 0.46,
         frameY: 10,
         frameScale: 1,
         technicalY: 5,

@@ -117,7 +117,6 @@ export default function ProductShowcase() {
       const addIntro = (query, values) => {
         mediaQueries.add(query, () => {
           const timeline = gsap.timeline({
-            defaults: { ease: "power3.out" },
             scrollTrigger: {
               trigger: header,
               start: values.start,
@@ -135,21 +134,20 @@ export default function ProductShowcase() {
               {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.52,
+                duration: values.eyebrowDuration,
+                ease: "sine.out",
               },
             )
             .fromTo(
               heading,
               {
-                autoAlpha: 0,
-                y: values.headingY,
-                clipPath: "inset(0 0 100% 0)",
+                "--ikigai-mask-progress": "0%",
+                "--ikigai-mask-feather": values.headingFeather,
               },
               {
-                autoAlpha: 1,
-                y: 0,
-                clipPath: "inset(0 0 0% 0)",
-                duration: 0.82,
+                "--ikigai-mask-progress": "140%",
+                duration: values.headingDuration,
+                ease: "sine.inOut",
               },
               0.08,
             )
@@ -162,9 +160,10 @@ export default function ProductShowcase() {
               {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.62,
+                duration: values.copyDuration,
+                ease: "sine.out",
               },
-              0.34,
+              0.54,
             );
 
           return () => timeline.kill();
@@ -172,23 +171,32 @@ export default function ProductShowcase() {
       };
 
       addIntro(MOTION_MEDIA.desktop, {
-        eyebrowY: 7,
-        headingY: 34,
-        copyY: 18,
+        eyebrowY: 2,
+        eyebrowDuration: 0.38,
+        headingDuration: 0.9,
+        headingFeather: "24%",
+        copyY: 3,
+        copyDuration: 0.46,
         start: "top 78%",
       });
 
       addIntro(MOTION_MEDIA.tablet, {
-        eyebrowY: 6,
-        headingY: 28,
-        copyY: 16,
+        eyebrowY: 2,
+        eyebrowDuration: 0.38,
+        headingDuration: 0.86,
+        headingFeather: "23%",
+        copyY: 3,
+        copyDuration: 0.46,
         start: "top 80%",
       });
 
       addIntro(MOTION_MEDIA.mobile, {
-        eyebrowY: 5,
-        headingY: 22,
-        copyY: 13,
+        eyebrowY: 2,
+        eyebrowDuration: 0.38,
+        headingDuration: 0.82,
+        headingFeather: "22%",
+        copyY: 3,
+        copyDuration: 0.46,
         start: "top 84%",
       });
 
@@ -379,7 +387,7 @@ export default function ProductShowcase() {
 
           <h2
             id="products-title"
-            className="products__heading gsap-text-clip max-w-[18ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em] md:col-start-1 md:row-start-2"
+            className="products__heading gsap-text-clip ikigai-alpha-mask max-w-[18ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em] md:col-start-1 md:row-start-2"
           >
             Start With One of Our Designs or Create Your Own
           </h2>

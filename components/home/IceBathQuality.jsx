@@ -245,7 +245,7 @@ export default function IceBathQuality() {
 
         const entrance = gsap.timeline({
           defaults: {
-            ease: "power2.out",
+            ease: "sine.out",
           },
           scrollTrigger: {
             trigger: stage,
@@ -259,12 +259,12 @@ export default function IceBathQuality() {
             eyebrow,
             {
               autoAlpha: 0,
-              y: 4,
+              y: 2,
             },
             {
               autoAlpha: 1,
               y: 0,
-              duration: 0.48,
+              duration: 0.38,
             },
             0,
           )
@@ -272,13 +272,12 @@ export default function IceBathQuality() {
             heading,
             {
               autoAlpha: 0,
-              y: 18,
+              y: 3,
             },
             {
               autoAlpha: 1,
               y: 0,
-              duration: 0.82,
-              ease: "power3.out",
+              duration: 0.74,
             },
             0.08,
           )
@@ -286,12 +285,12 @@ export default function IceBathQuality() {
             body,
             {
               autoAlpha: 0,
-              y: 10,
+              y: 3,
             },
             {
               autoAlpha: 1,
               y: 0,
-              duration: 0.58,
+              duration: 0.46,
             },
             0.28,
           )
@@ -372,7 +371,7 @@ export default function IceBathQuality() {
 
           const entrance = gsap.timeline({
             defaults: {
-              ease: "power3.out",
+              ease: "sine.out",
             },
             scrollTrigger: {
               trigger: technicalEnvironment,
@@ -391,7 +390,7 @@ export default function IceBathQuality() {
               {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.48,
+                duration: values.eyebrowDuration,
               },
               0,
             )
@@ -404,7 +403,7 @@ export default function IceBathQuality() {
               {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.82,
+                duration: values.headingDuration,
               },
               0.08,
             )
@@ -417,7 +416,7 @@ export default function IceBathQuality() {
               {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.58,
+                duration: values.bodyDuration,
               },
               0.28,
             )
@@ -464,9 +463,12 @@ export default function IceBathQuality() {
         fromOpacity: 0.22,
         toOpacity: 0.34,
         scrub: 1.25,
-        eyebrowY: 5,
-        headingY: 25,
-        bodyY: 12,
+        eyebrowY: 2,
+        eyebrowDuration: 0.38,
+        headingY: 3,
+        headingDuration: 0.8,
+        bodyY: 3,
+        bodyDuration: 0.48,
         mediaY: 15,
         mediaScale: 0.99,
         technicalY: 6,
@@ -480,9 +482,12 @@ export default function IceBathQuality() {
         fromOpacity: 0.2,
         toOpacity: 0.34,
         scrub: 1.4,
-        eyebrowY: 6,
-        headingY: 30,
-        bodyY: 15,
+        eyebrowY: 3,
+        eyebrowDuration: 0.4,
+        headingY: 4,
+        headingDuration: 0.84,
+        bodyY: 3,
+        bodyDuration: 0.5,
         mediaY: 18,
         mediaScale: 0.988,
         technicalY: 7,
@@ -503,7 +508,7 @@ export default function IceBathQuality() {
 
           const entrance = gsap.timeline({
             defaults: {
-              ease: "power3.out",
+              ease: "sine.out",
             },
             scrollTrigger: {
               trigger: bridge,
@@ -522,7 +527,7 @@ export default function IceBathQuality() {
               {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.76,
+                duration: values.statementDuration,
               },
               0,
             )
@@ -535,9 +540,9 @@ export default function IceBathQuality() {
               {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.54,
+                duration: values.ctaDuration,
               },
-              0.2,
+              0.16,
             );
 
           return () => entrance.kill();
@@ -545,20 +550,26 @@ export default function IceBathQuality() {
       };
 
       addBridgeMotion(MOTION_MEDIA.mobile, {
-        statementY: 18,
-        ctaY: 10,
+        statementY: 3,
+        statementDuration: 0.58,
+        ctaY: 2,
+        ctaDuration: 0.42,
         start: "top 84%",
       });
 
       addBridgeMotion(MOTION_MEDIA.tablet, {
-        statementY: 24,
-        ctaY: 12,
+        statementY: 3,
+        statementDuration: 0.58,
+        ctaY: 2,
+        ctaDuration: 0.42,
         start: "top 82%",
       });
 
       addBridgeMotion(MOTION_MEDIA.desktop, {
-        statementY: 28,
-        ctaY: 14,
+        statementY: 3,
+        statementDuration: 0.58,
+        ctaY: 2,
+        ctaDuration: 0.42,
         start: "top 80%",
       });
 

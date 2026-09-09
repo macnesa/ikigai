@@ -79,9 +79,8 @@ export default function FAQ() {
       const header = section.querySelector(".faq__header");
       const heading = section.querySelector(".faq__heading");
       const intro = section.querySelector(".faq__intro");
-      const cta = section.querySelector(".faq__cta");
 
-      if (!header || !heading || !intro || !cta) return;
+      if (!header || !heading || !intro) return;
 
       const mediaQueries = gsap.matchMedia();
 
@@ -89,7 +88,7 @@ export default function FAQ() {
         mediaQueries.add(query, () => {
           const timeline = gsap.timeline({
             defaults: {
-              ease: "power3.out",
+              ease: "sine.out",
             },
             scrollTrigger: {
               trigger: header,
@@ -124,19 +123,6 @@ export default function FAQ() {
                 duration: values.secondaryDuration,
               },
               0.18,
-            )
-            .fromTo(
-              cta,
-              {
-                autoAlpha: 0,
-                y: values.ctaY,
-              },
-              {
-                autoAlpha: 1,
-                y: 0,
-                duration: values.secondaryDuration,
-              },
-              0.26,
             );
 
           return () => timeline.kill();
@@ -144,29 +130,26 @@ export default function FAQ() {
       };
 
       addIntro(MOTION_MEDIA.desktop, {
-        headingY: 26,
-        introY: 12,
-        ctaY: 10,
-        headingDuration: 0.72,
-        secondaryDuration: 0.5,
+        headingY: 0,
+        introY: 0,
+        headingDuration: 0.66,
+        secondaryDuration: 0.42,
         start: "top 78%",
       });
 
       addIntro(MOTION_MEDIA.tablet, {
-        headingY: 21,
-        introY: 10,
-        ctaY: 9,
-        headingDuration: 0.68,
-        secondaryDuration: 0.48,
+        headingY: 0,
+        introY: 0,
+        headingDuration: 0.66,
+        secondaryDuration: 0.42,
         start: "top 80%",
       });
 
       addIntro(MOTION_MEDIA.mobile, {
-        headingY: 16,
-        introY: 8,
-        ctaY: 7,
-        headingDuration: 0.62,
-        secondaryDuration: 0.44,
+        headingY: 0,
+        introY: 0,
+        headingDuration: 0.66,
+        secondaryDuration: 0.42,
         start: "top 84%",
       });
 

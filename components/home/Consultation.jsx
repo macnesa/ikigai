@@ -73,9 +73,8 @@ export default function Consultation() {
       const heading = section.querySelector(".consultation__heading");
       const body = section.querySelector(".consultation__body");
       const checklist = section.querySelector(".consultation__checklist");
-      const form = section.querySelector(".consultation__form");
 
-      if (!eyebrow || !heading || !body || !checklist || !form) {
+      if (!eyebrow || !heading || !body || !checklist) {
         return;
       }
 
@@ -85,7 +84,7 @@ export default function Consultation() {
         mediaQueries.add(query, () => {
           const timeline = gsap.timeline({
             defaults: {
-              ease: "power3.out",
+              ease: "sine.out",
             },
             scrollTrigger: {
               trigger: section,
@@ -104,7 +103,7 @@ export default function Consultation() {
               {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.5,
+                duration: values.eyebrowDuration,
               },
               0,
             )
@@ -117,7 +116,7 @@ export default function Consultation() {
               {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.82,
+                duration: values.headingDuration,
               },
               0.08,
             )
@@ -130,7 +129,7 @@ export default function Consultation() {
               {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.6,
+                duration: values.bodyDuration,
               },
               0.28,
             )
@@ -143,22 +142,9 @@ export default function Consultation() {
               {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.66,
+                duration: values.checklistDuration,
               },
               0.42,
-            )
-            .fromTo(
-              form,
-              {
-                autoAlpha: 0,
-                y: values.formY,
-              },
-              {
-                autoAlpha: 1,
-                y: 0,
-                duration: 0.76,
-              },
-              values.formPosition,
             );
 
           return () => timeline.kill();
@@ -166,32 +152,38 @@ export default function Consultation() {
       };
 
       addEntrance(MOTION_MEDIA.desktop, {
-        eyebrowY: 6,
-        headingY: 34,
-        bodyY: 18,
-        checklistY: 20,
-        formY: 20,
-        formPosition: 0.16,
+        eyebrowY: 0,
+        eyebrowDuration: 0.34,
+        headingY: 2,
+        headingDuration: 0.68,
+        bodyY: 2,
+        bodyDuration: 0.42,
+        checklistY: 0,
+        checklistDuration: 0.42,
         start: "top 76%",
       });
 
       addEntrance(MOTION_MEDIA.tablet, {
-        eyebrowY: 5,
-        headingY: 28,
-        bodyY: 16,
-        checklistY: 18,
-        formY: 20,
-        formPosition: 0.5,
+        eyebrowY: 0,
+        eyebrowDuration: 0.34,
+        headingY: 2,
+        headingDuration: 0.68,
+        bodyY: 2,
+        bodyDuration: 0.42,
+        checklistY: 0,
+        checklistDuration: 0.4,
         start: "top 80%",
       });
 
       addEntrance(MOTION_MEDIA.mobile, {
-        eyebrowY: 4,
-        headingY: 22,
-        bodyY: 13,
-        checklistY: 15,
-        formY: 18,
-        formPosition: 0.5,
+        eyebrowY: 0,
+        eyebrowDuration: 0.34,
+        headingY: 2,
+        headingDuration: 0.64,
+        bodyY: 2,
+        bodyDuration: 0.42,
+        checklistY: 0,
+        checklistDuration: 0.38,
         start: "top 84%",
       });
 

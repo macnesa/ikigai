@@ -185,7 +185,7 @@ export default function Process() {
         mediaQueries.add(query, () => {
           const timeline = gsap.timeline({
             defaults: {
-              ease: "power3.out",
+              ease: "sine.out",
             },
             scrollTrigger: {
               trigger: header,
@@ -227,26 +227,26 @@ export default function Process() {
       };
 
       addHeaderMotion(MOTION_MEDIA.desktop, {
-        headingY: 22,
-        introY: 9,
-        headingDuration: 0.7,
-        introDuration: 0.5,
+        headingY: 3,
+        introY: 2,
+        headingDuration: 0.72,
+        introDuration: 0.46,
         start: "top 80%",
       });
 
       addHeaderMotion(MOTION_MEDIA.tablet, {
-        headingY: 18,
-        introY: 8,
-        headingDuration: 0.64,
+        headingY: 3,
+        introY: 2,
+        headingDuration: 0.72,
         introDuration: 0.46,
         start: "top 82%",
       });
 
       addHeaderMotion(MOTION_MEDIA.mobile, {
-        headingY: 14,
-        introY: 6,
-        headingDuration: 0.58,
-        introDuration: 0.42,
+        headingY: 3,
+        introY: 2,
+        headingDuration: 0.72,
+        introDuration: 0.46,
         start: "top 84%",
       });
 

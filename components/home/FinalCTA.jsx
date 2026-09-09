@@ -98,9 +98,6 @@ export default function FinalCTA() {
           }
 
           const entranceTimeline = gsap.timeline({
-            defaults: {
-              ease: "power3.out",
-            },
             scrollTrigger: {
               trigger: section,
               start: values.entranceStart,
@@ -112,15 +109,13 @@ export default function FinalCTA() {
             .fromTo(
               heading,
               {
-                autoAlpha: 0,
-                y: values.headingY,
-                clipPath: "inset(0 0 100% 0)",
+                "--ikigai-mask-progress": "0%",
+                "--ikigai-mask-feather": values.headingFeather,
               },
               {
-                autoAlpha: 1,
-                y: 0,
-                clipPath: "inset(0 0 0% 0)",
+                "--ikigai-mask-progress": "140%",
                 duration: values.headingDuration,
+                ease: "sine.inOut",
               },
               0,
             )
@@ -134,7 +129,7 @@ export default function FinalCTA() {
                 autoAlpha: 1,
                 y: 0,
                 duration: values.ctaDuration,
-                ease: "power2.out",
+                ease: "sine.out",
               },
               values.ctaDelay,
             );
@@ -150,11 +145,11 @@ export default function FinalCTA() {
         mediaFrom: 3,
         mediaTo: -3,
         scrub: 1.65,
-        headingY: 30,
-        headingDuration: 0.9,
-        ctaY: 12,
-        ctaDuration: 0.58,
-        ctaDelay: 0.34,
+        headingFeather: "30%",
+        headingDuration: 1.06,
+        ctaY: 2,
+        ctaDuration: 0.48,
+        ctaDelay: 0.86,
         entranceStart: "top 76%",
         overlaySelector: ".final-cta__overlay-desktop",
         overlayFrom: 1,
@@ -165,11 +160,11 @@ export default function FinalCTA() {
         mediaFrom: 2.35,
         mediaTo: -2.35,
         scrub: 1.45,
-        headingY: 24,
-        headingDuration: 0.82,
-        ctaY: 10,
-        ctaDuration: 0.54,
-        ctaDelay: 0.32,
+        headingFeather: "29%",
+        headingDuration: 1,
+        ctaY: 2,
+        ctaDuration: 0.47,
+        ctaDelay: 0.81,
         entranceStart: "top 79%",
         overlaySelector: ".final-cta__overlay-desktop",
         overlayFrom: 1,
@@ -180,11 +175,11 @@ export default function FinalCTA() {
         mediaFrom: 1.5,
         mediaTo: -1.5,
         scrub: 1.2,
-        headingY: 20,
-        headingDuration: 0.76,
-        ctaY: 9,
-        ctaDuration: 0.5,
-        ctaDelay: 0.3,
+        headingFeather: "28%",
+        headingDuration: 0.94,
+        ctaY: 2,
+        ctaDuration: 0.46,
+        ctaDelay: 0.76,
         entranceStart: "top 83%",
         overlaySelector: ".final-cta__overlay-mobile",
         overlayFrom: 1,
@@ -280,7 +275,7 @@ export default function FinalCTA() {
         <div className="flex w-full max-w-[42rem] flex-col items-start">
           <h2
             id="final-cta-title"
-            className="final-cta__heading gsap-text-clip max-w-[10.5ch] font-display text-[clamp(2.65rem,11.5vw,3.55rem)] font-medium leading-[0.96] tracking-[-0.047em] md:max-w-[10.5ch] md:text-[clamp(3.9rem,5vw,6.2rem)] md:leading-[0.94] md:tracking-[-0.05em]"
+            className="final-cta__heading gsap-text-clip ikigai-alpha-mask max-w-[10.5ch] font-display text-[clamp(2.65rem,11.5vw,3.55rem)] font-medium leading-[0.96] tracking-[-0.047em] md:max-w-[10.5ch] md:text-[clamp(3.9rem,5vw,6.2rem)] md:leading-[0.94] md:tracking-[-0.05em]"
           >
             Build a Wellness Space You’ll Be Proud to Own
           </h2>

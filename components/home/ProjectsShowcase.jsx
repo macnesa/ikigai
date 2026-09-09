@@ -136,9 +136,6 @@ export default function ProjectsShowcase() {
       const addIntro = (query, values) => {
         mediaQueries.add(query, () => {
           const timeline = gsap.timeline({
-            defaults: {
-              ease: "power3.out",
-            },
             scrollTrigger: {
               trigger: header,
               start: values.start,
@@ -150,13 +147,13 @@ export default function ProjectsShowcase() {
             .fromTo(
               heading,
               {
-                autoAlpha: 0,
-                y: values.headingY,
+                "--ikigai-mask-progress": "0%",
+                "--ikigai-mask-feather": values.headingFeather,
               },
               {
-                autoAlpha: 1,
-                y: 0,
-                duration: 0.76,
+                "--ikigai-mask-progress": "140%",
+                duration: values.headingDuration,
+                ease: "sine.inOut",
               },
               0,
             )
@@ -169,7 +166,8 @@ export default function ProjectsShowcase() {
               {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.56,
+                duration: values.copyDuration,
+                ease: "sine.out",
               },
               0.18,
             );
@@ -179,20 +177,26 @@ export default function ProjectsShowcase() {
       };
 
       addIntro(MOTION_MEDIA.desktop, {
-        headingY: 28,
-        copyY: 8,
+        headingDuration: 0.86,
+        headingFeather: "22%",
+        copyY: 3,
+        copyDuration: 0.46,
         start: "top 78%",
       });
 
       addIntro(MOTION_MEDIA.tablet, {
-        headingY: 22,
-        copyY: 6,
+        headingDuration: 0.82,
+        headingFeather: "21%",
+        copyY: 3,
+        copyDuration: 0.45,
         start: "top 80%",
       });
 
       addIntro(MOTION_MEDIA.mobile, {
-        headingY: 17,
-        copyY: 5,
+        headingDuration: 0.78,
+        headingFeather: "20%",
+        copyY: 2,
+        copyDuration: 0.44,
         start: "top 84%",
       });
 
@@ -233,7 +237,7 @@ export default function ProjectsShowcase() {
       <div className="site-container projects__header mx-auto mb-9 grid w-full max-w-[105rem] gap-4 px-[var(--page-gutter)] md:mb-[clamp(2.5rem,3vw,4rem)] md:grid-cols-[minmax(0,1.25fr)_minmax(20rem,0.75fr)] md:items-end md:gap-16">
         <h2
           id="projects-title"
-          className="projects__heading m-0 max-w-[15ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em]"
+          className="projects__heading ikigai-alpha-mask m-0 max-w-[15ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em]"
         >
           Wellness Spaces We’ve Built
         </h2>

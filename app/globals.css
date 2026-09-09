@@ -108,6 +108,29 @@
     margin-inline: -0.08em;
   }
 
+  .ikigai-alpha-mask {
+    --ikigai-mask-progress: 140%;
+    --ikigai-mask-feather: 24%;
+    -webkit-mask-image: linear-gradient(
+      to top,
+      #000 0%,
+      #000 calc(var(--ikigai-mask-progress) - var(--ikigai-mask-feather)),
+      transparent var(--ikigai-mask-progress),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to top,
+      #000 0%,
+      #000 calc(var(--ikigai-mask-progress) - var(--ikigai-mask-feather)),
+      transparent var(--ikigai-mask-progress),
+      transparent 100%
+    );
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+  }
+
   .dark-surface {
     --dark-surface-color: var(--night);
     --dark-surface-radial-size: 85% 75%;

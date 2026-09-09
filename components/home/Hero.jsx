@@ -2,13 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Check } from "lucide-react";
 import {
   gsap,
@@ -21,26 +15,11 @@ const IMAGEKIT_WIDTHS = [640, 960, 1280, 1600, 1920, 2560];
 const IMAGEKIT_QUALITY = 80;
 const HERO_FALLBACK_WIDTH = 1280;
 
-const ROTATION_INTERVAL_MS = 7000;
-const CROSSFADE_DURATION_MS = 900;
-
-const HERO_IMAGES = [
-  {
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/0566_ad48168e4a93f9aaf727711ea2ff3d488019b1cc.png",
-    mobilePosition: "52% center",
-    desktopPosition: "50% center",
-  },
-  {
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-25_17-51-48.png",
-    mobilePosition: "54% center",
-    desktopPosition: "52% center",
-  },
-  {
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-25_17-52-30.png",
-    mobilePosition: "58% center",
-    desktopPosition: "54% center",
-  },
-];
+const HERO_IMAGE = {
+  src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/0566_ad48168e4a93f9aaf727711ea2ff3d488019b1cc.png",
+  mobilePosition: "52% center",
+  desktopPosition: "50% center",
+};
 
 const proofItems = [
   "Existing & custom designs",
@@ -59,61 +38,13 @@ function getHeroSrcSet(src) {
   ).join(", ");
 }
 
-function getPreloadWidth() {
-  const targetWidth = Math.min(
-    IMAGEKIT_WIDTHS.at(-1),
-    Math.ceil(window.innerWidth * (window.devicePixelRatio || 1)),
-  );
-
-  return (
-    IMAGEKIT_WIDTHS.find((width) => width >= targetWidth) ||
-    IMAGEKIT_WIDTHS.at(-1)
-  );
-}
-
 export default function Hero() {
   const heroRef = useRef(null);
-  const failedImagesRef = useRef(new Set());
-  const lastShownAtRef = useRef(0);
-  const wasRotatingRef = useRef(false);
-  const fadeFrameRef = useRef(null);
-
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [nextReadyIndex, setNextReadyIndex] = useState(null);
-  const [preloadVersion, setPreloadVersion] = useState(0);
-  const [incomingIndex, setIncomingIndex] = useState(null);
-  const [isCrossfading, setIsCrossfading] = useState(false);
-  const [pageVisible, setPageVisible] = useState(true);
-  const [heroVisible, setHeroVisible] = useState(true);
   const [runtimePreferences, setRuntimePreferences] = useState({
     ready: false,
     reducedMotion: false,
     saveData: false,
   });
-
-  const pausePendingTransition = useCallback(() => {
-    if (fadeFrameRef.current !== null) {
-      window.cancelAnimationFrame(fadeFrameRef.current);
-      fadeFrameRef.current = null;
-    }
-
-    if (incomingIndex === null) return;
-
-    if (isCrossfading) {
-      setCurrentIndex(incomingIndex);
-    }
-
-    setIncomingIndex(null);
-    setIsCrossfading(false);
-    lastShownAtRef.current = Date.now();
-  }, [incomingIndex, isCrossfading]);
-
-  const canRotate =
-    runtimePreferences.ready &&
-    !runtimePreferences.reducedMotion &&
-    !runtimePreferences.saveData &&
-    pageVisible &&
-    heroVisible;
 
   useGSAP(
     () => {
@@ -154,21 +85,15 @@ export default function Hero() {
       };
 
       addDepth(MOTION_MEDIA.desktop, {
-        mediaFrom: 1.35,
-        mediaTo: -1.35,
-        scrub: 1.25,
+        mediaFrom: 2,
+        mediaTo: -2,
+        scrub: 1.1,
       });
 
       addDepth(MOTION_MEDIA.tablet, {
-        mediaFrom: 1,
-        mediaTo: -1,
-        scrub: 1.15,
-      });
-
-      addDepth(MOTION_MEDIA.mobile, {
-        mediaFrom: 0.55,
-        mediaTo: -0.55,
-        scrub: 1,
+        mediaFrom: 1.25,
+        mediaTo: -1.25,
+        scrub: 1.05,
       });
 
       return () => mediaQueries.revert();
@@ -205,11 +130,11 @@ export default function Hero() {
       const ctaBlock = select(".hero__cta-block");
       const proofs = select(".hero__proofs");
       const proofItems = select(".hero__proofs li");
-      const currentImage = select(".hero__image--current")[0];
+      const heroImage = select(".hero__image")[0];
 
-      if (currentImage) {
+      if (heroImage) {
         gsap.fromTo(
-          currentImage,
+          heroImage,
           { scale: 1.035 },
           {
             scale: 1,
@@ -223,12 +148,13 @@ export default function Hero() {
 
       mm.add("(max-width: 1023px)", () => {
         gsap.set(mobileTitleLines, {
-          yPercent: 132,
+          "--ikigai-mask-progress": "0%",
+          "--ikigai-mask-feather": "30%",
         });
 
         gsap.set(intro, {
           opacity: 0,
-          y: 12,
+          y: 3,
         });
 
         gsap.set(proofs, {
@@ -238,12 +164,12 @@ export default function Hero() {
 
         gsap.set(proofItems, {
           opacity: 0,
-          y: 6,
+          y: 2,
         });
 
         gsap.set(ctaBlock, {
           opacity: 0,
-          y: 12,
+          y: 2,
         });
 
         const timeline = gsap.timeline({
@@ -254,9 +180,10 @@ export default function Hero() {
           .to(
             mobileTitleLines,
             {
-              yPercent: 0,
-              duration: 0.74,
-              stagger: 0.09,
+              "--ikigai-mask-progress": "140%",
+              duration: 1.12,
+              stagger: 0.095,
+              ease: "sine.inOut",
             },
             0.08,
           )
@@ -265,9 +192,9 @@ export default function Hero() {
             {
               opacity: 1,
               y: 0,
-              duration: 0.44,
+              duration: 0.48,
             },
-            "-=0.24",
+            0.96,
           )
           /*
            * Mobile CTA now comes before proof.
@@ -280,7 +207,7 @@ export default function Hero() {
               y: 0,
               duration: 0.46,
             },
-            "-=0.16",
+            1.28,
           )
           .to(
             proofItems,
@@ -290,7 +217,7 @@ export default function Hero() {
               duration: 0.34,
               stagger: 0.035,
             },
-            "-=0.08",
+            1.5,
           );
 
         return () => timeline.kill();
@@ -298,12 +225,13 @@ export default function Hero() {
 
       mm.add("(min-width: 1024px)", () => {
         gsap.set(desktopTitleLines, {
-          yPercent: 132,
+          "--ikigai-mask-progress": "0%",
+          "--ikigai-mask-feather": "32%",
         });
 
         gsap.set(intro, {
           opacity: 0,
-          y: 20,
+          y: 3,
         });
 
         gsap.set(proofs, {
@@ -313,12 +241,12 @@ export default function Hero() {
 
         gsap.set(proofItems, {
           opacity: 0,
-          y: 8,
+          y: 2,
         });
 
         gsap.set(ctaBlock, {
           opacity: 0,
-          y: 16,
+          y: 2,
         });
 
         const timeline = gsap.timeline({
@@ -329,9 +257,10 @@ export default function Hero() {
           .to(
             desktopTitleLines,
             {
-              yPercent: 0,
-              duration: 0.86,
-              stagger: 0.1,
+              "--ikigai-mask-progress": "140%",
+              duration: 1.26,
+              stagger: 0.12,
+              ease: "sine.inOut",
             },
             0.08,
           )
@@ -340,28 +269,28 @@ export default function Hero() {
             {
               opacity: 1,
               y: 0,
-              duration: 0.54,
+              duration: 0.52,
             },
-            "-=0.3",
+            1.12,
           )
           .to(
             ctaBlock,
             {
               opacity: 1,
               y: 0,
-              duration: 0.5,
+              duration: 0.48,
             },
-            "-=0.26",
+            1.48,
           )
           .to(
             proofItems,
             {
               opacity: 1,
               y: 0,
-              duration: 0.38,
-              stagger: 0.045,
+              duration: 0.36,
+              stagger: 0.04,
             },
-            "-=0.24",
+            1.72,
           );
 
         return () => timeline.kill();
@@ -387,10 +316,6 @@ export default function Hero() {
       };
 
       setRuntimePreferences(preferences);
-
-      if (preferences.reducedMotion || preferences.saveData) {
-        pausePendingTransition();
-      }
     };
 
     updatePreferences();
@@ -402,205 +327,7 @@ export default function Hero() {
       motionQuery.removeEventListener?.("change", updatePreferences);
       connection?.removeEventListener?.("change", updatePreferences);
     };
-  }, [pausePendingTransition]);
-
-  useEffect(() => {
-    const updateVisibility = () => {
-      const isVisible = !document.hidden;
-
-      setPageVisible(isVisible);
-
-      if (!isVisible) {
-        pausePendingTransition();
-      }
-    };
-
-    updateVisibility();
-
-    document.addEventListener("visibilitychange", updateVisibility);
-
-    return () =>
-      document.removeEventListener("visibilitychange", updateVisibility);
-  }, [pausePendingTransition]);
-
-  useEffect(() => {
-    const hero = heroRef.current;
-
-    if (!hero || !("IntersectionObserver" in window)) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setHeroVisible(entry.isIntersecting);
-
-        if (!entry.isIntersecting) {
-          pausePendingTransition();
-        }
-      },
-      { threshold: 0 },
-    );
-
-    observer.observe(hero);
-
-    return () => observer.disconnect();
-  }, [pausePendingTransition]);
-
-  useEffect(() => {
-    if (
-      !runtimePreferences.ready ||
-      runtimePreferences.reducedMotion ||
-      runtimePreferences.saveData
-    ) {
-      return;
-    }
-
-    let cancelled = false;
-    let preloader = null;
-
-    const candidateIndices = Array.from(
-      { length: HERO_IMAGES.length - 1 },
-      (_, offset) => (currentIndex + offset + 1) % HERO_IMAGES.length,
-    ).filter((index) => !failedImagesRef.current.has(index));
-
-    const warmNextImage = async () => {
-      for (const candidateIndex of candidateIndices) {
-        try {
-          await new Promise((resolve, reject) => {
-            const image = new window.Image();
-
-            preloader = image;
-            image.decoding = "async";
-            image.sizes = "100vw";
-            image.srcset = getHeroSrcSet(HERO_IMAGES[candidateIndex].src);
-
-            image.onload = async () => {
-              try {
-                await image.decode();
-              } catch {
-                // Completed load remains safe to display.
-              }
-
-              resolve();
-            };
-
-            image.onerror = reject;
-
-            image.src = getImageKitUrl(
-              HERO_IMAGES[candidateIndex].src,
-              getPreloadWidth(),
-            );
-          });
-
-          if (!cancelled) {
-            setNextReadyIndex(candidateIndex);
-          }
-
-          return;
-        } catch {
-          failedImagesRef.current.add(candidateIndex);
-        }
-      }
-
-      if (!cancelled) {
-        setNextReadyIndex(null);
-      }
-    };
-
-    warmNextImage();
-
-    return () => {
-      cancelled = true;
-
-      if (preloader) {
-        preloader.onload = null;
-        preloader.onerror = null;
-      }
-    };
-  }, [
-    currentIndex,
-    preloadVersion,
-    runtimePreferences.ready,
-    runtimePreferences.reducedMotion,
-    runtimePreferences.saveData,
-  ]);
-
-  useEffect(() => {
-    if (canRotate && !wasRotatingRef.current) {
-      lastShownAtRef.current = Date.now();
-    }
-
-    wasRotatingRef.current = canRotate;
-  }, [canRotate]);
-
-  useEffect(() => {
-    if (
-      !canRotate ||
-      nextReadyIndex === null ||
-      nextReadyIndex === currentIndex ||
-      incomingIndex !== null
-    ) {
-      return;
-    }
-
-    const elapsed = Date.now() - lastShownAtRef.current;
-    const delay = Math.max(0, ROTATION_INTERVAL_MS - elapsed);
-
-    const timer = window.setTimeout(() => {
-      setIncomingIndex(nextReadyIndex);
-    }, delay);
-
-    return () => window.clearTimeout(timer);
-  }, [canRotate, currentIndex, incomingIndex, nextReadyIndex]);
-
-  useEffect(() => {
-    if (!isCrossfading || incomingIndex === null) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setCurrentIndex(incomingIndex);
-      setIncomingIndex(null);
-      setIsCrossfading(false);
-      lastShownAtRef.current = Date.now();
-    }, CROSSFADE_DURATION_MS);
-
-    return () => window.clearTimeout(timer);
-  }, [incomingIndex, isCrossfading]);
-
-  useEffect(
-    () => () => {
-      if (fadeFrameRef.current !== null) {
-        window.cancelAnimationFrame(fadeFrameRef.current);
-      }
-    },
-    [],
-  );
-
-  const startCrossfade = () => {
-    if (!canRotate || incomingIndex === null) return;
-
-    fadeFrameRef.current = window.requestAnimationFrame(() => {
-      fadeFrameRef.current = null;
-      setIsCrossfading(true);
-    });
-  };
-
-  const handleIncomingError = () => {
-    if (incomingIndex !== null) {
-      failedImagesRef.current.add(incomingIndex);
-    }
-
-    setIncomingIndex(null);
-    setIsCrossfading(false);
-    setNextReadyIndex(null);
-    setPreloadVersion((version) => version + 1);
-    lastShownAtRef.current = Date.now();
-  };
-
-  const currentImage = HERO_IMAGES[currentIndex];
-  const incomingImage =
-    incomingIndex !== null ? HERO_IMAGES[incomingIndex] : null;
+  }, []);
 
   return (
     <section
@@ -615,47 +342,22 @@ export default function Hero() {
       <div
         aria-hidden="true"
         className="hero__media absolute inset-x-0 -inset-y-[7%] -z-[3] overflow-hidden bg-[var(--placeholder-dark)]"
-        style={{
-          "--hero-crossfade-duration": `${CROSSFADE_DURATION_MS}ms`,
-        }}
       >
         <img
-          className="hero__image hero__image--current absolute inset-0 h-full w-full object-cover [object-position:var(--hero-object-mobile)] will-change-transform lg:[object-position:var(--hero-object-desktop)]"
+          className="hero__image absolute inset-0 h-full w-full object-cover [object-position:var(--hero-object-mobile)] will-change-transform lg:[object-position:var(--hero-object-desktop)]"
           style={{
-            "--hero-object-mobile": currentImage.mobilePosition,
-            "--hero-object-desktop": currentImage.desktopPosition,
+            "--hero-object-mobile": HERO_IMAGE.mobilePosition,
+            "--hero-object-desktop": HERO_IMAGE.desktopPosition,
           }}
-          src={getImageKitUrl(currentImage.src, HERO_FALLBACK_WIDTH)}
-          srcSet={getHeroSrcSet(currentImage.src)}
+          src={getImageKitUrl(HERO_IMAGE.src, HERO_FALLBACK_WIDTH)}
+          srcSet={getHeroSrcSet(HERO_IMAGE.src)}
           sizes="100vw"
           alt=""
           loading="eager"
-          fetchPriority={currentIndex === 0 ? "high" : "auto"}
+          fetchPriority="high"
           decoding="async"
           draggable="false"
         />
-
-        {incomingImage ? (
-          <img
-            className={`hero__image hero__image--incoming absolute inset-0 h-full w-full object-cover [object-position:var(--hero-object-mobile)] will-change-[opacity] [transition:opacity_var(--hero-crossfade-duration,900ms)_cubic-bezier(0.22,1,0.36,1)] lg:[object-position:var(--hero-object-desktop)] ${
-              isCrossfading ? "is-visible opacity-100" : "opacity-0"
-            }`}
-            style={{
-              "--hero-object-mobile": incomingImage.mobilePosition,
-              "--hero-object-desktop": incomingImage.desktopPosition,
-            }}
-            src={getImageKitUrl(incomingImage.src, HERO_FALLBACK_WIDTH)}
-            srcSet={getHeroSrcSet(incomingImage.src)}
-            sizes="100vw"
-            alt=""
-            loading="eager"
-            fetchPriority="auto"
-            decoding="async"
-            draggable="false"
-            onLoad={startCrossfade}
-            onError={handleIncomingError}
-          />
-        ) : null}
       </div>
 
       {/* =====================================================
@@ -700,20 +402,16 @@ export default function Hero() {
           >
             {/* ================= MOBILE TITLE ================= */}
             <span className="lg:hidden">
-              <span className="gsap-text-clip">
-                <span className="hero-title-line--mobile block">
-                  Build Your Dream
-                </span>
+              <span className="hero-title-line--mobile gsap-text-clip ikigai-alpha-mask">
+                <span className="block">Build Your Dream</span>
               </span>
 
-              <span className="gsap-text-clip">
-                <span className="hero-title-line--mobile block">
-                  Wellness Setup with
-                </span>
+              <span className="hero-title-line--mobile gsap-text-clip ikigai-alpha-mask">
+                <span className="block">Wellness Setup with</span>
               </span>
 
-              <span className="gsap-text-clip [--gsap-text-clip-offset:0.16em]">
-                <span className="hero-title-line--mobile block font-medium">
+              <span className="hero-title-line--mobile gsap-text-clip ikigai-alpha-mask [--gsap-text-clip-offset:0.16em]">
+                <span className="block font-medium">
                   Ikigai Wellness
                 </span>
               </span>
@@ -721,20 +419,16 @@ export default function Hero() {
 
             {/* ================= DESKTOP TITLE ================= */}
             <span className="hidden lg:block">
-              <span className="gsap-text-clip">
-                <span className="hero-title-line--desktop block">
-                  Build Your Dream
-                </span>
+              <span className="hero-title-line--desktop gsap-text-clip ikigai-alpha-mask">
+                <span className="block">Build Your Dream</span>
               </span>
 
-              <span className="gsap-text-clip">
-                <span className="hero-title-line--desktop block">
-                  Wellness Setup with
-                </span>
+              <span className="hero-title-line--desktop gsap-text-clip ikigai-alpha-mask">
+                <span className="block">Wellness Setup with</span>
               </span>
 
-              <span className="gsap-text-clip [--gsap-text-clip-offset:0.1em]">
-                <span className="hero-title-line--desktop block font-medium">
+              <span className="hero-title-line--desktop gsap-text-clip ikigai-alpha-mask [--gsap-text-clip-offset:0.1em]">
+                <span className="block font-medium">
                   Ikigai Wellness
                 </span>
               </span>

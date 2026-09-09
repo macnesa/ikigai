@@ -181,10 +181,10 @@ export default function TrustedBy() {
       className="dark-surface dark-surface--trust overflow-hidden bg-[var(--night)] text-white"
       aria-labelledby="trusted-by-title"
     >
-      <div className="flex h-[7.5rem] flex-col justify-center md:h-[9.5rem]">
+      <div className="flex h-[6.75rem] -translate-y-[0.125rem] flex-col justify-center md:h-[8.875rem] md:-translate-y-[0.375rem]">
         <p
           id="trusted-by-title"
-          className="m-0 mb-[1rem] text-center font-display text-[0.72rem] font-normal leading-none text-white/[0.68] md:mb-[1.2rem] md:text-[0.8rem]"
+          className="m-0 mb-[0.4rem] text-center font-display text-[0.72rem] font-normal leading-none text-white/[0.68] md:mb-[0.55rem] md:text-[0.8rem]"
         >
           Trusted by
         </p>
