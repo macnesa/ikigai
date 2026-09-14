@@ -35,6 +35,20 @@ const interestOptions = [
   { value: "unsure", label: "Not Sure Yet" },
 ];
 
+const timelineOptions = [
+  "ASAP / 0-1 month",
+  "1-3 months",
+  "3-6 months",
+  "Just exploring",
+];
+
+const requestTypeOptions = [
+  "Catalogue",
+  "Price / Quotation",
+  "Consultation",
+  "Site Assessment",
+];
+
 export default function Consultation() {
   const sectionRef = useRef(null);
   const {
@@ -50,6 +64,8 @@ export default function Consultation() {
       propertyType: "",
       location: "",
       interest: "",
+      timeline: "",
+      requestType: "",
       termsDraft: false,
       updatesDraft: false,
       website: "",
@@ -208,6 +224,8 @@ export default function Consultation() {
       propertyType: data.propertyType.trim(),
       location: data.location.trim(),
       interest: data.interest,
+      timeline: data.timeline,
+      requestType: data.requestType,
       termsAccepted: data.termsDraft === true,
       marketingConsent: data.updatesDraft === true,
       website: data.website.trim(),
@@ -238,6 +256,8 @@ export default function Consultation() {
           propertyType: "propertyType",
           location: "location",
           interest: "interest",
+          timeline: "timeline",
+          requestType: "requestType",
           termsAccepted: "termsDraft",
           marketingConsent: "updatesDraft",
         };
@@ -560,6 +580,106 @@ export default function Consultation() {
                 className="font-body mt-[0.55rem] mb-0 text-[0.68rem] font-normal tracking-normal text-[#f4c7c3] normal-case"
               >
                 {errors.interest.message}
+              </p>
+            ) : null}
+          </fieldset>
+
+          <fieldset
+            className="mt-[1.9rem] border-0 p-0"
+            aria-invalid={Boolean(errors.timeline)}
+            aria-describedby={
+              errors.timeline ? "consultation-timeline-error" : undefined
+            }
+          >
+            <legend className="font-display text-[length:var(--type-small-label)] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
+              When are you planning to get one?
+            </legend>
+
+            <div className="mt-[0.9rem] grid grid-cols-2 gap-2 md:flex md:flex-wrap">
+              {timelineOptions.map((option) => (
+                <label
+                  key={option}
+                  className="relative inline-flex w-full font-display font-medium md:w-auto"
+                >
+                  <input
+                    className="peer absolute opacity-0"
+                    type="radio"
+                    value={option}
+                    aria-describedby={
+                      errors.timeline ? "consultation-timeline-error" : undefined
+                    }
+                    {...register("timeline", {
+                      required: "Please select a timeline.",
+                      validate: (value) =>
+                        timelineOptions.includes(value) ||
+                        "Please select a valid timeline.",
+                    })}
+                  />
+
+                  <span className="inline-flex min-h-[3rem] w-full items-center justify-center border border-white/[0.2] bg-transparent px-[0.85rem] py-[0.7rem] text-center text-[0.72rem] leading-[1.18] text-white/[0.8] transition-[background-color,color,border-color] duration-[160ms] hover:border-white/[0.44] hover:text-white peer-checked:border-white peer-checked:bg-white peer-checked:text-[var(--ink)] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-3 peer-focus-visible:outline-white md:min-h-[2.65rem] md:w-auto md:px-[1rem] md:text-[0.72rem] md:leading-none">
+                    {option}
+                  </span>
+                </label>
+              ))}
+            </div>
+
+            {errors.timeline ? (
+              <p
+                id="consultation-timeline-error"
+                className="font-body mt-[0.55rem] mb-0 text-[0.68rem] font-normal tracking-normal text-[#f4c7c3] normal-case"
+              >
+                {errors.timeline.message}
+              </p>
+            ) : null}
+          </fieldset>
+
+          <fieldset
+            className="mt-[1.9rem] border-0 p-0"
+            aria-invalid={Boolean(errors.requestType)}
+            aria-describedby={
+              errors.requestType ? "consultation-request-type-error" : undefined
+            }
+          >
+            <legend className="font-display text-[length:var(--type-small-label)] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
+              What would you like from us?
+            </legend>
+
+            <div className="mt-[0.9rem] grid grid-cols-2 gap-2 md:flex md:flex-wrap">
+              {requestTypeOptions.map((option) => (
+                <label
+                  key={option}
+                  className="relative inline-flex w-full font-display font-medium md:w-auto"
+                >
+                  <input
+                    className="peer absolute opacity-0"
+                    type="radio"
+                    value={option}
+                    aria-describedby={
+                      errors.requestType
+                        ? "consultation-request-type-error"
+                        : undefined
+                    }
+                    {...register("requestType", {
+                      required: "Please select what you would like from us.",
+                      validate: (value) =>
+                        requestTypeOptions.includes(value) ||
+                        "Please select a valid request.",
+                    })}
+                  />
+
+                  <span className="inline-flex min-h-[3rem] w-full items-center justify-center border border-white/[0.2] bg-transparent px-[0.85rem] py-[0.7rem] text-center text-[0.72rem] leading-[1.18] text-white/[0.8] transition-[background-color,color,border-color] duration-[160ms] hover:border-white/[0.44] hover:text-white peer-checked:border-white peer-checked:bg-white peer-checked:text-[var(--ink)] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-3 peer-focus-visible:outline-white md:min-h-[2.65rem] md:w-auto md:px-[1rem] md:text-[0.72rem] md:leading-none">
+                    {option}
+                  </span>
+                </label>
+              ))}
+            </div>
+
+            {errors.requestType ? (
+              <p
+                id="consultation-request-type-error"
+                className="font-body mt-[0.55rem] mb-0 text-[0.68rem] font-normal tracking-normal text-[#f4c7c3] normal-case"
+              >
+                {errors.requestType.message}
               </p>
             ) : null}
           </fieldset>

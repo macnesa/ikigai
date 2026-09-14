@@ -18,12 +18,28 @@ const ALLOWED_INTERESTS = new Map([
   ["unsure", "Not Sure Yet"],
 ]);
 
+const ALLOWED_TIMELINES = new Set([
+  "ASAP / 0-1 month",
+  "1-3 months",
+  "3-6 months",
+  "Just exploring",
+]);
+
+const ALLOWED_REQUEST_TYPES = new Set([
+  "Catalogue",
+  "Price / Quotation",
+  "Consultation",
+  "Site Assessment",
+]);
+
 const EXPECTED_FIELDS = new Set([
   "name",
   "whatsapp",
   "propertyType",
   "location",
   "interest",
+  "timeline",
+  "requestType",
   "termsAccepted",
   "marketingConsent",
   "website",
@@ -148,6 +164,20 @@ function validatePayload(payload) {
     errors.interest = "Please select a valid interest.";
   }
 
+  const timeline = payload.timeline;
+  const requestType = payload.requestType;
+
+  if (typeof timeline !== "string" || !ALLOWED_TIMELINES.has(timeline)) {
+    errors.timeline = "Please select a valid timeline.";
+  }
+
+  if (
+    typeof requestType !== "string" ||
+    !ALLOWED_REQUEST_TYPES.has(requestType)
+  ) {
+    errors.requestType = "Please select a valid request.";
+  }
+
   if (whatsapp) {
     const digitCount = (whatsapp.match(/\d/g) || []).length;
 
@@ -183,6 +213,8 @@ function validatePayload(payload) {
       propertyType,
       location,
       interest,
+      timeline,
+      requestType,
       termsAccepted: payload.termsAccepted,
       marketingConsent: payload.marketingConsent,
       eventId,
@@ -209,6 +241,8 @@ function buildEmailContent(values) {
     propertyType: escapeHtml(values.propertyType),
     location: escapeHtml(values.location),
     interest: escapeHtml(interestLabel),
+    timeline: escapeHtml(values.timeline),
+    requestType: escapeHtml(values.requestType),
     marketing: escapeHtml(marketingLabel),
     submittedAt: escapeHtml(submittedAt),
   };
@@ -223,6 +257,8 @@ function buildEmailContent(values) {
       `Property / Project Type: ${values.propertyType}`,
       `Location: ${values.location}`,
       `Interested In: ${interestLabel}`,
+      `Timeline: ${values.timeline}`,
+      `What They Would Like from IKIGAI: ${values.requestType}`,
       "Terms Accepted: Yes",
       `Marketing Updates: ${marketingLabel}`,
       `Submitted At: ${submittedAt}`,
@@ -234,6 +270,8 @@ function buildEmailContent(values) {
       <p><strong>Property / Project Type:</strong><br>${safe.propertyType}</p>
       <p><strong>Location:</strong><br>${safe.location}</p>
       <p><strong>Interested In:</strong><br>${safe.interest}</p>
+      <p><strong>Timeline:</strong><br>${safe.timeline}</p>
+      <p><strong>What They Would Like from IKIGAI:</strong><br>${safe.requestType}</p>
       <p><strong>Terms Accepted:</strong><br>Yes</p>
       <p><strong>Marketing Updates:</strong><br>${safe.marketing}</p>
       <p><strong>Submitted At:</strong><br>${safe.submittedAt}</p>
