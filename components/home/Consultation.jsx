@@ -448,13 +448,14 @@ export default function Consultation() {
                       "WhatsApp number is required.",
                     format: (value) => {
                       const normalizedValue = value.trim();
-                      const digitCount = (normalizedValue.match(/\d/g) || [])
-                        .length;
+                      const normalizedPhone = `+${normalizedValue
+                        .slice(1)
+                        .replace(/[^\d]/g, "")}`;
 
                       return (
-                        (/^[+\d().\-\s]+$/.test(normalizedValue) &&
-                          digitCount >= 6) ||
-                        "Enter a valid WhatsApp number."
+                        (/^\+[\d().\-\s]+$/.test(normalizedValue) &&
+                          /^\+[1-9]\d{7,14}$/.test(normalizedPhone)) ||
+                        "Include your country code, e.g. +62..."
                       );
                     },
                   },

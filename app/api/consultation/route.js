@@ -4,6 +4,10 @@ import {
   isValidMetaEventId,
   sendMetaLeadEvent,
 } from "@/lib/meta-capi";
+import {
+  deliverLeadWebhook,
+  normalizeInternationalPhone,
+} from "@/lib/lead-webhook";
 
 const MAX_REQUEST_BYTES = 10_000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
@@ -178,12 +182,8 @@ function validatePayload(payload) {
     errors.requestType = "Please select a valid request.";
   }
 
-  if (whatsapp) {
-    const digitCount = (whatsapp.match(/\d/g) || []).length;
-
-    if (!/^[+\d().\-\s]+$/.test(whatsapp) || digitCount < 6) {
-      errors.whatsapp = "Please enter a valid WhatsApp number.";
-    }
+  if (whatsapp && !normalizeInternationalPhone(whatsapp)) {
+    errors.whatsapp = "Include your country code, e.g. +62...";
   }
 
   if (payload.termsAccepted !== true) {
@@ -277,6 +277,45 @@ function buildEmailContent(values) {
       <p><strong>Submitted At:</strong><br>${safe.submittedAt}</p>
     `.trim(),
   };
+}
+
+async function sendConsultationBackupEmail(values) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const toEmail = process.env.CONSULTATION_TO_EMAIL;
+  const fromEmail = process.env.CONSULTATION_FROM_EMAIL;
+
+  if (!apiKey || !toEmail || !fromEmail) {
+    console.error("Consultation email backup delivery skipped.", {
+      eventId: values.eventId,
+      category: "configuration",
+    });
+    return;
+  }
+
+  const email = buildEmailContent(values);
+
+  try {
+    const resend = new Resend(apiKey);
+    const { error } = await resend.emails.send({
+      from: fromEmail,
+      to: toEmail,
+      subject: email.subject,
+      text: email.text,
+      html: email.html,
+    });
+
+    if (error) {
+      console.error("Consultation email backup delivery failed.", {
+        eventId: values.eventId,
+        category: "provider-error",
+      });
+    }
+  } catch {
+    console.error("Consultation email backup delivery failed.", {
+      eventId: values.eventId,
+      category: "network-error",
+    });
+  }
 }
 
 export async function POST(request) {
@@ -375,70 +414,51 @@ export async function POST(request) {
     );
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
-  const toEmail = process.env.CONSULTATION_TO_EMAIL;
-  const fromEmail = process.env.CONSULTATION_FROM_EMAIL;
+  const webhookResult = await deliverLeadWebhook({
+    values,
+    requestUrl: request.url,
+    referrer: request.headers.get("referer") || "",
+    requestHost:
+      request.headers.get("x-forwarded-host") ||
+      request.headers.get("host") ||
+      "",
+    requestProtocol:
+      request.headers.get("x-forwarded-proto") ||
+      new URL(request.url).protocol,
+  });
 
-  if (!apiKey || !toEmail || !fromEmail) {
-    console.error("Consultation email service configuration is incomplete.");
-
-    return jsonResponse(
-      {
-        ok: false,
-        message: "Consultation service is temporarily unavailable.",
-      },
-      500,
-    );
-  }
-
-  const email = buildEmailContent(values);
-
-  try {
-    const resend = new Resend(apiKey);
-    const { error } = await resend.emails.send({
-      from: fromEmail,
-      to: toEmail,
-      subject: email.subject,
-      text: email.text,
-      html: email.html,
+  if (webhookResult.status !== "sent") {
+    console.error("Consultation webhook delivery failed.", {
+      eventId: values.eventId,
+      status: webhookResult.httpStatus,
+      category: webhookResult.category,
     });
-
-    if (error) {
-      console.error("Consultation email delivery failed.");
-
-      return jsonResponse(
-        {
-          ok: false,
-          message: "We couldn't send your request right now. Please try again.",
-        },
-        500,
-      );
-    }
-  } catch {
-    console.error("Consultation email delivery failed.");
 
     return jsonResponse(
       {
         ok: false,
         message: "We couldn't send your request right now. Please try again.",
       },
-      500,
+      503,
     );
   }
 
-  const eventSourceUrl =
-    request.headers.get("referer") || new URL("/", request.url).href;
   const metaLeadEvent = {
     eventId: values.eventId,
     phone: values.whatsapp,
-    sourceUrl: eventSourceUrl,
+    sourceUrl: webhookResult.pageUrl,
     clientIpAddress: getClientIp(request),
     clientUserAgent: request.headers.get("user-agent") || "",
     fbp: request.cookies.get("_fbp")?.value || "",
     fbc: request.cookies.get("_fbc")?.value || "",
   };
 
-  after(() => sendMetaLeadEvent(metaLeadEvent));
+  after(async () => {
+    await Promise.allSettled([
+      sendConsultationBackupEmail(values),
+      sendMetaLeadEvent(metaLeadEvent),
+    ]);
+  });
 
   return jsonResponse({
     ok: true,
