@@ -705,7 +705,7 @@ export default function IceBathQuality() {
           </p>
 
           <a
-            href="#consultation"
+            href="https://wa.me/62817202503?text=Hi!%20I%27m%20interested%20in%20your%20product.%20Could%20you%20share%20more%20details%3F"
             className="pill-button pill-button--standard pill-button--dark ice-quality__bridge-cta mx-auto inline-flex min-h-[3.65rem] w-[min(100%,19rem)] rounded-[0.95rem] border-[var(--ink)] px-[1.4rem] py-[0.95rem] text-[0.74rem] tracking-[0.045em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--ink)] md:mx-0 md:min-h-[3.15rem] md:w-fit md:rounded-[var(--pill)] md:px-[1.4rem] md:py-[0.9rem] md:text-[0.68rem] md:tracking-[0.07em]"
           >
             Book a free consultation
