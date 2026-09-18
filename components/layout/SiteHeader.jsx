@@ -1,5 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 
+import { WHATSAPP_CTA_URL } from "@/lib/contact-config";
+
 const LOGO_SRC =
   "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/image_2026-08-27_05-07-12.png?updatedAt=1787782055245";
 
@@ -23,7 +25,7 @@ export default function SiteHeader() {
         </a>
 
         <a
-          href="https://wa.me/62817202503?text=Hi!%20I%27m%20interested%20in%20your%20product.%20Could%20you%20share%20more%20details%3F"
+          href={WHATSAPP_CTA_URL}
           className="inline-flex min-h-[3rem] items-center justify-center justify-self-end rounded-full bg-black px-[1.35rem] py-[0.85rem] font-display text-[0.78rem] font-medium leading-none tracking-[0.01em] text-white uppercase transition-[background-color,color] duration-200 hover:bg-white hover:text-black"
         >
           Book a free consultation

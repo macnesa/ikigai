@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { WHATSAPP_CTA_URL } from "@/lib/contact-config";
 import {
   gsap,
   MOTION_MEDIA,
@@ -281,7 +282,7 @@ export default function FinalCTA() {
           </h2>
 
           <a
-            href="https://wa.me/62817202503?text=Hi!%20I%27m%20interested%20in%20your%20product.%20Could%20you%20share%20more%20details%3F"
+            href={WHATSAPP_CTA_URL}
             className="final-cta__cta mt-[1.75rem] inline-flex min-h-[3.35rem] w-auto items-center justify-center rounded-[var(--pill)] border border-white bg-white px-[1.55rem] py-[0.9rem] text-center font-display text-[0.74rem] font-medium leading-none tracking-[0.035em] text-[var(--ink)] transition-[background-color,color,border-color] duration-[180ms] hover:border-black hover:bg-black hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white md:mt-[2rem] md:min-h-[3.5rem] md:px-[1.75rem] md:text-[0.78rem]"
           >
             Book my free consultation

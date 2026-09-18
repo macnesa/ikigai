@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { Minus, Plus } from "lucide-react";
+import { WHATSAPP_CTA_URL } from "@/lib/contact-config";
 import {
   gsap,
   MOTION_MEDIA,
@@ -182,7 +183,7 @@ export default function FAQ() {
           </p>
 
           <a
-            href="https://wa.me/62817202503?text=Hi!%20I%27m%20interested%20in%20your%20product.%20Could%20you%20share%20more%20details%3F"
+            href={WHATSAPP_CTA_URL}
             className="faq__cta mt-[1.75rem] inline-flex min-h-[3.4rem] w-fit min-w-[11.5rem] items-center justify-center rounded-[0.9rem] border border-[var(--ink)] bg-[var(--ink)] px-[1.5rem] py-[0.9rem] font-display text-[0.78rem] font-medium leading-none tracking-[0.01em] text-white transition-[background-color,color,border-color] duration-[160ms] hover:bg-transparent hover:text-[var(--ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--ink)] md:mt-[2rem] md:min-h-[3.85rem] md:min-w-[14rem] md:text-[0.86rem]"
           >
             Message Us

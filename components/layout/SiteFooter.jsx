@@ -1,3 +1,5 @@
+import { WHATSAPP_CTA_URL } from "@/lib/contact-config";
+
 const footerGroups = [
   {
     title: "Products",
@@ -119,7 +121,7 @@ export default function SiteFooter() {
         </strong>
 
         <a
-          href="https://wa.me/62817202503?text=Hi!%20I%27m%20interested%20in%20your%20product.%20Could%20you%20share%20more%20details%3F"
+          href={WHATSAPP_CTA_URL}
           className="inline-flex min-h-[2.85rem] shrink-0 items-center justify-center rounded-[var(--pill)] bg-[var(--ink)] px-[1.15rem] py-[0.75rem] font-display text-[0.66rem] font-semibold leading-none tracking-[0.05em] text-white uppercase"
         >
           Book now
