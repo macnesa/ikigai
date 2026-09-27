@@ -10,18 +10,14 @@ import {
 } from "./HomeMotion";
 
 const FINAL_CTA_IMAGE_WIDTHS = [640, 960, 1280, 1600, 1920];
-const FINAL_CTA_IMAGE_QUALITY = 80;
-
 const FINAL_CTA_DESKTOP_IMAGE =
-  "https://ik.imagekit.io/ikigaiwellness/ikigai/home/b3f34f90ef3e371670eab38bea9970cfb08e2992.jpg";
+  "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533534/ikigai/home/b3f34f90ef3e371670eab38bea9970cfb08e2992.jpg";
 
 const FINAL_CTA_MOBILE_IMAGE =
-  "https://ik.imagekit.io/ikigaiwellness/ikigai/home/19fe447fdd327441430bc112d99ff4dbadc762aa.jpg";
+  "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533529/ikigai/home/19fe447fdd327441430bc112d99ff4dbadc762aa.jpg";
 
-function getImageKitUrl(src, width) {
-  const separator = src.includes("?") ? "&" : "?";
-
-  return `${src}${separator}tr=w-${width},q-${FINAL_CTA_IMAGE_QUALITY},f-auto`;
+function getImageKitUrl(src) {
+  return src;
 }
 
 function getImageKitSrcSet(src) {

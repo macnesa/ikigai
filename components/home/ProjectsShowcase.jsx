@@ -16,76 +16,73 @@ import {
 /* eslint-disable @next/next/no-img-element */
 
 const PROJECT_IMAGE_WIDTHS = [480, 640, 960, 1280];
-const PROJECT_IMAGE_QUALITY = 80;
 const PROJECT_LIGHTBOX_IMAGE_WIDTH = 1600;
 
 const projects = [
   {
     id: 1,
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-26_12-00-12.png",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533570/ikigai/home/image_2026-08-26_12-00-12.jpg",
     alt: "",
     objectPosition: "center center",
   },
   {
     id: 2,
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-26_11-59-43.png",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533565/ikigai/home/image_2026-08-26_11-59-43.jpg",
     alt: "",
     objectPosition: "center center",
   },
   {
     id: 3,
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-26_11-58-47.png",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533556/ikigai/home/image_2026-08-26_11-58-47.jpg",
     alt: "",
     objectPosition: "center center",
   },
   {
     id: 4,
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-26_12-00-20.png",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533571/ikigai/home/image_2026-08-26_12-00-20.jpg",
     alt: "",
     objectPosition: "center center",
   },
   {
     id: 5,
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-26_12-00-02.png",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533567/ikigai/home/image_2026-08-26_12-00-02.png",
     alt: "",
     objectPosition: "center center",
   },
   {
     id: 6,
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-26_11-59-30.png",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533563/ikigai/home/image_2026-08-26_11-59-30.jpg",
     alt: "",
     objectPosition: "center center",
   },
   {
     id: 7,
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-26_11-59-17.png",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533561/ikigai/home/image_2026-08-26_11-59-17.jpg",
     alt: "",
     objectPosition: "center center",
   },
   {
     id: 8,
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-26_11-58-32.png",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533554/ikigai/home/image_2026-08-26_11-58-32.jpg",
     alt: "",
     objectPosition: "center center",
   },
   {
     id: 9,
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-26_11-58-55.png",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533558/ikigai/home/image_2026-08-26_11-58-55.jpg",
     alt: "",
     objectPosition: "center center",
   },
   {
     id: 10,
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-26_11-59-02.png",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533560/ikigai/home/image_2026-08-26_11-59-02.jpg",
     alt: "",
     objectPosition: "center center",
   },
 ];
 
-function getImageKitUrl(src, width) {
-  const separator = src.includes("?") ? "&" : "?";
-
-  return `${src}${separator}tr=w-${width},q-${PROJECT_IMAGE_QUALITY},f-auto`;
+function getImageKitUrl(src) {
+  return src;
 }
 
 function getImageKitSrcSet(src) {

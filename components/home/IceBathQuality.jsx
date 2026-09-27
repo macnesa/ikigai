@@ -11,13 +11,11 @@ import {
   useGSAP,
 } from "./HomeMotion";
 
-const IMAGEKIT_QUALITY = 80;
-
 const MOBILE_ICE_BATH_VISUAL =
-  "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-29_17-35-43.png";
+  "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533573/ikigai/home/image_2026-08-29_17-35-43.jpg";
 
 const DESKTOP_ICE_BATH_VIDEO =
-  "https://ik.imagekit.io/ikigaiwellness/ikigai/home/assamble%20chiller.mp4?updatedAt=1788083800216";
+  "https://res.cloudinary.com/aefhdt7e/video/upload/v1790534392/ikigai/video/assamble-chiller.mp4";
 
 const iceBathDetails = [
   {
@@ -57,10 +55,8 @@ const iceBathDetails = [
   },
 ];
 
-function getImageKitUrl(src, width) {
-  const separator = src.includes("?") ? "&" : "?";
-
-  return `${src}${separator}tr=w-${width},q-${IMAGEKIT_QUALITY},f-auto`;
+function getImageKitUrl(src) {
+  return src;
 }
 
 function MobileTechnicalDetails() {

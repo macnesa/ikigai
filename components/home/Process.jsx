@@ -11,8 +11,6 @@ import {
 } from "./HomeMotion";
 
 const PROCESS_IMAGE_WIDTHS = [480, 640, 960, 1280, 1600];
-const PROCESS_IMAGE_QUALITY = 80;
-
 /*
  * The supplied process photography is naturally very wide.
  * Reference asset: 1600 × 846 ≈ 1.891:1.
@@ -28,7 +26,7 @@ const processSteps = [
     title: "Understand your space",
     body: "Available space, intended usage, electrical supply, drainage and project requirements.",
     image:
-      "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-26_11-51-55.png",
+      "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533541/ikigai/home/image_2026-08-26_11-51-55.png",
     objectPosition: "center center",
   },
   {
@@ -36,7 +34,7 @@ const processSteps = [
     title: "Determine the right solution",
     body: "Existing design or custom — then adapted around your space, aesthetic and usage.",
     image:
-      "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-26_11-52-13.png",
+      "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533543/ikigai/home/image_2026-08-26_11-52-13.png",
     objectPosition: "center center",
   },
   {
@@ -44,7 +42,7 @@ const processSteps = [
     title: "Verify the technical details",
     body: "Heater sizing, ventilation, chilling, circulation and filtration reviewed before production.",
     image:
-      "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-26_11-52-30.png",
+      "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533545/ikigai/home/image_2026-08-26_11-52-30.png",
     objectPosition: "center center",
   },
   {
@@ -52,7 +50,7 @@ const processSteps = [
     title: "Build for your project",
     body: "Our own team handles production and the technical requirements.",
     image:
-      "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-26_11-52-43.png",
+      "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533547/ikigai/home/image_2026-08-26_11-52-43.png",
     objectPosition: "center center",
   },
   {
@@ -60,7 +58,7 @@ const processSteps = [
     title: "Handled by our team",
     body: "We coordinate delivery, installation and commissioning of your wellness equipment.",
     image:
-      "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-26_11-52-54.png",
+      "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533550/ikigai/home/image_2026-08-26_11-52-54.png",
     objectPosition: "center center",
   },
   {
@@ -68,7 +66,7 @@ const processSteps = [
     title: "We’re still here after installation",
     body: "Include a weekly maintenance for both commercial & residential to make sure it lasts for years to come.",
     image:
-      "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-26_11-53-05.png",
+      "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533552/ikigai/home/image_2026-08-26_11-53-05.png",
     objectPosition: "center center",
   },
 ];
@@ -79,10 +77,8 @@ const processPairs = [
   [processSteps[4], processSteps[5]],
 ];
 
-function getImageKitUrl(src, width) {
-  const separator = src.includes("?") ? "&" : "?";
-
-  return `${src}${separator}tr=w-${width},q-${PROCESS_IMAGE_QUALITY},f-auto`;
+function getImageKitUrl(src) {
+  return src;
 }
 
 function getImageKitSrcSet(src) {

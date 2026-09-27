@@ -13,11 +13,10 @@ import {
 } from "./HomeMotion";
 
 const IMAGEKIT_WIDTHS = [640, 960, 1280, 1600, 1920, 2560];
-const IMAGEKIT_QUALITY = 80;
 const HERO_FALLBACK_WIDTH = 1280;
 
 const HERO_IMAGE = {
-  src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/0566_ad48168e4a93f9aaf727711ea2ff3d488019b1cc.png",
+  src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533527/ikigai/home/0566_ad48168e4a93f9aaf727711ea2ff3d488019b1cc.jpg",
   mobilePosition: "52% center",
   desktopPosition: "50% center",
 };
@@ -29,8 +28,8 @@ const proofItems = [
   "1 year free maintenance & warranty",
 ];
 
-function getImageKitUrl(src, width) {
-  return `${src}?tr=w-${width},q-${IMAGEKIT_QUALITY},f-auto`;
+function getImageKitUrl(src) {
+  return src;
 }
 
 function getHeroSrcSet(src) {

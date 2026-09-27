@@ -12,13 +12,11 @@ import {
 } from "./HomeMotion";
 
 const IMAGEKIT_WIDTHS = [640, 960, 1280, 1600];
-const IMAGEKIT_QUALITY = 80;
-
 const SAUNA_COMPARISON_IMAGES = {
   other:
-    "https://ik.imagekit.io/ikigaiwellness/ikigai/home/Screenshot%202026-08-26%20at%2011.35.57.png",
+    "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533530/ikigai/home/Screenshot%202026-08-26%20at%2011.35.57.jpg",
   ours:
-    "https://ik.imagekit.io/ikigaiwellness/ikigai/home/Screenshot%202026-08-26%20at%2011.36.12.png",
+    "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533532/ikigai/home/Screenshot%202026-08-26%20at%2011.36.12.jpg",
 };
 
 const saunaDetails = [
@@ -54,10 +52,8 @@ const saunaDetails = [
   },
 ];
 
-function getImageKitUrl(src, width) {
-  const separator = src.includes("?") ? "&" : "?";
-
-  return `${src}${separator}tr=w-${width},q-${IMAGEKIT_QUALITY},f-auto`;
+function getImageKitUrl(src) {
+  return src;
 }
 
 function getImageKitSrcSet(src) {

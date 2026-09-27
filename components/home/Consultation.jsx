@@ -336,7 +336,7 @@ export default function Consultation() {
 
           <div className="relative mt-[1.75rem] aspect-[12/5] w-full overflow-hidden bg-[#414957] md:mt-[2rem]">
             <img
-              src="https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-30_17-21-40.png"
+              src="https://res.cloudinary.com/aefhdt7e/image/upload/v1790533575/ikigai/home/image_2026-08-30_17-21-40.jpg"
               alt=""
               className="h-full w-full object-cover"
               loading="lazy"

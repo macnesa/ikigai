@@ -12,57 +12,53 @@ import ImageLightbox, {
 import { gsap, MOTION_MEDIA, useGSAP } from "./HomeMotion";
 
 const PRODUCT_IMAGE_WIDTHS = [640, 960, 1280, 1600];
-const PRODUCT_IMAGE_QUALITY = 80;
-
 const products = [
   {
     title: "Classic Ice Bath",
     description:
       "Our classic ice bath is a complete unit. Chiller and filtration inside, no plant room, nothing to plumb in. One footprint, one connection, ready to run.",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-25_23-19-55.png?updatedAt=1787675333277",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533537/ikigai/home/image_2026-08-25_23-19-55.png",
     objectPosition: "center center",
   },
   {
     title: "3 Person Saunas",
     description:
       "Bench space for one person to fully lie down, two to sit comfortably, or three together. Compact, without sacrificing the experience of a properly designed sauna.",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/0275_348057fe0d27de6fae3a14e2f8500d6b59108821.jpg?updatedAt=1787675240336",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533523/ikigai/home/0275_348057fe0d27de6fae3a14e2f8500d6b59108821.jpg",
     objectPosition: "center center",
   },
   {
     title: "Bespoke Ice Bath",
     description:
       "Everything you love about the Classic — made personal. Custom engraving, branding or artwork, for owners who want their ice bath to carry their story.",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/0306_41377ebfdae7bc695f1079fb869aa20bf545561c.jpg?updatedAt=1787675241166",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533525/ikigai/home/0306_41377ebfdae7bc695f1079fb869aa20bf545561c.jpg",
     objectPosition: "center center",
   },
   {
     title: "6 Person Saunas",
     description:
       "For larger villas, hotels and wellness spaces a sauna that becomes a statement feature, with room for families, guests and groups.",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/0178_0e7909969004bb0b72295d38b7f95ad6008701fb.jpg?updatedAt=1787675241466",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533521/ikigai/home/0178_0e7909969004bb0b72295d38b7f95ad6008701fb.jpg",
     objectPosition: "center center",
   },
   {
     title: "Custom Saunas",
     description:
       "A specific space, architectural style or vision in mind? We customise dimensions, layout, materials, finishes and technical setup around your property.",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/image_2026-08-25_23-26-04.png?updatedAt=1787675351258",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533539/ikigai/home/image_2026-08-25_23-26-04.jpg",
     objectPosition: "center center",
   },
   {
     title: "Custom Ice Bath",
     description:
       "From high volume wellness centres to boutique hotels, we design ice baths around the demand they actually have to handle. Custom chillers, custom filtration, custom baths, built to run all day without water quality or temperature dropping off.",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/home/0036_d44802b6f589894262c3c7434d64cc8452299a41.jpg?updatedAt=1787675240515",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533517/ikigai/home/0036_d44802b6f589894262c3c7434d64cc8452299a41.jpg",
     objectPosition: "center center",
   },
 ];
 
-function getImageKitUrl(src, width) {
-  const separator = src.includes("?") ? "&" : "?";
-
-  return `${src}${separator}tr=w-${width},q-${PRODUCT_IMAGE_QUALITY},f-auto`;
+function getImageKitUrl(src) {
+  return src;
 }
 
 function getImageKitSrcSet(src) {

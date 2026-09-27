@@ -1,13 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 
 const IMAGEKIT_LOGO_WIDTHS = [192, 288, 384, 480];
-const IMAGEKIT_LOGO_QUALITY = 80;
 const MARQUEE_REPEAT_COUNT = 2;
 
 const trustedByLogos = [
   {
     name: "Four Points",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0484_84af68bf00c4be60d84f5ae81513ecd15abaaa08.png",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533581/ikigai/logo/0484_84af68bf00c4be60d84f5ae81513ecd15abaaa08.png",
     alt: "Four Points by Sheraton",
     width: 836,
     height: 156,
@@ -16,7 +15,7 @@ const trustedByLogos = [
   },
   {
     name: "Grand Hyatt",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0546_a41ab206d798293cf77ce791c66cd98301b77f85.png",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533583/ikigai/logo/0546_a41ab206d798293cf77ce791c66cd98301b77f85.png",
     alt: "Grand Hyatt Jakarta",
     width: 428,
     height: 283,
@@ -25,7 +24,7 @@ const trustedByLogos = [
   },
   {
     name: "Marriott",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0549_a6ac5d0ff6f66e10522aabee813b95602c8d140b.png",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533602/ikigai/logo/0549_a6ac5d0ff6f66e10522aabee813b95602c8d140b.png",
     alt: "Marriott",
     width: 1622,
     height: 1274,
@@ -34,7 +33,7 @@ const trustedByLogos = [
   },
   {
     name: "The Apurva Kempinski",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0440_7415c0a6e4d5e728f944e3654d04df0be592b9e9.png",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533577/ikigai/logo/0440_7415c0a6e4d5e728f944e3654d04df0be592b9e9.png",
     alt: "The Apurva Kempinski",
     width: 543,
     height: 676,
@@ -43,7 +42,7 @@ const trustedByLogos = [
   },
   {
     name: "Mandapa",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/image_2026-08-27_03-51-40.png?updatedAt=1787778004117",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533605/ikigai/logo/image_2026-08-27_03-51-40.png",
     alt: "Mandapa",
     width: 4725,
     height: 4725,
@@ -52,7 +51,7 @@ const trustedByLogos = [
   },
   {
     name: "The Westin",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0549_a6ac5d0ff6f66e10522aabee813b95602c8d140b%20(1).png?updatedAt=1788170623020",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533586/ikigai/logo/0549_a6ac5d0ff6f66e10522aabee813b95602c8d140b%20%281%29.png",
     alt: "The Westin",
     width: 4725,
     height: 4725,
@@ -61,7 +60,7 @@ const trustedByLogos = [
   },
   {
     name: "JSI Resort",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0549_a6ac5d0ff6f66e10522aabee813b95602c8d140b%20(5).png?updatedAt=1788170623158=",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533597/ikigai/logo/0549_a6ac5d0ff6f66e10522aabee813b95602c8d140b%20%285%29.png",
     alt: "JSI Resort",
     width: 4725,
     height: 4725,
@@ -70,7 +69,7 @@ const trustedByLogos = [
   },
   {
     name: "RAW",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0549_a6ac5d0ff6f66e10522aabee813b95602c8d140b%20(4).png?updatedAt=1788170623149",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533593/ikigai/logo/0549_a6ac5d0ff6f66e10522aabee813b95602c8d140b%20%284%29.png",
     alt: "RAW",
     width: 4725,
     height: 4725,
@@ -79,7 +78,7 @@ const trustedByLogos = [
   },
   {
     name: "Hotel Indigo",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0549_a6ac5d0ff6f66e10522aabee813b95602c8d140b%20(6).png?updatedAt=1788170623201",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533601/ikigai/logo/0549_a6ac5d0ff6f66e10522aabee813b95602c8d140b%20%286%29.png",
     alt: "Hotel Indigo",
     width: 4725,
     height: 4725,
@@ -88,7 +87,7 @@ const trustedByLogos = [
   },
   {
     name: "InterContinental Hotels & Resorts",
-    src: "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/0549_a6ac5d0ff6f66e10522aabee813b95602c8d140b%20(2).png?updatedAt=1788170623305",
+    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533588/ikigai/logo/0549_a6ac5d0ff6f66e10522aabee813b95602c8d140b%20%282%29.png",
     alt: "InterContinental Hotels & Resorts",
     width: 4725,
     height: 4725,
@@ -102,10 +101,8 @@ const repeatedLogos = Array.from(
   () => trustedByLogos,
 ).flat();
 
-function getImageKitUrl(src, width) {
-  const separator = src.includes("?") ? "&" : "?";
-
-  return `${src}${separator}tr=w-${width},q-${IMAGEKIT_LOGO_QUALITY},f-auto`;
+function getImageKitUrl(src) {
+  return src;
 }
 
 function getImageKitSrcSet(src) {

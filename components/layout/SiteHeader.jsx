@@ -3,7 +3,7 @@
 import { WHATSAPP_CTA_URL } from "@/lib/contact-config";
 
 const LOGO_SRC =
-  "https://ik.imagekit.io/ikigaiwellness/ikigai/logo/image_2026-08-27_05-07-12.png?updatedAt=1787782055245";
+  "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533607/ikigai/logo/image_2026-08-27_05-07-12.png";
 
 export default function SiteHeader() {
   return (
