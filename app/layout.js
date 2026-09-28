@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import localFont from "next/font/local";
 import Script from "next/script";
 import ContactClickTracking from "@/components/tracking/ContactClickTracking";
@@ -93,6 +94,7 @@ export default function RootLayout({ children }) {
 
         <ContactClickTracking />
         {children}
+        <Analytics />
       </body>
     </html>
   );
