@@ -6,78 +6,38 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { WHATSAPP_CTA_URL } from "@/lib/contact-config";
+import { cloudinaryAssetUrl } from "@/lib/cloudinary";
 import ImageLightbox, {
   useImageLightbox,
 } from "../ui/ImageLightbox";
 import { gsap, MOTION_MEDIA, useGSAP } from "./HomeMotion";
 
 const PRODUCT_IMAGE_WIDTHS = [640, 960, 1280, 1600];
-const products = [
-  {
-    title: "Classic Ice Bath",
-    description:
-      "Our classic ice bath is a complete unit. Chiller and filtration inside, no plant room, nothing to plumb in. One footprint, one connection, ready to run.",
-    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533537/ikigai/home/image_2026-08-25_23-19-55.png",
-    objectPosition: "center center",
-  },
-  {
-    title: "3 Person Saunas",
-    description:
-      "Bench space for one person to fully lie down, two to sit comfortably, or three together. Compact, without sacrificing the experience of a properly designed sauna.",
-    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533523/ikigai/home/0275_348057fe0d27de6fae3a14e2f8500d6b59108821.jpg",
-    objectPosition: "center center",
-  },
-  {
-    title: "Bespoke Ice Bath",
-    description:
-      "Everything you love about the Classic — made personal. Custom engraving, branding or artwork, for owners who want their ice bath to carry their story.",
-    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533525/ikigai/home/0306_41377ebfdae7bc695f1079fb869aa20bf545561c.jpg",
-    objectPosition: "center center",
-  },
-  {
-    title: "6 Person Saunas",
-    description:
-      "For larger villas, hotels and wellness spaces a sauna that becomes a statement feature, with room for families, guests and groups.",
-    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533521/ikigai/home/0178_0e7909969004bb0b72295d38b7f95ad6008701fb.jpg",
-    objectPosition: "center center",
-  },
-  {
-    title: "Custom Saunas",
-    description:
-      "A specific space, architectural style or vision in mind? We customise dimensions, layout, materials, finishes and technical setup around your property.",
-    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533539/ikigai/home/image_2026-08-25_23-26-04.jpg",
-    objectPosition: "center center",
-  },
-  {
-    title: "Custom Ice Bath",
-    description:
-      "From high volume wellness centres to boutique hotels, we design ice baths around the demand they actually have to handle. Custom chillers, custom filtration, custom baths, built to run all day without water quality or temperature dropping off.",
-    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533517/ikigai/home/0036_d44802b6f589894262c3c7434d64cc8452299a41.jpg",
-    objectPosition: "center center",
-  },
-];
-
-function getImageKitUrl(src) {
+function getCloudinaryUrl(src) {
   return src;
 }
 
-function getImageKitSrcSet(src) {
+function getCloudinarySrcSet(src) {
   return PRODUCT_IMAGE_WIDTHS.map(
-    (width) => `${getImageKitUrl(src, width)} ${width}w`,
+    (width) => `${getCloudinaryUrl(src, width)} ${width}w`,
   ).join(", ");
 }
 
-const productLightboxImages = products.map((product) => ({
-  src: getImageKitUrl(
-    product.src,
-    PRODUCT_IMAGE_WIDTHS[PRODUCT_IMAGE_WIDTHS.length - 1],
-  ),
-  alt: product.title,
-}));
-
-export default function ProductShowcase() {
+export default function ProductShowcase({ content }) {
   const sectionRef = useRef(null);
   const imageLightbox = useImageLightbox();
+  const products = (content?.products || []).map((product) => ({
+    ...product,
+    src: cloudinaryAssetUrl(product.image),
+    objectPosition: "center center",
+  }));
+  const productLightboxImages = products.map((product) => ({
+    src: getCloudinaryUrl(
+      product.src,
+      PRODUCT_IMAGE_WIDTHS[PRODUCT_IMAGE_WIDTHS.length - 1],
+    ),
+    alt: product.imageAlt || "",
+  }));
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
@@ -379,20 +339,18 @@ export default function ProductShowcase() {
       <div className="site-container mx-auto w-full max-w-[105rem] px-[var(--page-gutter)]">
         <header className="products__header mb-[2.5rem] grid gap-3 md:mb-[clamp(3.25rem,4vw,4.75rem)] md:grid-cols-[minmax(0,1.25fr)_minmax(20rem,0.75fr)] md:grid-rows-[auto_auto] md:gap-x-[clamp(3rem,6vw,7rem)] md:gap-y-3">
           <p className="eyebrow products__eyebrow m-0 font-display text-[0.66rem] font-semibold leading-[1.2] tracking-[0.18em] uppercase md:col-start-1 md:row-start-1">
-            Existing & custom solutions
+            {content?.eyebrow || ""}
           </p>
 
           <h2
             id="products-title"
             className="products__heading gsap-text-clip ikigai-alpha-mask max-w-[18ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em] md:col-start-1 md:row-start-2"
           >
-            Start With One of Our Designs or Create Your Own
+            {content?.heading || ""}
           </h2>
 
           <p className="products__intro m-0 mt-[0.4rem] max-w-[31rem] text-[length:var(--type-section-intro-prominent)] leading-[1.65] text-[var(--ink-soft)] md:col-start-2 md:row-start-2 md:mt-0 md:self-end md:justify-self-end md:leading-[1.6]">
-            Whether one of our existing sauna and ice bath designs fits your
-            space or your project needs something custom, our team will help
-            you create the right setup.
+            {content?.intro || ""}
           </p>
         </header>
 
@@ -407,7 +365,7 @@ export default function ProductShowcase() {
             <div className="products__track flex items-stretch [touch-action:pan-y_pinch-zoom]">
               {products.map((product, index) => (
                 <div
-                  key={product.title}
+                  key={product._key}
                   className="products__slide min-w-0 flex-[0_0_88%] pr-[0.8rem] md:flex-[0_0_var(--product-card-width)] md:pr-[clamp(0.9rem,1.2vw,1.4rem)]"
                   role="group"
                   aria-roledescription="slide"
@@ -429,13 +387,13 @@ export default function ProductShowcase() {
                       <div className="product-card__media-motion h-full w-full origin-center will-change-transform">
                         <img
                           className="block h-full w-full object-cover"
-                          src={getImageKitUrl(
+                          src={getCloudinaryUrl(
                             product.src,
                             PRODUCT_IMAGE_WIDTHS[1],
                           )}
-                          srcSet={getImageKitSrcSet(product.src)}
+                          srcSet={getCloudinarySrcSet(product.src)}
                           sizes="(min-width: 48rem) clamp(22rem, 26vw, 31rem), 88vw"
-                          alt={product.title}
+                          alt={product.imageAlt || ""}
                           loading="lazy"
                           decoding="async"
                           draggable="false"
@@ -509,12 +467,11 @@ export default function ProductShowcase() {
               id="products-consultation-title"
               className="m-0 max-w-[20ch] font-display text-[clamp(1.55rem,6vw,1.9rem)] font-medium leading-[1.06] tracking-[-0.036em] md:text-[clamp(2rem,2.3vw,2.7rem)]"
             >
-              Not sure what works best for your space?
+              {content?.consultationHeading || ""}
             </h3>
 
             <p className="mt-[0.8rem] mb-0 max-w-[34rem] text-[0.8rem] leading-[1.62] text-white/[0.66] md:text-[0.86rem]">
-              You don&apos;t need to know exactly what you need. Tell us about
-              your property and we&apos;ll explain what&apos;s possible.
+              {content?.consultationBody || ""}
             </p>
           </div>
 
@@ -522,7 +479,7 @@ export default function ProductShowcase() {
             href={WHATSAPP_CTA_URL}
             className="pill-button pill-button--standard pill-button--light inline-flex w-fit flex-none"
           >
-            Book a free consultation
+            {content?.consultationCtaLabel || ""}
           </a>
         </aside>
       </div>

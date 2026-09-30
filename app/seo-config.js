@@ -1,17 +1,3 @@
-export const SITE_NAME = "IKIGAI Wellness";
-export const SITE_TITLE =
-  "IKIGAI Wellness | Saunas & Ice Baths in Indonesia";
-export const SITE_DESCRIPTION =
-  "Premium saunas, ice baths, and complete wellness spaces designed, built, installed, and maintained for homes, villas, and hotels across Indonesia.";
-
-export const SOCIAL_IMAGE = {
-  url: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533527/ikigai/home/0566_ad48168e4a93f9aaf727711ea2ff3d488019b1cc.jpg",
-  width: 1672,
-  height: 941,
-  type: "image/jpeg",
-  alt: "IKIGAI Wellness sauna and ice bath installation",
-};
-
 export function getSiteUrl() {
   const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
 

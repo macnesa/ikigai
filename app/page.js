@@ -12,24 +12,70 @@ import SmoothScroll from "@/components/home/SmoothScroll";
 import TrustedBy from "@/components/home/TrustedBy";
 import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
+import { cloudinaryAssetUrl } from "@/lib/cloudinary";
+import { getHomePageContent } from "@/lib/sanity";
+import { getSiteUrl } from "./seo-config";
 
-export default function Home() {
+export async function generateMetadata() {
+  const { landingPage, siteSettings } = await getHomePageContent();
+  const seo = landingPage.seo || {};
+  const socialImage = seo.socialImage || siteSettings.defaultSocialImage;
+  const socialImageUrl = cloudinaryAssetUrl(socialImage);
+  const socialImageAlt = seo.socialImageAlt || siteSettings.defaultSocialImageAlt;
+  const title = seo.title || siteSettings.defaultSeoTitle;
+  const description = seo.description || siteSettings.defaultSeoDescription;
+  const siteUrl = getSiteUrl();
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      ...(siteUrl ? { url: siteUrl } : {}),
+      siteName: siteSettings.siteName,
+      type: "website",
+      ...(socialImageUrl
+        ? {
+            images: [
+              {
+                url: socialImageUrl,
+                width: socialImage?.width,
+                height: socialImage?.height,
+                alt: socialImageAlt,
+              },
+            ],
+          }
+        : {}),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      ...(socialImageUrl ? { images: [socialImageUrl] } : {}),
+    },
+  };
+}
+
+export default async function Home() {
+  const { landingPage, siteSettings } = await getHomePageContent();
+
   return (
     <main id="main-content">
       <HomeMotion />
       <SmoothScroll />
-      <SiteHeader />
-      <Hero />
-      <TrustedBy />
-      <ProductShowcase />
-      <SaunaQuality />
-      <IceBathQuality />
-      <Process />
-      <ProjectsShowcase />
-      <Consultation />
-      <FAQ />
-      <FinalCTA />
-      <SiteFooter />
+      <SiteHeader content={siteSettings} />
+      <Hero content={landingPage.hero} />
+      <TrustedBy content={landingPage.trustedClients} />
+      <ProductShowcase content={landingPage.productShowcase} />
+      <SaunaQuality content={landingPage.saunaQuality} />
+      <IceBathQuality content={landingPage.iceBathQuality} />
+      <Process content={landingPage.process} />
+      <ProjectsShowcase content={landingPage.projects} />
+      <Consultation content={landingPage.consultation} />
+      <FAQ content={landingPage.faq} />
+      <FinalCTA content={landingPage.finalCta} />
+      <SiteFooter content={siteSettings} />
     </main>
   );
 }

@@ -10,60 +10,10 @@ import {
   useGSAP,
 } from "./HomeMotion";
 
-const FAQ_ITEMS = [
-  {
-    id: "faq-1",
-    question: "How do I know which one is right for my property?",
-    answer:
-      "You don't need to figure it out. We review your space and usage during the free consultation, then recommend.",
-  },
-  {
-    id: "faq-2",
-    question: "How does purchasing work?",
-    answer:
-      "Free consultation, then design and technical setup confirmed, fixed scope and timeline agreed, then production and installation scheduled.",
-  },
-  {
-    id: "faq-3",
-    question: "How much does it cost?",
-    answer:
-      "It depends on product, size, equipment and customisation. We’ll walk through the options in your consultation.",
-  },
-  {
-    id: "faq-4",
-    question: "Can you customise the design?",
-    answer:
-      "Yes — dimensions, layout, materials, finishes. If an existing design already fits, we’ll recommend that instead.",
-  },
-  {
-    id: "faq-5",
-    question: "Where do you deliver and install?",
-    answer:
-      "Throughout Indonesia. For projects outside Bali we confirm logistics during the consultation.",
-  },
-  {
-    id: "faq-6",
-    question: "How long does production take?",
-    answer:
-      "Typically 4–6 weeks. Exact dates confirmed before the project begins.",
-  },
-  {
-    id: "faq-7",
-    question: "What does warranty and maintenance look like?",
-    answer:
-      "Residential installs include one year: bi-weekly visits, filter changes every two weeks, system checks and paint touch-ups.",
-  },
-  {
-    id: "faq-8",
-    question: "Do you work with hotels?",
-    answer:
-      "Yes. Commercial usage is higher, so we build a separate maintenance programme around the property.",
-  },
-];
-
-export default function FAQ() {
+export default function FAQ({ content }) {
   const sectionRef = useRef(null);
   const [openIndex, setOpenIndex] = useState(null);
+  const faqItems = content?.faqs || [];
 
   useGSAP(
     () => {
@@ -174,30 +124,29 @@ export default function FAQ() {
             id="faq-title"
             className="faq__heading m-0 max-w-[7ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[0.98] tracking-[-0.045em] md:max-w-[6ch]"
           >
-            Ikigai FAQs
+            {content?.heading || ""}
           </h2>
 
           <p className="faq__intro mt-[1.25rem] mb-0 max-w-[20rem] text-[length:var(--type-section-intro-standard)] leading-[1.6] text-[var(--ink-soft)] md:mt-[1.45rem] md:max-w-[18rem] md:leading-[1.55]">
-            Common questions about our sauna and ice bath systems, and how they
-            fit into your space.
+            {content?.intro || ""}
           </p>
 
           <a
             href={WHATSAPP_CTA_URL}
             className="faq__cta mt-[1.75rem] inline-flex min-h-[3.4rem] w-fit min-w-[11.5rem] items-center justify-center rounded-[0.9rem] border border-[var(--ink)] bg-[var(--ink)] px-[1.5rem] py-[0.9rem] font-display text-[0.78rem] font-medium leading-none tracking-[0.01em] text-white transition-[background-color,color,border-color] duration-[160ms] hover:bg-transparent hover:text-[var(--ink)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--ink)] md:mt-[2rem] md:min-h-[3.85rem] md:min-w-[14rem] md:text-[0.86rem]"
           >
-            Message Us
+            {content?.ctaLabel || ""}
           </a>
         </header>
 
         <div className="faq__list border-t border-[var(--line)]">
-          {FAQ_ITEMS.map((item, index) => {
+          {faqItems.map((item, index) => {
             const isOpen = openIndex === index;
-            const panelId = `${item.id}-panel`;
+            const panelId = `${item._key}-panel`;
 
             return (
               <div
-                key={item.id}
+                key={item._key}
                 className="faq-item border-b border-[var(--line)]"
               >
                 <button

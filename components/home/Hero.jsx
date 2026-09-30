@@ -11,35 +11,25 @@ import {
   shouldLimitMotion,
   useGSAP,
 } from "./HomeMotion";
+import { cloudinaryAssetUrl } from "@/lib/cloudinary";
 
-const IMAGEKIT_WIDTHS = [640, 960, 1280, 1600, 1920, 2560];
+const CLOUDINARY_WIDTHS = [640, 960, 1280, 1600, 1920, 2560];
 const HERO_FALLBACK_WIDTH = 1280;
 
-const HERO_IMAGE = {
-  src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533527/ikigai/home/0566_ad48168e4a93f9aaf727711ea2ff3d488019b1cc.jpg",
-  mobilePosition: "52% center",
-  desktopPosition: "50% center",
-};
-
-const proofItems = [
-  "Existing & custom designs",
-  "Made for high-end wellness hotel",
-  "Installed across Indonesia",
-  "1 year free maintenance & warranty",
-];
-
-function getImageKitUrl(src) {
+function getCloudinaryUrl(src) {
   return src;
 }
 
 function getHeroSrcSet(src) {
-  return IMAGEKIT_WIDTHS.map(
-    (width) => `${getImageKitUrl(src, width)} ${width}w`,
+  return CLOUDINARY_WIDTHS.map(
+    (width) => `${getCloudinaryUrl(src, width)} ${width}w`,
   ).join(", ");
 }
 
-export default function Hero() {
+export default function Hero({ content }) {
   const heroRef = useRef(null);
+  const heroImage = cloudinaryAssetUrl(content?.backgroundMedia);
+  const proofItems = content?.proofItems || [];
   const [runtimePreferences, setRuntimePreferences] = useState({
     ready: false,
     reducedMotion: false,
@@ -346,13 +336,13 @@ export default function Hero() {
         <img
           className="hero__image absolute inset-0 h-full w-full object-cover [object-position:var(--hero-object-mobile)] will-change-transform lg:[object-position:var(--hero-object-desktop)]"
           style={{
-            "--hero-object-mobile": HERO_IMAGE.mobilePosition,
-            "--hero-object-desktop": HERO_IMAGE.desktopPosition,
+            "--hero-object-mobile": "52% center",
+            "--hero-object-desktop": "50% center",
           }}
-          src={getImageKitUrl(HERO_IMAGE.src, HERO_FALLBACK_WIDTH)}
-          srcSet={getHeroSrcSet(HERO_IMAGE.src)}
+          src={getCloudinaryUrl(heroImage, HERO_FALLBACK_WIDTH)}
+          srcSet={getHeroSrcSet(heroImage)}
           sizes="100vw"
-          alt=""
+          alt={content?.backgroundMediaAlt || ""}
           loading="eager"
           fetchPriority="high"
           decoding="async"
@@ -403,16 +393,16 @@ export default function Hero() {
             {/* ================= MOBILE TITLE ================= */}
             <span className="lg:hidden">
               <span className="hero-title-line--mobile gsap-text-clip ikigai-alpha-mask">
-                <span className="block">Build Your Dream</span>
+                <span className="block">{content?.headingLine1 || ""}</span>
               </span>
 
               <span className="hero-title-line--mobile gsap-text-clip ikigai-alpha-mask">
-                <span className="block">Wellness Setup with</span>
+                <span className="block">{content?.headingLine2 || ""}</span>
               </span>
 
               <span className="hero-title-line--mobile gsap-text-clip ikigai-alpha-mask [--gsap-text-clip-offset:0.16em]">
                 <span className="block font-medium">
-                  Ikigai Wellness
+                  {content?.headingLine3 || ""}
                 </span>
               </span>
             </span>
@@ -420,24 +410,23 @@ export default function Hero() {
             {/* ================= DESKTOP TITLE ================= */}
             <span className="hidden lg:block">
               <span className="hero-title-line--desktop gsap-text-clip ikigai-alpha-mask">
-                <span className="block">Build Your Dream</span>
+                <span className="block">{content?.headingLine1 || ""}</span>
               </span>
 
               <span className="hero-title-line--desktop gsap-text-clip ikigai-alpha-mask">
-                <span className="block">Wellness Setup with</span>
+                <span className="block">{content?.headingLine2 || ""}</span>
               </span>
 
               <span className="hero-title-line--desktop gsap-text-clip ikigai-alpha-mask [--gsap-text-clip-offset:0.1em]">
                 <span className="block font-medium">
-                  Ikigai Wellness
+                  {content?.headingLine3 || ""}
                 </span>
               </span>
             </span>
           </h1>
 
           <p className="hero__intro mt-[1.15rem] mb-0 max-w-[29rem] text-[0.82rem] leading-[1.55] text-white/[0.82] md:max-w-[32rem] md:text-[0.9rem] lg:mt-[1.25rem] lg:max-w-[38rem] lg:text-[clamp(1rem,1.1vw,1.125rem)] lg:leading-[1.42] lg:text-white/[0.82]">
-            Premium saunas, ice baths and complete wellness spaces designed,
-            built, installed and maintained by our team across Indonesia.
+            {content?.intro || ""}
           </p>
         </div>
 
@@ -495,12 +484,11 @@ export default function Hero() {
               "
               href={WHATSAPP_CTA_URL}
             >
-              Book a free consultation
+              {content?.ctaLabel || ""}
             </a>
 
             <p className="mt-[1rem] hidden max-w-[20.375rem] text-[0.75rem] leading-[1.72] text-white/[0.72] lg:block">
-              Tell us about your property and what you&apos;re looking to create.
-              Our team will recommend the right setup and next steps.
+              {content?.supportingCopy || ""}
             </p>
           </div>
         </div>
@@ -523,7 +511,7 @@ export default function Hero() {
           {proofItems.map((item) => (
             <li
               className="flex items-start gap-[0.6rem] font-display text-[0.75rem] font-medium leading-[1.38] text-white/[0.84] md:text-[0.82rem] lg:items-center lg:gap-[0.625rem] lg:text-[clamp(0.86rem,0.9vw,0.95rem)] lg:font-semibold lg:leading-[1.25] lg:text-white/[0.94]"
-              key={item}
+              key={item._key}
             >
               <Check
                 className="mt-[0.05rem] h-[14px] w-[14px] shrink-0 opacity-75 lg:mt-0 lg:h-[1.05rem] lg:w-[1.05rem] lg:opacity-90"
@@ -531,7 +519,7 @@ export default function Hero() {
                 strokeWidth={1.7}
               />
 
-              <span>{item}</span>
+              <span>{item.text}</span>
             </li>
           ))}
         </ul>

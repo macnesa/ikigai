@@ -15,17 +15,7 @@ import {
   shouldLimitMotion,
   useGSAP,
 } from "./HomeMotion";
-
-const consultationChecklist = [
-  "Your available space",
-  "Sauna or ice bath options",
-  "Intended usage and capacity",
-  "Estimated budget",
-  "What you're looking to create",
-  "Existing vs. custom designs",
-  "Electrical, drainage, installation",
-  "Recommended next steps",
-];
+import { cloudinaryAssetUrl } from "@/lib/cloudinary";
 
 const interestOptions = [
   { value: "sauna", label: "Sauna" },
@@ -49,8 +39,10 @@ const requestTypeOptions = [
   "Site Assessment",
 ];
 
-export default function Consultation() {
+export default function Consultation({ content }) {
   const sectionRef = useRef(null);
+  const consultationChecklist = content?.checklist || [];
+  const consultationImage = cloudinaryAssetUrl(content?.image);
   const {
     register,
     handleSubmit,
@@ -317,7 +309,7 @@ export default function Consultation() {
     >
       <div className="site-container mx-auto grid w-full max-w-[105rem] gap-y-[0.8rem] px-[var(--page-gutter)] lg:grid-cols-[minmax(0,1.08fr)_minmax(32rem,0.92fr)] lg:grid-rows-[auto_1fr] lg:gap-x-[clamp(4.5rem,7vw,9rem)] lg:gap-y-[0.85rem]">
         <p className="eyebrow consultation__eyebrow m-0 font-display text-[0.66rem] font-semibold leading-[1.2] tracking-[0.18em] text-white/[0.62] uppercase lg:col-start-1 lg:row-start-1">
-          Free wellness consultation
+          {content?.eyebrow || ""}
         </p>
 
         <div className="lg:col-start-1 lg:row-start-2">
@@ -325,19 +317,17 @@ export default function Consultation() {
             id="consultation-title"
             className="consultation__heading m-0 max-w-[15ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em]"
           >
-            Planning a Wellness Space? Talk to Our Team
+            {content?.heading || ""}
           </h2>
 
           <p className="consultation__body mt-[1.25rem] mb-0 max-w-[35rem] text-[length:var(--type-section-intro-prominent)] leading-[1.65] text-white/[0.68] md:leading-[1.6]">
-            You don&apos;t need to know exactly which sauna, ice bath or
-            technical setup you need. Tell us about your property — we&apos;ll
-            explain what&apos;s possible and what to do next.
+            {content?.intro || ""}
           </p>
 
           <div className="relative mt-[1.75rem] aspect-[12/5] w-full overflow-hidden bg-[#414957] md:mt-[2rem]">
             <img
-              src="https://res.cloudinary.com/aefhdt7e/image/upload/v1790533575/ikigai/home/image_2026-08-30_17-21-40.jpg"
-              alt=""
+              src={consultationImage || undefined}
+              alt={content?.imageAlt || ""}
               className="h-full w-full object-cover"
               loading="lazy"
               decoding="async"
@@ -352,7 +342,7 @@ export default function Consultation() {
             <ul className="mt-[1rem] mb-0 grid gap-x-[2.5rem] gap-y-[0.72rem] p-0 [list-style:none] sm:grid-cols-2 md:gap-y-[0.6rem]">
               {consultationChecklist.map((item) => (
                 <li
-                  key={item}
+                  key={item._key}
                   className="flex items-start gap-[0.65rem] text-[length:var(--type-consultation-checklist)] leading-[1.42] text-white/[0.76]"
                 >
                   <Check
@@ -362,7 +352,7 @@ export default function Consultation() {
                     strokeWidth={1.7}
                   />
 
-                  <span>{item}</span>
+                  <span>{item.text}</span>
                 </li>
               ))}
             </ul>
@@ -375,7 +365,7 @@ export default function Consultation() {
           noValidate
         >
           <h3 className="mt-0 mb-[1.8rem] max-w-[22rem] font-display text-[1.5rem] font-medium leading-[1.1] tracking-[-0.03em] md:text-[1.6rem]">
-            Book your free wellness consultation
+            {content?.formHeading || ""}
           </h3>
 
           <div
@@ -394,12 +384,12 @@ export default function Consultation() {
 
           <div className="grid gap-y-[1.55rem] md:grid-cols-2 md:gap-x-[1.35rem] md:gap-y-[1.7rem]">
             <label className="grid gap-[0.4rem] font-display text-[length:var(--type-small-label)] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
-              <span>Name</span>
+              <span>{content?.nameLabel || ""}</span>
 
               <input
                 className="font-body w-full rounded-none border-0 border-b border-white/[0.2] bg-transparent px-0 py-[0.72rem] text-[0.88rem] font-normal tracking-normal text-white normal-case outline-none transition-colors duration-[160ms] placeholder:text-white/[0.42] focus:border-white/[0.78]"
                 type="text"
-                placeholder="Your name"
+                placeholder={content?.namePlaceholder || ""}
                 autoComplete="name"
                 aria-invalid={Boolean(errors.name)}
                 aria-describedby={errors.name ? "consultation-name-error" : undefined}
@@ -425,12 +415,12 @@ export default function Consultation() {
             </label>
 
             <label className="grid gap-[0.4rem] font-display text-[length:var(--type-small-label)] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
-              <span>WhatsApp</span>
+              <span>{content?.whatsAppLabel || ""}</span>
 
               <input
                 className="font-body w-full rounded-none border-0 border-b border-white/[0.2] bg-transparent px-0 py-[0.72rem] text-[0.88rem] font-normal tracking-normal text-white normal-case outline-none transition-colors duration-[160ms] placeholder:text-white/[0.42] focus:border-white/[0.78]"
                 type="tel"
-                placeholder="+62 …"
+                placeholder={content?.whatsAppPlaceholder || ""}
                 autoComplete="tel"
                 aria-invalid={Boolean(errors.whatsapp)}
                 aria-describedby={
@@ -473,12 +463,12 @@ export default function Consultation() {
             </label>
 
             <label className="grid gap-[0.4rem] font-display text-[length:var(--type-small-label)] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
-              <span>Property / Project type</span>
+              <span>{content?.propertyTypeLabel || ""}</span>
 
               <input
                 className="font-body w-full rounded-none border-0 border-b border-white/[0.2] bg-transparent px-0 py-[0.72rem] text-[0.88rem] font-normal tracking-normal text-white normal-case outline-none transition-colors duration-[160ms] placeholder:text-white/[0.42] focus:border-white/[0.78]"
                 type="text"
-                placeholder="Villa, hotel, residence …"
+                placeholder={content?.propertyTypePlaceholder || ""}
                 aria-invalid={Boolean(errors.propertyType)}
                 aria-describedby={
                   errors.propertyType
@@ -509,12 +499,12 @@ export default function Consultation() {
             </label>
 
             <label className="grid gap-[0.4rem] font-display text-[length:var(--type-small-label)] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
-              <span>Location</span>
+              <span>{content?.locationLabel || ""}</span>
 
               <input
                 className="font-body w-full rounded-none border-0 border-b border-white/[0.2] bg-transparent px-0 py-[0.72rem] text-[0.88rem] font-normal tracking-normal text-white normal-case outline-none transition-colors duration-[160ms] placeholder:text-white/[0.42] focus:border-white/[0.78]"
                 type="text"
-                placeholder="Canggu, Ubud, Jakarta …"
+                placeholder={content?.locationPlaceholder || ""}
                 autoComplete="address-level2"
                 aria-invalid={Boolean(errors.location)}
                 aria-describedby={
@@ -550,7 +540,7 @@ export default function Consultation() {
             }
           >
             <legend className="font-display text-[length:var(--type-small-label)] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
-              What are you interested in?
+              {content?.interestsLabel || ""}
             </legend>
 
             <div className="mt-[0.9rem] grid grid-cols-2 gap-2 md:flex md:flex-wrap">
@@ -593,7 +583,7 @@ export default function Consultation() {
             }
           >
             <legend className="font-display text-[length:var(--type-small-label)] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
-              When are you planning to get one?
+              {content?.timelineLabel || ""}
             </legend>
 
             <div className="mt-[0.9rem] grid grid-cols-2 gap-2 md:flex md:flex-wrap">
@@ -642,7 +632,7 @@ export default function Consultation() {
             }
           >
             <legend className="font-display text-[length:var(--type-small-label)] font-semibold tracking-[0.14em] text-white/[0.6] uppercase">
-              What would you like from us?
+              {content?.requestTypeLabel || ""}
             </legend>
 
             <div className="mt-[0.9rem] grid grid-cols-2 gap-2 md:flex md:flex-wrap">
@@ -709,7 +699,7 @@ export default function Consultation() {
               </span>
 
               <span>
-                I agree to the Terms &amp; Conditions and Privacy Policy
+                {content?.termsCopy || ""}
               </span>
             </label>
 
@@ -738,10 +728,7 @@ export default function Consultation() {
               </span>
 
               <span>
-                Send me occasional updates from IKIGAI.{" "}
-                <strong className="font-medium text-white/[0.68]">
-                  Optional
-                </strong>
+                {content?.marketingConsentCopy || ""}
               </span>
             </label>
           </div>
@@ -751,12 +738,13 @@ export default function Consultation() {
             type="submit"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Sending..." : "Book my free consultation"}
+            {isSubmitting
+              ? content?.submittingLabel || ""
+              : content?.submitLabel || ""}
           </button>
 
           <p className="mt-[0.9rem] mb-0 max-w-[31rem] text-[0.68rem] leading-[1.55] text-white/[0.52]">
-            No obligation. Tell us about your project and we&apos;ll help you
-            understand your options.
+            {content?.closingCopy || ""}
           </p>
 
           {notice.message ? (

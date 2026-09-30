@@ -9,6 +9,7 @@ import {
   shouldLimitMotion,
   useGSAP,
 } from "./HomeMotion";
+import { cloudinaryAssetUrl } from "@/lib/cloudinary";
 
 const PROCESS_IMAGE_WIDTHS = [480, 640, 960, 1280, 1600];
 /*
@@ -20,70 +21,13 @@ const PROCESS_IMAGE_WIDTHS = [480, 640, 960, 1280, 1600];
  */
 const PROCESS_DESKTOP_ASPECT = "1600 / 846";
 
-const processSteps = [
-  {
-    label: "Assess",
-    title: "Understand your space",
-    body: "Available space, intended usage, electrical supply, drainage and project requirements.",
-    image:
-      "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533541/ikigai/home/image_2026-08-26_11-51-55.png",
-    objectPosition: "center center",
-  },
-  {
-    label: "Recommend & design",
-    title: "Determine the right solution",
-    body: "Existing design or custom — then adapted around your space, aesthetic and usage.",
-    image:
-      "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533543/ikigai/home/image_2026-08-26_11-52-13.png",
-    objectPosition: "center center",
-  },
-  {
-    label: "Engineer",
-    title: "Verify the technical details",
-    body: "Heater sizing, ventilation, chilling, circulation and filtration reviewed before production.",
-    image:
-      "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533545/ikigai/home/image_2026-08-26_11-52-30.png",
-    objectPosition: "center center",
-  },
-  {
-    label: "Build",
-    title: "Build for your project",
-    body: "Our own team handles production and the technical requirements.",
-    image:
-      "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533547/ikigai/home/image_2026-08-26_11-52-43.png",
-    objectPosition: "center center",
-  },
-  {
-    label: "Install",
-    title: "Handled by our team",
-    body: "We coordinate delivery, installation and commissioning of your wellness equipment.",
-    image:
-      "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533550/ikigai/home/image_2026-08-26_11-52-54.png",
-    objectPosition: "center center",
-  },
-  {
-    label: "Maintain",
-    title: "We’re still here after installation",
-    body: "Include a weekly maintenance for both commercial & residential to make sure it lasts for years to come.",
-    image:
-      "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533552/ikigai/home/image_2026-08-26_11-53-05.png",
-    objectPosition: "center center",
-  },
-];
-
-const processPairs = [
-  [processSteps[0], processSteps[1]],
-  [processSteps[2], processSteps[3]],
-  [processSteps[4], processSteps[5]],
-];
-
-function getImageKitUrl(src) {
+function getCloudinaryUrl(src) {
   return src;
 }
 
-function getImageKitSrcSet(src) {
+function getCloudinarySrcSet(src) {
   return PROCESS_IMAGE_WIDTHS.map(
-    (width) => `${getImageKitUrl(src, width)} ${width}w`,
+    (width) => `${getCloudinaryUrl(src, width)} ${width}w`,
   ).join(", ");
 }
 
@@ -136,8 +80,8 @@ function DesktopProcessImage({ step, side }) {
     >
       <img
         className="process-chapter__image block h-full w-full object-cover will-change-transform"
-        src={getImageKitUrl(step.image, PROCESS_IMAGE_WIDTHS[2])}
-        srcSet={getImageKitSrcSet(step.image)}
+        src={getCloudinaryUrl(step.image, PROCESS_IMAGE_WIDTHS[2])}
+        srcSet={getCloudinarySrcSet(step.image)}
         sizes="(min-width: 105rem) 28rem, (min-width: 80rem) 28vw, 100vw"
         alt=""
         loading="lazy"
@@ -151,8 +95,18 @@ function DesktopProcessImage({ step, side }) {
   );
 }
 
-export default function Process() {
+export default function Process({ content }) {
   const sectionRef = useRef(null);
+  const processSteps = (content?.steps || []).map((step) => ({
+    ...step,
+    image: cloudinaryAssetUrl(step.image),
+    objectPosition: "center center",
+  }));
+  const processPairs = [
+    [processSteps[0], processSteps[1]],
+    [processSteps[2], processSteps[3]],
+    [processSteps[4], processSteps[5]],
+  ].filter(([leftStep, rightStep]) => leftStep && rightStep);
 
   useGSAP(
     () => {
@@ -439,13 +393,11 @@ export default function Process() {
             id="process-title"
             className="process__heading m-0 max-w-[15ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em] xl:mx-auto"
           >
-            The Ikigai Process
+            {content?.heading || ""}
           </h2>
 
           <p className="process__intro mt-4 mb-0 max-w-[35rem] text-[length:var(--type-section-intro-standard)] leading-[1.65] text-white/[0.64] md:mt-5 md:leading-[1.62] xl:mt-[1.4rem] xl:max-w-[41rem] xl:leading-[1.65]">
-            You tell us about your property and what you’re trying to create. We
-            manage the process from assessment through installation and ongoing
-            support.
+            {content?.intro || ""}
           </p>
         </header>
 
@@ -459,7 +411,7 @@ export default function Process() {
         <div className="grid gap-y-[3.75rem] md:gap-y-[4.25rem] xl:hidden">
           {processSteps.map((step, index) => (
             <article
-              key={step.title}
+              key={step._key}
               className="process-step min-w-0"
             >
               <div className="process-step__copy">
@@ -485,11 +437,11 @@ export default function Process() {
               <div className="mt-[1.4rem] aspect-[5/3] overflow-hidden bg-[#414957] md:mt-[1.55rem]">
                 <img
                   className="process-step__mobile-image block h-full w-full object-cover will-change-transform"
-                  src={getImageKitUrl(
+                  src={getCloudinaryUrl(
                     step.image,
                     PROCESS_IMAGE_WIDTHS[1],
                   )}
-                  srcSet={getImageKitSrcSet(step.image)}
+                  srcSet={getCloudinarySrcSet(step.image)}
                   sizes="calc(100vw - 2 * var(--page-gutter))"
                   alt=""
                   loading="lazy"
@@ -537,7 +489,7 @@ export default function Process() {
 
             return (
               <div
-                key={`${pair[0].title}-${pair[1].title}`}
+                key={`${pair[0]?._key}-${pair[1]?._key}`}
                 className={[
                   "process-chapter",
                   "grid grid-cols-2 items-center",

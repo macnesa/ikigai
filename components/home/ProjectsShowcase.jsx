@@ -12,93 +12,36 @@ import {
   shouldLimitMotion,
   useGSAP,
 } from "./HomeMotion";
+import { cloudinaryAssetUrl } from "@/lib/cloudinary";
 
 /* eslint-disable @next/next/no-img-element */
 
 const PROJECT_IMAGE_WIDTHS = [480, 640, 960, 1280];
 const PROJECT_LIGHTBOX_IMAGE_WIDTH = 1600;
 
-const projects = [
-  {
-    id: 1,
-    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533570/ikigai/home/image_2026-08-26_12-00-12.jpg",
-    alt: "",
-    objectPosition: "center center",
-  },
-  {
-    id: 2,
-    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533565/ikigai/home/image_2026-08-26_11-59-43.jpg",
-    alt: "",
-    objectPosition: "center center",
-  },
-  {
-    id: 3,
-    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533556/ikigai/home/image_2026-08-26_11-58-47.jpg",
-    alt: "",
-    objectPosition: "center center",
-  },
-  {
-    id: 4,
-    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533571/ikigai/home/image_2026-08-26_12-00-20.jpg",
-    alt: "",
-    objectPosition: "center center",
-  },
-  {
-    id: 5,
-    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533567/ikigai/home/image_2026-08-26_12-00-02.png",
-    alt: "",
-    objectPosition: "center center",
-  },
-  {
-    id: 6,
-    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533563/ikigai/home/image_2026-08-26_11-59-30.jpg",
-    alt: "",
-    objectPosition: "center center",
-  },
-  {
-    id: 7,
-    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533561/ikigai/home/image_2026-08-26_11-59-17.jpg",
-    alt: "",
-    objectPosition: "center center",
-  },
-  {
-    id: 8,
-    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533554/ikigai/home/image_2026-08-26_11-58-32.jpg",
-    alt: "",
-    objectPosition: "center center",
-  },
-  {
-    id: 9,
-    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533558/ikigai/home/image_2026-08-26_11-58-55.jpg",
-    alt: "",
-    objectPosition: "center center",
-  },
-  {
-    id: 10,
-    src: "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533560/ikigai/home/image_2026-08-26_11-59-02.jpg",
-    alt: "",
-    objectPosition: "center center",
-  },
-];
-
-function getImageKitUrl(src) {
+function getCloudinaryUrl(src) {
   return src;
 }
 
-function getImageKitSrcSet(src) {
+function getCloudinarySrcSet(src) {
   return PROJECT_IMAGE_WIDTHS.map(
-    (width) => `${getImageKitUrl(src, width)} ${width}w`,
+    (width) => `${getCloudinaryUrl(src, width)} ${width}w`,
   ).join(", ");
 }
 
-const projectLightboxImages = projects.map((project) => ({
-  src: getImageKitUrl(project.src, PROJECT_LIGHTBOX_IMAGE_WIDTH),
-  alt: project.alt,
-}));
-
-export default function ProjectsShowcase() {
+export default function ProjectsShowcase({ content }) {
   const sectionRef = useRef(null);
   const imageLightbox = useImageLightbox();
+  const projects = (content?.projects || []).map((project) => ({
+    ...project,
+    src: cloudinaryAssetUrl(project.image),
+    alt: project.imageAlt || "",
+    objectPosition: "center center",
+  }));
+  const projectLightboxImages = projects.map((project) => ({
+    src: getCloudinaryUrl(project.src, PROJECT_LIGHTBOX_IMAGE_WIDTH),
+    alt: project.alt,
+  }));
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
@@ -236,12 +179,11 @@ export default function ProjectsShowcase() {
           id="projects-title"
           className="projects__heading ikigai-alpha-mask m-0 max-w-[15ch] font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em]"
         >
-          Wellness Spaces We’ve Built
+          {content?.heading || ""}
         </h2>
 
         <p className="projects__intro m-0 max-w-[34rem] text-[length:var(--type-section-intro-standard)] leading-[1.65] text-[var(--ink-soft)] md:max-w-[38rem] md:justify-self-end">
-          From private villas to commercial wellness facilities: spaces
-          designed around their environment and requirements.
+          {content?.intro || ""}
         </p>
       </div>
 
@@ -253,7 +195,7 @@ export default function ProjectsShowcase() {
           <div className="projects__track flex pl-[var(--page-offset)] pr-[var(--page-gutter)] [touch-action:pan-y_pinch-zoom]">
             {projects.map((project, index) => (
               <div
-                key={project.id}
+                key={project._key}
                 className="projects__slide min-w-0 flex-[0_0_78%] pr-3 md:basis-[clamp(12rem,13.75vw,17rem)] md:pr-[clamp(0.55rem,0.7vw,0.85rem)]"
               >
                 <div className="project-card relative">
@@ -271,11 +213,11 @@ export default function ProjectsShowcase() {
                   >
                     <img
                       className="project-card__image block h-full w-full object-cover"
-                      src={getImageKitUrl(
+                      src={getCloudinaryUrl(
                         project.src,
                         PROJECT_IMAGE_WIDTHS[1],
                       )}
-                      srcSet={getImageKitSrcSet(project.src)}
+                      srcSet={getCloudinarySrcSet(project.src)}
                       sizes="(min-width: 48rem) 14vw, 78vw"
                       alt={project.alt}
                       loading="lazy"

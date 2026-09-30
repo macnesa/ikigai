@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { WHATSAPP_CTA_URL } from "@/lib/contact-config";
+import { cloudinaryAssetUrl } from "@/lib/cloudinary";
 import {
   gsap,
   MOTION_MEDIA,
@@ -10,24 +11,20 @@ import {
 } from "./HomeMotion";
 
 const FINAL_CTA_IMAGE_WIDTHS = [640, 960, 1280, 1600, 1920];
-const FINAL_CTA_DESKTOP_IMAGE =
-  "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533534/ikigai/home/b3f34f90ef3e371670eab38bea9970cfb08e2992.jpg";
-
-const FINAL_CTA_MOBILE_IMAGE =
-  "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533529/ikigai/home/19fe447fdd327441430bc112d99ff4dbadc762aa.jpg";
-
-function getImageKitUrl(src) {
+function getCloudinaryUrl(src) {
   return src;
 }
 
-function getImageKitSrcSet(src) {
+function getCloudinarySrcSet(src) {
   return FINAL_CTA_IMAGE_WIDTHS.map(
-    (width) => `${getImageKitUrl(src, width)} ${width}w`,
+    (width) => `${getCloudinaryUrl(src, width)} ${width}w`,
   ).join(", ");
 }
 
-export default function FinalCTA() {
+export default function FinalCTA({ content }) {
   const sectionRef = useRef(null);
+  const desktopImage = cloudinaryAssetUrl(content?.primaryImage);
+  const mobileImage = cloudinaryAssetUrl(content?.secondaryImage);
 
   useGSAP(
     () => {
@@ -204,19 +201,19 @@ export default function FinalCTA() {
         <picture className="block h-full w-full">
           <source
             media="(max-width: 47.99rem)"
-            srcSet={getImageKitSrcSet(FINAL_CTA_MOBILE_IMAGE)}
+            srcSet={getCloudinarySrcSet(mobileImage)}
             sizes="100vw"
           />
 
           <img
             className="final-cta__image block h-full w-full object-cover object-center"
-            src={getImageKitUrl(
-              FINAL_CTA_DESKTOP_IMAGE,
+            src={getCloudinaryUrl(
+              desktopImage,
               FINAL_CTA_IMAGE_WIDTHS[2],
             )}
-            srcSet={getImageKitSrcSet(FINAL_CTA_DESKTOP_IMAGE)}
+            srcSet={getCloudinarySrcSet(desktopImage)}
             sizes="100vw"
-            alt=""
+            alt={content?.primaryImageAlt || ""}
             loading="lazy"
             decoding="async"
             draggable="false"
@@ -274,14 +271,14 @@ export default function FinalCTA() {
             id="final-cta-title"
             className="final-cta__heading gsap-text-clip ikigai-alpha-mask max-w-[10.5ch] font-display text-[clamp(2.65rem,11.5vw,3.55rem)] font-medium leading-[0.96] tracking-[-0.047em] md:max-w-[10.5ch] md:text-[clamp(3.9rem,5vw,6.2rem)] md:leading-[0.94] md:tracking-[-0.05em]"
           >
-            Build a Wellness Space You’ll Be Proud to Own
+            {content?.heading || ""}
           </h2>
 
           <a
             href={WHATSAPP_CTA_URL}
             className="final-cta__cta mt-[1.75rem] inline-flex min-h-[3.35rem] w-auto items-center justify-center rounded-[var(--pill)] border border-white bg-white px-[1.55rem] py-[0.9rem] text-center font-display text-[0.74rem] font-medium leading-none tracking-[0.035em] text-[var(--ink)] transition-[background-color,color,border-color] duration-[180ms] hover:border-black hover:bg-black hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white md:mt-[2rem] md:min-h-[3.5rem] md:px-[1.75rem] md:text-[0.78rem]"
           >
-            Book my free consultation
+            {content?.ctaLabel || ""}
           </a>
         </div>
       </div>

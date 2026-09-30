@@ -5,10 +5,6 @@ import ContactClickTracking from "@/components/tracking/ContactClickTracking";
 import {
   getIndexingMetadata,
   getSiteUrl,
-  SITE_DESCRIPTION,
-  SITE_NAME,
-  SITE_TITLE,
-  SOCIAL_IMAGE,
 } from "./seo-config";
 import "./globals.css";
 
@@ -49,23 +45,7 @@ export const metadata = {
         },
       }
     : {}),
-  title: SITE_TITLE,
-  description: SITE_DESCRIPTION,
   robots: getIndexingMetadata(siteUrl),
-  openGraph: {
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
-    ...(siteUrl ? { url: siteUrl } : {}),
-    siteName: SITE_NAME,
-    type: "website",
-    images: [SOCIAL_IMAGE],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
-    images: [SOCIAL_IMAGE.url],
-  },
 };
 
 export default function RootLayout({ children }) {

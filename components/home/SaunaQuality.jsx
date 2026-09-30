@@ -10,66 +10,30 @@ import {
   shouldLimitMotion,
   useGSAP,
 } from "./HomeMotion";
+import { cloudinaryAssetUrl } from "@/lib/cloudinary";
 
-const IMAGEKIT_WIDTHS = [640, 960, 1280, 1600];
-const SAUNA_COMPARISON_IMAGES = {
-  other:
-    "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533530/ikigai/home/Screenshot%202026-08-26%20at%2011.35.57.jpg",
-  ours:
-    "https://res.cloudinary.com/aefhdt7e/image/upload/v1790533532/ikigai/home/Screenshot%202026-08-26%20at%2011.36.12.jpg",
-};
+const CLOUDINARY_WIDTHS = [640, 960, 1280, 1600];
+const FALLBACK_SUMMARY =
+  "Every IKIGAI sauna is engineered as a complete room — from heater sizing and ventilation to insulation and construction.";
 
-const saunaDetails = [
-  {
-    id: "sauna-heater",
-    title: "The heater needs to match the room",
-    mobileTitle: "Heater sizing",
-    body: "Sized around sauna volume, glass area and construction. Too small, and the room does not heat properly.",
-  },
-  {
-    id: "sauna-airflow",
-    title: "Good heat still needs good airflow",
-    mobileTitle: "Ventilation",
-    body: "Designed air intake and exhaust. Without it the room feels stuffy and the heat goes uneven.",
-  },
-  {
-    id: "sauna-benches",
-    title: "Where you sit changes the experience",
-    mobileTitle: "Bench height",
-    body: "Heat rises. Benches too low and much of your body stays in the cooler part of the room.",
-  },
-  {
-    id: "sauna-clearances",
-    title: "The heater can’t go wherever it looks best",
-    mobileTitle: "Heater position & clearances",
-    body: "Position and distance from wood, benches and walls must match the heater’s requirements.",
-  },
-  {
-    id: "sauna-insulation",
-    title: "The room needs to hold heat",
-    mobileTitle: "Insulation & construction",
-    body: "Insulation, vapour control and wall construction are designed for repeated heat and humidity. A sauna isn’t just timber on the outside.",
-  },
-];
-
-function getImageKitUrl(src) {
+function getCloudinaryUrl(src) {
   return src;
 }
 
-function getImageKitSrcSet(src) {
-  return IMAGEKIT_WIDTHS.map(
-    (width) => `${getImageKitUrl(src, width)} ${width}w`,
+function getCloudinarySrcSet(src) {
+  return CLOUDINARY_WIDTHS.map(
+    (width) => `${getCloudinaryUrl(src, width)} ${width}w`,
   ).join(", ");
 }
 
-function ComparisonImage({ src }) {
+function ComparisonImage({ src, alt }) {
   return (
     <img
       className="absolute inset-0 block h-full w-full object-cover object-center"
-      src={getImageKitUrl(src, IMAGEKIT_WIDTHS[1])}
-      srcSet={getImageKitSrcSet(src)}
+      src={getCloudinaryUrl(src, CLOUDINARY_WIDTHS[1])}
+      srcSet={getCloudinarySrcSet(src)}
       sizes="(min-width: 48rem) 48vw, 100vw"
-      alt=""
+      alt={alt || ""}
       loading="lazy"
       decoding="async"
       draggable="false"
@@ -78,7 +42,7 @@ function ComparisonImage({ src }) {
   );
 }
 
-function ComparisonSlider() {
+function ComparisonSlider({ primaryImage, primaryImageAlt, comparisonImage, comparisonImageAlt }) {
   const [position, setPosition] = useState(50);
 
   return (
@@ -90,13 +54,13 @@ function ComparisonSlider() {
         "--comparison-position": `${position}%`,
       }}
     >
-      <ComparisonImage src={SAUNA_COMPARISON_IMAGES.ours} />
+      <ComparisonImage src={primaryImage} alt={primaryImageAlt} />
 
       <div
         className="absolute inset-0 [clip-path:inset(0_calc(100%_-_var(--comparison-position))_0_0)]"
         aria-hidden="true"
       >
-        <ComparisonImage src={SAUNA_COMPARISON_IMAGES.other} />
+          <ComparisonImage src={comparisonImage} alt={comparisonImageAlt} />
       </div>
 
       <div
@@ -131,7 +95,7 @@ function ComparisonSlider() {
   );
 }
 
-function MobileTechnicalDetails() {
+function MobileTechnicalDetails({ details, summary }) {
   const containerRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(null);
   const hasIntroducedRef = useRef(false);
@@ -194,14 +158,14 @@ function MobileTechnicalDetails() {
       className="sauna__technical-focus sauna__technical-mobile md:hidden"
     >
       <div className="border-t border-white/[0.15]">
-        {saunaDetails.map((item, index) => {
+        {details.map((item, index) => {
           const isActive = activeIndex === index;
-          const panelId = `${item.id}-mobile-detail`;
-          const triggerId = `${item.id}-mobile-trigger`;
+          const panelId = `${item._key}-mobile-detail`;
+          const triggerId = `${item._key}-mobile-trigger`;
 
           return (
             <div
-              key={item.id}
+              key={item._key}
               className="border-b border-white/[0.15]"
             >
               <button
@@ -265,21 +229,20 @@ function MobileTechnicalDetails() {
       </div>
 
       <p className="mt-[2.2rem] mb-0 max-w-[21rem] text-[0.82rem] leading-[1.65] text-white/[0.62]">
-        Every IKIGAI sauna is engineered as a complete room — from heater
-        sizing and ventilation to insulation and construction.
+        {summary || FALLBACK_SUMMARY}
       </p>
     </div>
   );
 }
 
-function DesktopTechnicalDetails() {
+function DesktopTechnicalDetails({ details }) {
   return (
     <div className="sauna__technical-focus sauna__technical-desktop hidden md:block">
-      {saunaDetails.map((item, index) => (
+      {details.map((item, index) => (
         <article
-          key={item.id}
+          key={item._key}
           className={`grid grid-cols-[3.4rem_minmax(0,1fr)] gap-4 py-[1.35rem] ${
-            index < saunaDetails.length - 1
+            index < details.length - 1
               ? "border-b border-white/[0.13]"
               : ""
           }`}
@@ -303,17 +266,20 @@ function DesktopTechnicalDetails() {
   );
 }
 
-function TechnicalDetails() {
+function TechnicalDetails({ details, summary }) {
   return (
     <>
-      <DesktopTechnicalDetails />
-      <MobileTechnicalDetails />
+      <DesktopTechnicalDetails details={details} />
+      <MobileTechnicalDetails details={details} summary={summary} />
     </>
   );
 }
 
-export default function SaunaQuality() {
+export default function SaunaQuality({ content }) {
   const sectionRef = useRef(null);
+  const details = content?.technicalDetails || [];
+  const primaryImage = cloudinaryAssetUrl(content?.primaryImage);
+  const comparisonImage = cloudinaryAssetUrl(content?.comparisonImage);
 
   useGSAP(
     () => {
@@ -540,36 +506,38 @@ export default function SaunaQuality() {
       <div className="relative z-[1] mx-auto grid w-full max-w-[105rem] px-[var(--page-gutter)] md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:grid-rows-[auto_auto_1fr] md:gap-x-[clamp(3rem,5vw,6rem)]">
         <div className="grid gap-[0.8rem] md:col-start-2 md:row-start-1">
           <p className="sauna__eyebrow m-0 font-display text-[0.66rem] font-semibold leading-[1.2] tracking-[0.18em] text-white/[0.62] uppercase">
-            Sauna
+            {content?.eyebrow || ""}
           </p>
 
           <h2
             id="sauna-title"
             className="sauna__heading gsap-text-clip font-display text-[length:var(--standard-section-heading-size)] font-medium leading-[1.02] tracking-[-0.042em]"
           >
-            Beautiful Isn’t Always Built Properly
+            {content?.heading || ""}
           </h2>
         </div>
 
         <p className="sauna__body order-2 mt-[1rem] mb-0 text-[length:var(--type-section-intro-standard)] leading-[1.65] text-white/[0.64] md:order-none md:col-start-2 md:row-start-2 md:mt-[1rem] md:max-w-[39rem] md:leading-[1.58]">
           <span className="md:hidden">
-            A sauna can look beautiful and still be poorly designed. What
-            matters is how the whole room works together.
+            {content?.mobileCopy || ""}
           </span>
 
           <span className="hidden md:inline">
-            Most problems aren’t obvious when an installation is new. They show
-            up later: poor performance, higher running costs, uncomfortable use,
-            difficult maintenance.
+            {content?.desktopCopy || ""}
           </span>
         </p>
 
         <div className="sauna__comparison-frame order-3 -mx-[var(--page-gutter)] mt-[2rem] w-[calc(100%+2*var(--page-gutter))] md:order-none md:col-start-1 md:row-start-1 md:row-span-3 md:mx-0 md:mt-0 md:w-auto">
-          <ComparisonSlider />
+          <ComparisonSlider
+            primaryImage={primaryImage}
+            primaryImageAlt={content?.primaryImageAlt}
+            comparisonImage={comparisonImage}
+            comparisonImageAlt={content?.comparisonImageAlt}
+          />
         </div>
 
         <div className="order-4 mt-[2.25rem] md:order-none md:col-start-2 md:row-start-3 md:mt-[1.9rem]">
-          <TechnicalDetails />
+          <TechnicalDetails details={details} summary={content?.summary} />
         </div>
       </div>
     </section>

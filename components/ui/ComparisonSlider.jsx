@@ -5,17 +5,15 @@
 import { useState } from "react";
 import { MoveHorizontal } from "lucide-react";
 
-const IMAGEKIT_WIDTHS = [640, 960, 1280, 1600];
-const IMAGEKIT_QUALITY = 80;
+const CLOUDINARY_WIDTHS = [640, 960, 1280, 1600];
 
-function getImageKitUrl(src, width) {
-  const separator = src.includes("?") ? "&" : "?";
-  return `${src}${separator}tr=w-${width},q-${IMAGEKIT_QUALITY},f-auto`;
+function getCloudinaryUrl(src) {
+  return src;
 }
 
-function getImageKitSrcSet(src) {
-  return IMAGEKIT_WIDTHS.map(
-    (width) => `${getImageKitUrl(src, width)} ${width}w`,
+function getCloudinarySrcSet(src) {
+  return CLOUDINARY_WIDTHS.map(
+    (width) => `${getCloudinaryUrl(src, width)} ${width}w`,
   ).join(", ");
 }
 
@@ -29,8 +27,8 @@ function ComparisonImage({ src, after = false }) {
     >
       <img
         className="comparison__image block h-full w-full object-cover object-center"
-        src={getImageKitUrl(src, IMAGEKIT_WIDTHS[1])}
-        srcSet={getImageKitSrcSet(src)}
+        src={getCloudinaryUrl(src, CLOUDINARY_WIDTHS[1])}
+        srcSet={getCloudinarySrcSet(src)}
         sizes="(min-width: 48rem) 44vw, calc(100vw - 2.5rem)"
         alt=""
         loading="lazy"
